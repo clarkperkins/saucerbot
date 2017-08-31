@@ -2,33 +2,16 @@
 
 
 import logging
-import os
 
 import requests
 
 from saucerbot import app
+from saucerbot.utils import send_message
 
-API_URL = 'https://api.groupme.com/v3'
-BOT_ID = os.environ['BOT_ID']
+
 CATFACTS_URL = 'https://catfact.ninja/fact'
 
 logger = logging.getLogger(__name__)
-
-
-def send_message(text, **kwargs):
-    message = {
-        'bot_id': BOT_ID,
-        'text': text,
-    }
-
-    message.update(kwargs)
-
-    r = requests.post('{}/bots/post'.format(API_URL), json=message)
-
-    if r.status_code != 201:
-        logger.debug('Message failed to send: {}'.format(r.text))
-
-    return r.status_code == 201
 
 
 @app.handler()
