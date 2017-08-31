@@ -5,8 +5,7 @@ import logging
 
 import requests
 
-from saucerbot import app
-from saucerbot.utils import send_message
+from saucerbot import app, utils
 
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
@@ -32,7 +31,7 @@ def mars(message):
 
             full_message = "{}@{}".format(pre_message, message['name'])
 
-            send_message(full_message, attachments=attachments)
+            utils.send_message(full_message, attachments=attachments)
             break
 
 
@@ -42,7 +41,7 @@ def you_suck_too_coach(message):
     Sends 'YOU SUCK TOO COACH'
     """
     if 'you suck' in message['text'].lower():
-        send_message('YOU SUCK TOO COACH')
+        utils.send_message('YOU SUCK TOO COACH')
 
 
 @app.handler()
@@ -52,4 +51,17 @@ def catfacts(message):
     """
     if 'cat' in message['text'].lower():
         catfact = requests.get(CATFACTS_URL).json()
-        send_message(catfact['fact'])
+        utils.send_message(catfact['fact'])
+
+
+@app.handler()
+def new_arrivals(message):
+    """
+    Gets all the new arrivals
+    """
+    matches = ('new arrivals', 'new beers')
+
+    for match in matches:
+        if match in message['text'].lower():
+            utils.send_message(utils.get_new_arrivals())
+            break

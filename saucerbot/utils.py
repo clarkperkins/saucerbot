@@ -5,6 +5,8 @@ import os
 
 import requests
 
+from saucerbot.parsers import NewArrivalsParser
+
 
 API_URL = 'https://api.groupme.com/v3'
 BOT_ID = os.environ['BOT_ID']
@@ -26,3 +28,11 @@ def send_message(text, **kwargs):
         logger.debug('Message failed to send: {}'.format(r.text))
 
     return r.status_code == 201
+
+
+def get_new_arrivals():
+    parser = NewArrivalsParser()
+
+    beers = parser.parse()
+
+    return '\n'.join(x['name'] for x in beers)
