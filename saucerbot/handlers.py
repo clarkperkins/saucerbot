@@ -29,7 +29,7 @@ def mars(message):
                 }
             ]
 
-            full_message = "{}@{}".format(pre_message, message['name'])
+            full_message = '{}@{}'.format(pre_message, message['name'])
 
             utils.send_message(full_message, attachments=attachments)
             break

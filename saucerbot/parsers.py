@@ -22,9 +22,6 @@ class Parser(object):
 
 
 class KimonoParser(Parser):
-    """
-
-    """
     base = ''
     fields = ()
     url = ''
@@ -37,6 +34,7 @@ class KimonoParser(Parser):
 
         r = requests.get(self.url.format(*args))
 
+        self.types = {}
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
     def parse(self):
@@ -45,9 +43,10 @@ class KimonoParser(Parser):
         :return: All the records
         :rtype: list
         """
-        rows = []
-        types = {}
+        for row in self._do_initial_parse():
+            yield self.post_process(row)
 
+    def _do_initial_parse(self):
         if not self.base:
             raise MissingBaseError()
 
@@ -59,7 +58,7 @@ class KimonoParser(Parser):
 
                 if len(columns) == 0:
                     # Handle missing field
-                    next_type = types.get(field)
+                    next_type = self.types.get(field)
                     if not next_type:
                         # try to guess it
                         next_type = selector.split(' > ')[-1].split(':')[0]
@@ -79,11 +78,11 @@ class KimonoParser(Parser):
                 column = columns[0]
 
                 # Check to make sure it's the correct type
-                if field in types:
-                    if types[field] != column.name:
+                if field in self.types:
+                    if self.types[field] != column.name:
                         raise RowMismatchError()
 
-                types[field] = column.name
+                self.types[field] = column.name
 
                 if column.name == 'a':
                     next_row[field] = {
@@ -95,36 +94,17 @@ class KimonoParser(Parser):
                 else:
                     next_row[field] = column.text
 
-            rows.append(next_row)
+            yield next_row
 
-        # Scan through a second time in case the fields were not discernable the first time through
-        for row in rows:
-            missing = False
-            for field, selector in self.fields:
-                if field not in row:
-                    missing = True
-                    if types[field] == 'a':
-                        row[field] = {
-                            'text': '',
-                            'href': ''
-                        }
-                    else:
-                        row[field] = ''
-            if not missing:
-                # All the fields were intact, so we're done
-                break
-
-        return self.post_process(rows)
-
-    def post_process(self, data):
+    def post_process(self, row):
         """
         You may override this method to do any data post-processing.
-        By default this will just return the original list.
-        :param data: The list of data that was scraped
-        :return: the transformed data
-        :rtype: list
+        By default this will just return the original row.
+        :param row: The list of data that was scraped
+        :return: the transformed row
+        :rtype: dict
         """
-        return data
+        return row
 
 
 class NewArrivalsParser(KimonoParser):
@@ -135,9 +115,8 @@ class NewArrivalsParser(KimonoParser):
         ('date',        'td.views-field-created-1'),
     )
 
-    def post_process(self, data):
-        for item in data:
-            item['name'] = item['name'].strip()
-            item['date'] = item['date'].strip()
+    def post_process(self, row):
+        row['name'] = row['name'].strip()
+        row['date'] = row['date'].strip()
 
-        return data
+        return row
