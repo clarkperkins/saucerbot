@@ -77,7 +77,7 @@ def vandy(message):
     Vandy things
     """
     if 'go dores' in message['text'].lower():
-        utils.send_message('ANCHOR DOWN')
+        utils.send_message('ANCHOR DOWN \u2693\ufe0f')
 
     if 'anchor down' in message['text'].lower():
         utils.send_message('GO DORES')
