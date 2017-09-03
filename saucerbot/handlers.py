@@ -103,3 +103,16 @@ def system_messages(message):
 
     if change_name_match:
         utils.send_message('{emoji}', attachments=[utils.get_emoji_attachment([[1, 81]])])
+
+
+@app.handler()
+def pizza(message):
+    """
+    complain about pizza
+    """
+    matches = ('thin crust', 'deep dish')
+
+    for match in matches:
+        if match in message['text'].lower():
+            utils.send_message('That is a false binary and you know it, asshole')
+            break
