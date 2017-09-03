@@ -125,3 +125,9 @@ def lit(message):
     """
     if 'lit fam' in message['text'].lower():
         utils.send_message("You're not lit, I'm lit")
+
+
+@app.handler()
+def dont_at_me(message):
+    if '@saucerbot' in message['text']:
+        utils.send_message("don't @ me \ud83d\ude44")
