@@ -72,6 +72,18 @@ def new_arrivals(message):
 
 
 @app.handler()
+def vandy(message):
+    """
+    Vandy things
+    """
+    if 'go dores' in message['text'].lower():
+        utils.send_message('ANCHOR DOWN')
+
+    if 'anchor down' in message['text'].lower():
+        utils.send_message('GO DORES')
+
+
+@app.handler()
 def system_messages(message):
     """
     Process system messages
