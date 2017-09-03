@@ -117,3 +117,21 @@ def pizza(message):
         if match in message['text'].lower():
             utils.send_message('That is a false binary and you know it, asshole')
             break
+
+
+@app.handler()
+def lit(message):
+    """
+    battle with the lit bot
+    """
+    if 'lit fam' in message['text'].lower():
+        utils.send_message("You're not lit, I'm lit")
+
+
+@app.handler()
+def dont_at_me(message):
+    if '@saucerbot' in message['text']:
+        utils.send_message("don't @ me \ud83d\ude44")
+    elif '@ saucerbot' in message['text'].lower() or '@saucerbot' in message['text'].lower():
+        utils.send_message("you think you're sneaky don't you")
+
