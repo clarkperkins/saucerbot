@@ -24,3 +24,11 @@ app = SaucerFlask(__name__)
 import saucerbot.commands
 import saucerbot.handlers
 import saucerbot.views
+
+from saucerbot.database import session
+
+
+# Add the teardown for the database
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    session.remove()

@@ -9,6 +9,7 @@ import requests
 from saucerbot import app, utils
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
+TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
 
 logger = logging.getLogger(__name__)
 
