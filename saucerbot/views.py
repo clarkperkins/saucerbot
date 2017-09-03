@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import logging
 
 from flask import request
@@ -14,9 +15,9 @@ logger = logging.getLogger(__name__)
 def groupme():
     message = request.get_json(force=True)
 
-    logger.info('Received message: {}'.format(message))
+    logger.info('Received message: {}'.format(json.dumps(message)))
 
-    if message['sender_type'] != 'user':
+    if message['sender_type'] == 'bot':
         return jsonify({})
 
     # Call all our handlers
