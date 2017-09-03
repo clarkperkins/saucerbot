@@ -116,3 +116,12 @@ def pizza(message):
         if match in message['text'].lower():
             utils.send_message('That is a false binary and you know it, asshole')
             break
+
+
+@app.handler()
+def lit(message):
+    """
+    battle with the lit bot
+    """
+    if 'lit fam' in message['text'].lower():
+        utils.send_message("You're not lit, I'm lit")

@@ -17,7 +17,7 @@ def groupme():
 
     logger.info('Received message: {}'.format(json.dumps(message)))
 
-    if message['sender_type'] == 'bot':
+    if message['sender_type'] == 'bot' and message['name'] == 'saucerbot':
         return jsonify({})
 
     # Call all our handlers
