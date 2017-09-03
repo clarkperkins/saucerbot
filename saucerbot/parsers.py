@@ -13,7 +13,6 @@ class MissingBaseError(Exception):
 
 
 class Parser(object):
-
     def __init__(self):
         super(Parser, self).__init__()
 
@@ -111,8 +110,8 @@ class NewArrivalsParser(KimonoParser):
     url = 'https://www.beerknurd.com/locations/nashville-flying-saucer'
     base = 'div.view-new-arrivals-block > div > table > tbody > tr'
     fields = (
-        ('name',        'td.views-field-title'),
-        ('date',        'td.views-field-created-1'),
+        ('name', 'td.views-field-title'),
+        ('date', 'td.views-field-created-1'),
     )
 
     def post_process(self, row):

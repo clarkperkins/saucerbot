@@ -7,7 +7,6 @@ import requests
 
 from saucerbot.parsers import NewArrivalsParser
 
-
 API_URL = 'https://api.groupme.com/v3'
 BOT_ID = os.environ['BOT_ID']
 

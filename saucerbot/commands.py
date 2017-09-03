@@ -3,6 +3,7 @@
 import datetime
 
 import click
+
 from saucerbot import app
 from saucerbot.utils import send_message
 

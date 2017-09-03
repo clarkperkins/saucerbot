@@ -14,13 +14,14 @@ logger = logging.getLogger(__name__)
 def groupme():
     message = request.get_json(force=True)
 
-    logger.debug(message)
+    logger.info('Received message: {}'.format(message))
 
     if message['sender_type'] != 'user':
         return jsonify({})
 
     # Call all our handlers
     for handler in app.handlers:
+        logger.debug('Trying message handler {} ...'.format(handler.__name__))
         handler(message)
 
     response = {

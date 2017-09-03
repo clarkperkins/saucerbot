@@ -7,7 +7,6 @@ import requests
 
 from saucerbot import app, utils
 
-
 CATFACTS_URL = 'https://catfact.ninja/fact'
 
 logger = logging.getLogger(__name__)
