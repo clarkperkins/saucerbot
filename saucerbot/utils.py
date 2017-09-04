@@ -3,6 +3,7 @@
 import datetime
 import logging
 import os
+import re
 
 from elasticsearch import Elasticsearch
 import requests
@@ -16,9 +17,15 @@ EMOJI_PLACEHOLDER = '\ufffd'
 
 logger = logging.getLogger(__name__)
 
+ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
+
+
+def get_es_client():
+    return Elasticsearch(os.environ['BONSAI_URL'])
+
 
 def load_beers_into_es():
-    es = Elasticsearch(os.environ['BONSAI_URL'])
+    es = get_es_client()
 
     # Make sure the template is there
     es.indices.put_template(
@@ -38,6 +45,7 @@ def load_beers_into_es():
                         'description': {'type': 'text'},
                         'stars': {'type': 'long'},
                         'reviews': {'type': 'long'},
+                        'abv': {'type': 'float'},
                     }
                 }
             }
@@ -61,6 +69,9 @@ def load_beers_into_es():
             beer.pop('city')
         if not beer['country']:
             beer.pop('country')
+        abv_match = ABV_RE.search(beer['description'])
+        if abv_match:
+            beer['abv'] = float(abv_match.group('abv'))
         es.index(index_name, 'beer', beer, beer_id)
 
     alias_actions = []
