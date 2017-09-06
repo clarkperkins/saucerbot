@@ -29,7 +29,7 @@ def save_saucer_id(message, match):
     tasted_beers = utils.get_tasted_brews(saucer_id)
 
     if len(tasted_beers) == 0:
-        app.bot.post("Hmmm, it looks like {} isn't a valid Saucer ID.")
+        app.bot.post("Hmmm, it looks like {} isn't a valid Saucer ID.".format(saucer_id))
         return True
 
     # Otherwise it's valid - we can move on
