@@ -1,6 +1,11 @@
 beautifulsoup4>=4.6.0,<4.7.0
 click>=6.0,<7.0
+elasticsearch>=5.0,<6.0
 Flask>=0.12.0,<0.13.0
+Flask-SQLAlchemy>=2.2.0,<2.3.0
+GroupyAPI>=0.7.0,<0.8.0
 gunicorn>=19.7.0,<19.8.0
+psycopg2>=2.7.0,<2.8.0
 PyYAML
 requests>=2.0,<3.0
+SQLAlchemy>=1.1.0,<1.2.0

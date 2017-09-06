@@ -15,16 +15,36 @@ logger = logging.getLogger(__name__)
 def groupme():
     message = request.get_json(force=True)
 
-    logger.info('Received message: {}'.format(json.dumps(message)))
+    logger.info('Received raw message: {}'.format(json.dumps(message)))
+
+    # Load it as a groupme message
+    message = app.group.bot_message(message)
 
     # We don't want to accidentally respond to ourself
-    if message['sender_type'] == 'bot' and message['name'] == 'saucerbot':
+    if message.sender_type == 'bot' and message.name == 'saucerbot':
         return jsonify({})
 
     # Call all our handlers
     for handler in app.handlers:
-        logger.debug('Trying message handler {} ...'.format(handler.__name__))
-        handler(message)
+        logger.debug('Trying message handler {} ...'.format(handler.func.__name__))
+
+        if handler.re:
+            re_func = getattr(handler.re, handler.type)
+            text = message.text
+            if not handler.case_sensitive:
+                text = text.lower()
+            match = re_func(text)
+            if match:
+                handler.func(message, match)
+                res = True
+            else:
+                res = False
+        else:
+            res = handler.func(message)
+
+        # Stop the rest of the handlers
+        if res and handler.short_circuit:
+            break
 
     response = {
         'ok': True
