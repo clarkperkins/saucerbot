@@ -22,6 +22,41 @@ SAUCER_ID_RE = re.compile(r'my saucer id is (?P<saucer_id>[0-9]+)')
 
 # Handlers run in the order they were registered
 
+@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)', short_circuit=True)
+def save_saucer_id(message, match):
+    saucer_id = match.group('saucer_id')
+
+    tasted_beers = utils.get_tasted_brews(saucer_id)
+
+    if len(tasted_beers) == 0:
+        app.bot.post("Hmmm, it looks like {} isn't a valid Saucer ID.")
+        return True
+
+    # Otherwise it's valid - we can move on
+    user = models.User.query.filter_by(groupme_id=message.user_id).first()
+
+    if user:
+        user.saucer_id = saucer_id
+    else:
+        user = models.User(groupme_id=message.user_id,
+                           saucer_id=saucer_id)
+
+    db.session.add(user)
+    db.session.commit()
+
+    pre_message = "Thanks, "
+    post_message = "!  I saved your Saucer ID."
+    mentions = groupme.attachments.Mentions(
+        [message.user_id],
+        [(len(pre_message), len(message.name) + 1)]
+    )
+
+    full_message = '{}@{}{}'.format(pre_message, message.name, post_message)
+
+    app.bot.post(full_message, mentions)
+    return True
+
+
 @app.handler()
 def mars(message):
     """
@@ -140,39 +175,4 @@ def dont_at_me(message, match):
 @app.handler(r'@ saucerbot')
 def sneaky(message, match):
     app.bot.post("you think you're sneaky don't you")
-    return True
-
-
-@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
-def save_saucer_id(message, match):
-    saucer_id = match.group('saucer_id')
-
-    tasted_beers = utils.get_tasted_brews(saucer_id)
-
-    if len(tasted_beers) == 0:
-        app.bot.post("Hmmm, it looks like {} isn't a valid Saucer ID.")
-        return True
-
-    # Otherwise it's valid - we can move on
-    user = models.User.query.filter_by(groupme_id=message.user_id).first()
-
-    if user:
-        user.saucer_id = saucer_id
-    else:
-        user = models.User(groupme_id=message.user_id,
-                           saucer_id=saucer_id)
-
-    db.session.add(user)
-    db.session.commit()
-
-    pre_message = "Thanks, "
-    post_message = "!  I saved your Saucer ID."
-    mentions = groupme.attachments.Mentions(
-        [message.user_id],
-        [(len(pre_message), len(message.name) + 1)]
-    )
-
-    full_message = '{}@{}{}'.format(pre_message, message.name, post_message)
-
-    app.bot.post(full_message, mentions)
     return True
