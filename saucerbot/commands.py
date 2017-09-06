@@ -5,6 +5,8 @@ import logging
 
 import click
 
+from saucerbot.bridgestone import get_todays_events
+from saucerbot.bridgestone import create_message
 from saucerbot import app, db, utils
 
 logger = logging.getLogger(__name__)
@@ -35,11 +37,14 @@ def remind(force):
     today = datetime.datetime.now()
 
     if today.weekday() == 0 or force:
+        todays_events = get_todays_events()
         if app.bot.post(LIKE_IF_POST):
             logger.info('Successfully sent reminder message.')
         else:
             logger.warning('Failed to send reminder message')
 
+        if len(todays_events) > 0:
+            app.bot.post(create_message(todays_events[0]))
     else:
         logger.info("Not sending message, it's not Monday!")
 
