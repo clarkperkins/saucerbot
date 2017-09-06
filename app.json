@@ -1,5 +1,7 @@
 {
   "name": "saucerbot",
+  "description": "Bot for the saucer groupme",
+  "repository": "https://github.com/clarkperkins/saucerbot.git",
   "scripts": {
     "postdeploy": "python manage.py pr create",
     "pr-predestroy": "python manage.py pr destroy"
@@ -15,7 +17,12 @@
       "required": true
     }
   },
-  "formation": {},
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
   "addons": [
     "bonsai",
     "heroku-postgresql"
