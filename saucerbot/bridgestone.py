@@ -46,9 +46,3 @@ def create_message(event):
     else:
         event_string = random.choice(__general_quips).format(name=event['name'])
     return template.format(event=event_string, time=time_string)
-
-
-
-
-
-

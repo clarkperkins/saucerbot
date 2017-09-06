@@ -1,0 +1,22 @@
+{
+  "name": "saucerbot",
+  "scripts": {},
+  "env": {
+    "BONSAI_URL": {
+      "required": true
+    },
+    "GROUPME_API_KEY": {
+      "required": true
+    }
+  },
+  "formation": {},
+  "addons": [
+    "bonsai",
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
