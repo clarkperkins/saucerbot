@@ -5,8 +5,7 @@ import logging
 
 import click
 
-from saucerbot.bridgestone import get_todays_events
-from saucerbot.bridgestone import create_message
+from saucerbot.bridgestone import create_message, get_todays_events
 from saucerbot import app, db, utils
 
 logger = logging.getLogger(__name__)

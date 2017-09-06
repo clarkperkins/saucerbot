@@ -1,7 +1,10 @@
-from parsers import BridgestoneEventsParser
-from datetime import datetime
+# -*- coding: utf-8 -*-
+
 import random
 import re
+from datetime import datetime
+
+from saucerbot.parsers import BridgestoneEventsParser
 
 __bridgestone_time_pattern = '%b. %d - %I:%M %p'
 __message_formats = [
