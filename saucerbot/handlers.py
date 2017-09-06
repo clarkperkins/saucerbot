@@ -143,7 +143,7 @@ def sneaky(message, match):
     return True
 
 
-@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)', regex_type='match')
+@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
 def save_saucer_id(message, match):
     saucer_id = match.group('saucer_id')
 
