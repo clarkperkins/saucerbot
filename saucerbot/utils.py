@@ -11,9 +11,6 @@ import requests
 from saucerbot.parsers import NewArrivalsParser
 
 BREWS_URL = 'https://www.beerknurd.com/api/brew/list/13886'
-API_URL = 'https://api.groupme.com/v3'
-BOT_ID = os.environ['BOT_ID']
-EMOJI_PLACEHOLDER = '\ufffd'
 
 logger = logging.getLogger(__name__)
 
@@ -91,30 +88,6 @@ def load_beers_into_es():
 
     # Perform the update
     es.indices.update_aliases({'actions': alias_actions})
-
-
-def send_message(text, **kwargs):
-    message = {
-        'bot_id': BOT_ID,
-        'text': text.format(emoji=EMOJI_PLACEHOLDER),
-    }
-
-    message.update(kwargs)
-
-    r = requests.post('{}/bots/post'.format(API_URL), json=message)
-
-    if r.status_code != 201:
-        logger.debug('Message failed to send: {}'.format(r.text))
-
-    return r.status_code == 201
-
-
-def get_emoji_attachment(charmap):
-    return {
-        'type': 'emoji',
-        'charmap': charmap,
-        'placeholder': EMOJI_PLACEHOLDER,
-    }
 
 
 def get_new_arrivals():
