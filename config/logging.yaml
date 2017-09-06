@@ -21,3 +21,7 @@ loggers:
       - console
     level: INFO
     propagate: false
+  requests.packages.urllib3.connectionpool:
+    handlers:
+      - console
+    level: WARNING

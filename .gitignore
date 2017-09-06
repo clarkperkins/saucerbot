@@ -1,7 +1,8 @@
 ### Project Settings
 
 load_env.sh
-
+*.db
+kibana-*/
 
 ### Python template
 # Byte-compiled / optimized / DLL files
