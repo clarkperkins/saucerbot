@@ -8,7 +8,7 @@ from flask import Flask
 
 from saucerbot import groupme
 
-BOT_ID = os.environ['GROUPME_BOT_ID']
+BOT_ID = os.environ.get('GROUPME_BOT_ID')
 
 
 Handler = namedtuple('Handler', ['re', 'type', 'func', 'case_sensitive', 'short_circuit'])
@@ -24,7 +24,7 @@ class SaucerFlask(Flask):
         self.bot = groupme.Bot.get(BOT_ID)
 
         # Load the group too
-        self.group = groupme.Group.get(self.bot.group_id)
+        self.group = groupme.Group.get(self.bot.group_id) if self.bot else None
 
     def handler(self, regex=None, regex_type='search', case_sensitive=False, short_circuit=False):
         """

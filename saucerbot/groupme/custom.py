@@ -22,10 +22,13 @@ class Bot(GroupyBot):
 
     @classmethod
     def get(cls, bot_id):
+        if not bot_id:
+            return None
+
         for bot in endpoint.Bots.index():
             if bot['bot_id'] == bot_id:
                 return Bot(**bot)
-        raise GroupMeError('Bot with ID {} not found'.format(bot_id))
+        return None
 
     def post(self, text, *attachments, picture_url=None):
         text = text.format(emoji=config.EMOJI_PLACEHOLDER)
