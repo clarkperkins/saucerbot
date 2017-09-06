@@ -119,3 +119,19 @@ class NewArrivalsParser(KimonoParser):
         row['date'] = row['date'].strip()
 
         return row
+
+
+class BridgestoneEventsParser(KimonoParser):
+
+    url = 'https://www.bridgestonearena.com/events'
+    base = 'div#list > div > div.info.clearfix'
+    fields = (
+        ('name', 'h3 > a'),
+        ('date', 'div.date')
+    )
+
+    def post_process(self, row):
+        row['name'] = row['name']['text'].strip()
+        row['date'] = row['date'].strip()
+
+        return row
