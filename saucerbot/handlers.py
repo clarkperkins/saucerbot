@@ -143,15 +143,24 @@ def sneaky(message, match):
     return True
 
 
-@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
+@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)', regex_type='match')
 def save_saucer_id(message, match):
+    saucer_id = match.group('saucer_id')
+
+    tasted_beers = utils.get_tasted_brews(saucer_id)
+
+    if len(tasted_beers) == 0:
+        app.bot.post("Hmmm, it looks like {} isn't a valid Saucer ID.")
+        return True
+
+    # Otherwise it's valid - we can move on
     user = models.User.query.filter_by(groupme_id=message.user_id).first()
 
     if user:
-        user.saucer_id = match.group('saucer_id')
+        user.saucer_id = saucer_id
     else:
         user = models.User(groupme_id=message.user_id,
-                           saucer_id=match.group('saucer_id'))
+                           saucer_id=saucer_id)
 
     db.session.add(user)
     db.session.commit()

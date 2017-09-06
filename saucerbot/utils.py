@@ -10,7 +10,9 @@ import requests
 
 from saucerbot.parsers import NewArrivalsParser
 
+# This url is specific to nashville
 BREWS_URL = 'https://www.beerknurd.com/api/brew/list/13886'
+TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{}'
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,11 @@ ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
 
 def get_es_client():
     return Elasticsearch(os.environ['BONSAI_URL'])
+
+
+def get_tasted_brews(saucer_id):
+    r = requests.get(TASTED_URL.format(saucer_id))
+    return r.json()
 
 
 def load_beers_into_es():
