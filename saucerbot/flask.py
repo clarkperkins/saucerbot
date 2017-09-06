@@ -8,7 +8,7 @@ from flask import Flask
 
 from saucerbot import groupme
 
-BOT_ID = os.environ['GROUPME_BOT_ID']
+BOT_ID = os.environ.get('GROUPME_BOT_ID')
 
 
 Handler = namedtuple('Handler', ['re', 'type', 'func', 'case_sensitive', 'short_circuit'])

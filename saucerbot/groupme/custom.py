@@ -22,6 +22,9 @@ class Bot(GroupyBot):
 
     @classmethod
     def get(cls, bot_id):
+        if not bot_id:
+            return None
+
         for bot in endpoint.Bots.index():
             if bot['bot_id'] == bot_id:
                 return Bot(**bot)
