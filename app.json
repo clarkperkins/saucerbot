@@ -1,11 +1,17 @@
 {
   "name": "saucerbot",
-  "scripts": {},
+  "scripts": {
+    "postdeploy": "python manage.py pr create",
+    "pr-predestroy": "python manage.py pr destroy"
+  },
   "env": {
-    "BONSAI_URL": {
+    "HEROKU_APP_NAME": {
       "required": true
     },
     "GROUPME_API_KEY": {
+      "required": true
+    },
+    "GROUPME_GROUP_ID": {
       "required": true
     }
   },

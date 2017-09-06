@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
 import datetime
 import logging
 
 import click
 
 from saucerbot.bridgestone import create_message, get_todays_events
-from saucerbot import app, db, utils
+from saucerbot import app, db, groupme, utils
 
 logger = logging.getLogger(__name__)
 
@@ -76,3 +77,37 @@ def load_beers():
     Load all the beers.
     """
     utils.load_beers_into_es()
+
+
+@app.cli.group()
+def pr():
+    """
+    Helper commands to get PR deploys working
+    """
+
+
+@pr.command()
+def create():
+    group = groupme.Group.get(os.environ['GROUPME_GROUP_ID'])
+
+    app_name = os.environ['HEROKU_APP_NAME']
+
+    new_bot = groupme.Bot.create(
+        app_name,
+        group,
+        callback_url='https://{}.herokuapp.com/hooks/groupme/'.format(app_name),
+    )
+
+    logger.info("Created bot with ID: {}".format(new_bot.bot_id))
+
+
+@pr.command()
+def destroy():
+    app_name = os.environ['HEROKU_APP_NAME']
+
+    bots = groupme.Bot.list()
+
+    for bot in bots:
+        if bot.name == app_name:
+            logger.info("Destroying bot: {} <{}>".format(bot.name, bot.bot_id))
+            bot.destroy()
