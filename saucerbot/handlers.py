@@ -119,6 +119,18 @@ def anchor_down(message, match):
     return True
 
 
+@app.handler(r'black')
+def black(message, match):
+    app.bot.post("GOLD")
+    return True
+
+
+@app.handler(r'gold')
+def gold(message, match):
+    app.bot.post("BLACK")
+    return True
+
+
 @app.handler()
 def system_messages(message):
     """
