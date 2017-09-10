@@ -106,12 +106,12 @@ def whos_coming():
             break
 
 
-@app.cli.command('load-beers')
-def load_beers():
+@app.cli.command('load-nashville-brews')
+def load_nashville_brews():
     """
-    Load all the beers.
+    Load all the brews from the Nashville Saucer.
     """
-    utils.load_beers_into_es()
+    utils.load_nashville_brews()
 
 
 @app.cli.group()
