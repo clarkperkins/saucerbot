@@ -179,6 +179,5 @@ def sneaky(message, match):
 
 
 @app.handler(r'ohhh+')
-@app.handler(r'OHHH+')
 def anchor_down(message, match):
     app.bot.post("ANCHOR! DOWN!")
