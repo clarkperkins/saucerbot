@@ -31,7 +31,7 @@ def get_todays_events():
     events = []
     for ev in BridgestoneEventsParser().parse():
         event_date = datetime.strptime(ev['date'], __bridgestone_time_pattern)
-        if today.date() == event_date.date() and event_date.hour >= 12:
+        if today.day == event_date.day and today.month == event_date.month and event_date.hour >= 12:
             events.append(ev)
     return events
 
