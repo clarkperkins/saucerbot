@@ -176,3 +176,9 @@ def dont_at_me(message, match):
 def sneaky(message, match):
     app.bot.post("you think you're sneaky don't you")
     return True
+
+
+@app.handler(r'ohhh+')
+@app.handler(r'OHHH+')
+def anchor_down(message, match):
+    app.bot.post("ANCHOR! DOWN!")
