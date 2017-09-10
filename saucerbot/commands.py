@@ -3,6 +3,7 @@
 import os
 import datetime
 import logging
+from functools import wraps
 
 import click
 
@@ -28,31 +29,57 @@ def initdb():
     logger.info('Initialized the database.')
 
 
-@app.cli.command()
-@click.option('--force', is_flag=True, help='Forces saucerbot to send a reminder on non-mondays')
-def remind(force):
+@app.cli.group()
+def remind():
+    """
+    Commands for sending reminders
+    """
+
+
+def only_mondays(*args, **kwargs):
+    """
+    Decorator to only send commands on mondays
+    """
+    def decorator(func):
+
+        @click.option('--force', is_flag=True,
+                      help='Forces saucerbot to send a reminder on non-mondays')
+        @wraps(func)
+        def wrapper(force, *fargs, **fkwargs):
+            today = datetime.datetime.now()
+
+            # only call the function if it's a monday
+            if today.weekday() == 0 or force:
+                return func(*fargs, **fkwargs)
+            else:
+                logger.info("Not sending message, it's not Monday!")
+
+        return wrapper
+
+    return decorator
+
+
+@remind.command('like-if')
+@only_mondays()
+def like_if():
     """
     Remind everyone to come to saucer.
     """
-    today = datetime.datetime.now()
-
-    if today.weekday() == 0 or force:
-        todays_events = get_todays_events()
-        if app.bot.post(LIKE_IF_POST):
-            logger.info('Successfully sent reminder message.')
-        else:
-            logger.warning('Failed to send reminder message')
-
-        if len(todays_events) > 0:
-            app.bot.post(create_message(todays_events[0]))
+    todays_events = get_todays_events()
+    if app.bot.post(LIKE_IF_POST):
+        logger.info('Successfully sent reminder message.')
     else:
-        logger.info("Not sending message, it's not Monday!")
+        logger.warning('Failed to send reminder message')
+
+    if len(todays_events) > 0:
+        app.bot.post(create_message(todays_events[0]))
 
 
-@app.cli.command('remind-again')
-def remind_again():
+@remind.command('whos-coming')
+@only_mondays()
+def whos_coming():
     """
-    Sends a message with the number of people coming tonight.
+    Let everyone know who's coming
     """
     # Since the bot post response is empty, search through the old posts to
     # find the most recent one matching the text
@@ -62,12 +89,20 @@ def remind_again():
 
             if num_likes == 0:
                 phrase = 'nobody is'
+                ending = ' \ud83d\ude2d'
             elif num_likes == 1:
                 phrase = 'only 1 person is'
+                ending = ' \ud83d\ude22'
             else:
                 phrase = '{} people are'.format(num_likes)
+                ending = ''
 
-            app.bot.post("Looks like {} coming tonight.".format(phrase))
+            if app.bot.post("Looks like {} coming tonight.{}".format(phrase, ending)):
+                logger.info('Successfully sent reminder message.')
+            else:
+                logger.warning('Failed to send reminder message')
+
+            # We sent a message already, don't send another
             break
 
 
