@@ -7,6 +7,7 @@ from flask import request
 from flask.json import jsonify
 
 from saucerbot import app
+import the_dores
 
 logger = logging.getLogger(__name__)
 
@@ -50,4 +51,16 @@ def groupme():
         'ok': True
     }
 
+    return jsonify(response)
+
+
+@app.route('/hooks/dores-win', methods=['POST'])
+def did_the_dores_win():
+    logger.info("Request to /hooks/dores-win")
+    result = the_dores.did_the_dores_win(False, False)
+    if result:
+        app.bot.post(result)
+    response = {
+        'ok': True
+    }
     return jsonify(response)
