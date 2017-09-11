@@ -17,12 +17,10 @@ REMOVE_RE = re.compile(r'^(?P<remover>.*) removed (?P<removee>.*) from the group
 ADD_RE = re.compile(r'^(?P<adder>.*) added (?P<addee>.*) to the group\.$')
 CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
-SAUCER_ID_RE = re.compile(r'my saucer id is (?P<saucer_id>[0-9]+)')
-
 
 # Handlers run in the order they were registered
 
-@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)', short_circuit=True)
+@app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
 def save_saucer_id(message, match):
     saucer_id = match.group('saucer_id')
 
@@ -30,7 +28,6 @@ def save_saucer_id(message, match):
 
     if len(tasted_beers) == 0:
         app.bot.post("Hmmm, it looks like {} isn't a valid Saucer ID.".format(saucer_id))
-        return True
 
     # Otherwise it's valid - we can move on
     user = models.User.query.filter_by(groupme_id=message.user_id).first()
@@ -54,7 +51,6 @@ def save_saucer_id(message, match):
     full_message = '{}@{}{}'.format(pre_message, message.name, post_message)
 
     app.bot.post(full_message, mentions)
-    return True
 
 
 @app.handler()
@@ -84,7 +80,6 @@ def you_suck_too_coach(message, match):
     Sends 'YOU SUCK TOO COACH'
     """
     app.bot.post("YOU SUCK TOO COACH")
-    return True
 
 
 @app.handler(r'cat')
@@ -94,7 +89,6 @@ def catfacts(message, match):
     """
     catfact = requests.get(CATFACTS_URL).json()
     app.bot.post(catfact['fact'])
-    return True
 
 
 @app.handler(r'new beers')
@@ -104,31 +98,26 @@ def new_arrivals(message, match):
     Gets all the new arrivals
     """
     app.bot.post(utils.get_new_arrivals())
-    return True
 
 
 @app.handler(r'go dores')
 def go_dores(message, match):
     app.bot.post("ANCHOR DOWN \u2693\ufe0f")
-    return True
 
 
 @app.handler(r'anchor down')
 def anchor_down(message, match):
     app.bot.post("GO DORES")
-    return True
 
 
 @app.handler(r'black')
 def black(message, match):
     app.bot.post("GOLD")
-    return True
 
 
 @app.handler(r'gold')
 def gold(message, match):
     app.bot.post("BLACK")
-    return True
 
 
 @app.handler()
@@ -165,7 +154,6 @@ def pizza(message, match):
     complain about pizza
     """
     app.bot.post("That is a false binary and you know it, asshole")
-    return True
 
 
 @app.handler(r'lit fam')
@@ -174,17 +162,14 @@ def lit(message, match):
     battle with the lit bot
     """
     app.bot.post("You're not lit, I'm lit")
-    return True
 
 
-@app.handler(r'@saucerbot', case_sensitive=True, short_circuit=True)
+@app.handler(r'@saucerbot', case_sensitive=True)
 def dont_at_me(message, match):
     app.bot.post("don't @ me \ud83d\ude44")
-    return True
 
 
 @app.handler(r'@saucerbot')
 @app.handler(r'@ saucerbot')
 def sneaky(message, match):
     app.bot.post("you think you're sneaky don't you")
-    return True
