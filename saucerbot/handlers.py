@@ -195,5 +195,5 @@ def troll(meesage, match):
         pre_message = 'Shaina'
         attachments = []
 
-    full_message = "{} is a troll".format(pre_message)
+    full_message = "{} is the troll".format(pre_message)
     app.bot.post(full_message, *attachments)
