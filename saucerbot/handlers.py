@@ -17,6 +17,8 @@ REMOVE_RE = re.compile(r'^(?P<remover>.*) removed (?P<removee>.*) from the group
 ADD_RE = re.compile(r'^(?P<adder>.*) added (?P<addee>.*) to the group\.$')
 CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
+SHAINA_USER_ID = '6830949'
+
 
 # Handlers run in the order they were registered
 
@@ -173,3 +175,25 @@ def dont_at_me(message, match):
 @app.handler(r'@ saucerbot')
 def sneaky(message, match):
     app.bot.post("you think you're sneaky don't you")
+
+
+@app.handler(r'pong')
+@app.handler(r'beer pong')
+def troll(meesage, match):
+    filtered = app.group.members().filter(user_id=SHAINA_USER_ID)
+
+    if filtered:
+        shaina = filtered[0]
+        mentions = groupme.attachments.Mentions(
+            [SHAINA_USER_ID],
+            [(0, len(shaina.nickname) + 1)]
+        )
+
+        pre_message = '@{}'.format(shaina.nickname)
+        attachments = [mentions]
+    else:
+        pre_message = 'Shaina'
+        attachments = []
+
+    full_message = "{} is a troll".format(pre_message)
+    app.bot.post(full_message, *attachments)
