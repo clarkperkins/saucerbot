@@ -102,6 +102,7 @@ def new_arrivals(message, match):
     app.bot.post(utils.get_new_arrivals())
 
 
+@app.handler(r'ohhh+')
 @app.handler(r'go dores')
 def go_dores(message, match):
     app.bot.post("ANCHOR DOWN \u2693\ufe0f")
