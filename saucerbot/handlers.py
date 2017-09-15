@@ -178,6 +178,12 @@ def sneaky(message, match):
     app.bot.post("you think you're sneaky don't you")
 
 
+@app.handler(r' bot ')
+@app.handler(r'zo')
+def zo(message, match):
+    app.bot.post("Zo is dead.  Long live saucerbot.")
+
+
 @app.handler(r'pong')
 @app.handler(r'beer pong')
 def troll(meesage, match):
