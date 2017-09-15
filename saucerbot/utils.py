@@ -5,7 +5,7 @@ import logging
 import os
 import re
 
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, RequestError
 import requests
 
 from saucerbot.parsers import NewArrivalsParser
@@ -103,7 +103,29 @@ def load_nashville_brews():
     })
 
     # Perform the update
-    es.indices.update_aliases({'actions': alias_actions})
+    try:
+        es.indices.update_aliases({'actions': alias_actions})
+    except RequestError:
+        logger.warning("There was an error updating the indices.  "
+                       "Will only add the new index & not delete old indices.")
+        es.indices.put_alias(index_name, BREWS_ALIAS_NAME)
+
+    # Grab all the matching indices
+    old_indices = es.indices.get(f'{BREWS_ALIAS_NAME}-*')
+
+    del old_indices[index_name]
+
+    if old_indices:
+        logger.info("Cleaning up old indices...")
+
+        # Try deleting any indices that didn't already get deleted
+        for old_index in old_indices:
+            if old_index != index_name:
+                logger.info(f"Deleting {old_index}...")
+                try:
+                    es.indices.delete(old_index)
+                except RequestError:
+                    logger.info(f"Error deleting {old_index}.  Leaving it in place.")
 
 
 def get_new_arrivals():
