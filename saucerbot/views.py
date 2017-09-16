@@ -6,8 +6,7 @@ import logging
 from flask import request
 from flask.json import jsonify
 
-from saucerbot import app
-import the_dores
+from saucerbot import app, the_dores
 
 logger = logging.getLogger(__name__)
 
