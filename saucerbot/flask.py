@@ -11,7 +11,7 @@ from saucerbot import groupme
 BOT_ID = os.environ.get('GROUPME_BOT_ID')
 
 
-Handler = namedtuple('Handler', ['re', 'type', 'func', 'case_sensitive', 'short_circuit'])
+Handler = namedtuple('Handler', ['regex', 'func'])
 
 
 class SaucerFlask(Flask):
@@ -26,17 +26,19 @@ class SaucerFlask(Flask):
         # Load the group too
         self.group = groupme.Group.get(self.bot.group_id) if self.bot else None
 
-    def handler(self, regex=None, regex_type='search', case_sensitive=False, short_circuit=False):
+    def handler(self, regex=None, case_sensitive=False):
         """
         Add a message handler
         """
         def wrapper(func):
+            flags = 0
+
+            if not case_sensitive:
+                flags = flags | re.IGNORECASE
+
             self.handlers.append(Handler(
-                re.compile(regex) if regex else None,
-                regex_type,
+                re.compile(regex, flags) if regex else None,
                 func,
-                case_sensitive,
-                short_circuit,
             ))
             return func
 

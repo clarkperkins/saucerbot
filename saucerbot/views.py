@@ -23,32 +23,31 @@ def groupme():
 
     # We don't want to accidentally respond to ourself
     if message.sender_type == 'bot' and message.name == 'saucerbot':
-        return jsonify({})
+        return jsonify({'message_sent': False})
+
+    message_sent = False
 
     # Call all our handlers
     for handler in app.handlers:
         logger.debug('Trying message handler {} ...'.format(handler.func.__name__))
 
-        if handler.re:
-            re_func = getattr(handler.re, handler.type)
-            text = message.text
-            if not handler.case_sensitive:
-                text = text.lower()
-            match = re_func(text)
+        if handler.regex:
+            # This is a regex handler, special case
+            match = handler.regex.search(message.text)
             if match:
+                # We matched!  Now call our handler and break out of the loop
                 handler.func(message, match)
-                res = True
-            else:
-                res = False
+                message_sent = True
+                break
         else:
-            res = handler.func(message)
-
-        # Stop the rest of the handlers
-        if res and handler.short_circuit:
-            break
+            # Just a plain handler.
+            # If it returns something truthy, it matched, so it means we should stop
+            if handler.func(message):
+                message_sent = True
+                break
 
     response = {
-        'ok': True
+        'message_sent': message_sent,
     }
 
     return jsonify(response)

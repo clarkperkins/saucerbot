@@ -25,3 +25,7 @@ loggers:
     handlers:
       - console
     level: WARNING
+  elasticsearch:
+    handlers:
+      - console
+    level: WARNING
