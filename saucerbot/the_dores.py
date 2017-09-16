@@ -120,11 +120,11 @@ IN_PROGRESS_MESSAGES = [
 ]
 
 # Good for testing the feature
-import sys
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        date = datetime.datetime.strptime(sys.argv[1], "%m-%d-%Y")
-    else:
-        date = None
-    print(did_the_dores_win(True, True, date))
+# import sys
+#
+# if __name__ == '__main__':
+#     if len(sys.argv) > 1:
+#         date = datetime.datetime.strptime(sys.argv[1], "%m-%d-%Y")
+#     else:
+#         date = None
+#     print(did_the_dores_win(True, True, date))
