@@ -61,6 +61,8 @@ def did_the_dores_win():
     if result:
         app.bot.post(result)
     response = {
-        'ok': True
+        'ok': True,
+        'win': result is not None,
+        'result': result
     }
     return jsonify(response)
