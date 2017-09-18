@@ -176,7 +176,6 @@ def dont_at_me(message, match):
 @app.handler(r'@ saucerbot')
 def sneaky(message, match):
     app.bot.post("you think you're sneaky don't you")
-    return True
 
 
 @app.handler(r' bot ')
@@ -215,4 +214,3 @@ def did_the_dores_win(message, match):
         app.bot.post("I couldn't find the Vandy game {emoji}", groupme.attachments.Emoji([[1, 35]]))
     else:
         app.bot.post(result)
-    return True

@@ -2,10 +2,30 @@ import requests
 import datetime
 import random
 import logging
+import math
+import sys
 
 logger = logging.getLogger(__name__)
 
 ESPN_FOOTBALL_URL = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?lang=en&region=us&calendartype=blacklist&limit=300&dates={year}&seasontype={season}&week={week}&groups=80'
+
+WINNING_FORMATS = [
+    "Hell yeah! The 'Dores took down the {team} {vandy_score}-{other_score}",
+    "ATFD! Vandy rolled past the {team} {vandy_score}-{other_score}",
+    "The {team} stood no chance! Vandy wins {vandy_score}-{other_score}",
+    "Vandy conquered the {team}, prevailing with a score of {vandy_score}-{other_score}"
+]
+
+LOSING_FORMATS = [
+    "Not this time... the {team} overcame Vandy {other_score}-{vandy_score}",
+    "No :( We lost {other_score}-{vandy_score} to the {team}"
+]
+
+IN_PROGRESS_MESSAGES = [
+    "Time will tell...",
+    "Waiting on the result!",
+    "I don't know yet, but go dores!"
+]
 
 
 def get_football_results(desired_date):
@@ -18,9 +38,9 @@ def get_football_results(desired_date):
     else:
         season_type = 2  # code for regular season
         week = __get_week(desired_date)
-        logger.info("It's week {}".format(week))
+        logger.debug("It's week {}".format(week))
     url = ESPN_FOOTBALL_URL.format(year=desired_date.year, week=week, season=season_type)
-    logger.info("Requesting URL '{}'".format(url))
+    logger.debug("Requesting URL '{}'".format(url))
     response = requests.get(url)
     if 200 <= response.status_code < 300:
         scores = response.json()
@@ -67,7 +87,7 @@ def __get_week(desired_date):
         labor_day = labor_day + datetime.timedelta(days=1)
     week_1 = labor_day - datetime.timedelta(4)  # we'll say Thursday is the one we want to calculate from
     diff = desired_date - week_1
-    week = diff.days / 7 + 1
+    week = int(math.floor(diff.days / 7)) + 1
     return week
 
 
@@ -104,31 +124,10 @@ def did_the_dores_win(print_in_progress=False, print_loss=False, desired_date=No
         return response.format(team=opponent['team']['displayName'], vandy_score=vandy['score'],
                                other_score=opponent['score'])
 
-
-WINNING_FORMATS = [
-    "Hell yeah! The 'Dores took down the {team} {vandy_score}-{other_score}",
-    "ATFD! Vandy rolled past the {team} {vandy_score}-{other_score}",
-    "The {team} stood no chance! Vandy wins {vandy_score}-{other_score}",
-    "Vandy conquered the {team}, prevailing with a score of {vandy_score}-{other_score}"
-]
-
-LOSING_FORMATS = [
-    "Not this time... the {team} overcame Vandy {other_score}-{vandy_score}",
-    "No :( We lost {other_score}-{vandy_score} to the {team}"
-]
-
-IN_PROGRESS_MESSAGES = [
-    "Time will tell...",
-    "Waiting on the result!",
-    "I don't know yet, but go dores!"
-]
-
 # Good for testing the feature
-# import sys
-#
-# if __name__ == '__main__':
-#     if len(sys.argv) > 1:
-#         date = datetime.datetime.strptime(sys.argv[1], "%m-%d-%Y")
-#     else:
-#         date = None
-#     print(did_the_dores_win(True, True, date))
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        date = datetime.datetime.strptime(sys.argv[1], "%m-%d-%Y")
+    else:
+        date = None
+    print(did_the_dores_win(True, True, date))
