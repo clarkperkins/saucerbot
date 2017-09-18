@@ -18,9 +18,9 @@ def get_football_results(desired_date):
     else:
         season_type = 2  # code for regular season
         week = __get_week(desired_date)
-        logger.debug("It's week {}".format(week))
+        logger.info("It's week {}".format(week))
     url = ESPN_FOOTBALL_URL.format(year=desired_date.year, week=week, season=season_type)
-    logger.debug("Requesting URL '{}'".format(url))
+    logger.info("Requesting URL '{}'".format(url))
     response = requests.get(url)
     if 200 <= response.status_code < 300:
         scores = response.json()
