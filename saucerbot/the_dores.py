@@ -20,6 +20,7 @@ def get_football_results(desired_date):
         week = __get_week(desired_date)
         logger.debug("It's week {}".format(week))
     url = ESPN_FOOTBALL_URL.format(year=desired_date.year, week=week, season=season_type)
+    logger.debug("Requesting URL '{}'".format(url))
     response = requests.get(url)
     if 200 <= response.status_code < 300:
         scores = response.json()
@@ -82,10 +83,12 @@ def did_the_dores_win(print_in_progress=False, print_loss=False, desired_date=No
         desired_date = datetime.datetime.now()
     game = get_football_results(desired_date)
     if game is None:
+        logger.debug("No game found")
         return None
     else:
         vandy, opponent = __get_teams(game)
         if game['status']['type']['completed'] is False:
+            logger.debug("Game still in progress")
             if print_in_progress:
                 return random.choice(IN_PROGRESS_MESSAGES)
             else:
@@ -96,6 +99,7 @@ def did_the_dores_win(print_in_progress=False, print_loss=False, desired_date=No
             if print_loss:
                 response = random.choice(LOSING_FORMATS)
             else:
+                logger.debug("Vandy lost, but no printing is enabled")
                 return None
         return response.format(team=opponent['team']['displayName'], vandy_score=vandy['score'],
                                other_score=opponent['score'])
