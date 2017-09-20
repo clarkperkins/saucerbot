@@ -6,7 +6,7 @@ import re
 
 import requests
 
-from saucerbot import app, db, groupme, models, utils
+from saucerbot import app, db, groupme, models, utils, the_dores
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
@@ -204,3 +204,13 @@ def troll(meesage, match):
 
     full_message = "{} is the troll".format(pre_message)
     app.bot.post(full_message, *attachments)
+
+
+@app.handler(r'did the dores win')
+@app.handler(r'did vandy win')
+def did_the_dores_win(message, match):
+    result = the_dores.did_the_dores_win(True, True)
+    if result is None:
+        app.bot.post("I couldn't find the Vandy game {emoji}", groupme.attachments.Emoji([[1, 35]]))
+    else:
+        app.bot.post(result)
