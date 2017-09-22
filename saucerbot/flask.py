@@ -2,6 +2,7 @@
 
 import os
 import re
+import typing
 from collections import namedtuple
 
 from flask import Flask
@@ -16,9 +17,9 @@ Handler = namedtuple('Handler', ['regex', 'func'])
 
 class SaucerFlask(Flask):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super(SaucerFlask, self).__init__(*args, **kwargs)
-        self.handlers = []
+        self.handlers: typing.List[Handler] = []
 
         # Find our bot object
         self.bot = groupme.Bot.get(BOT_ID)
@@ -26,11 +27,11 @@ class SaucerFlask(Flask):
         # Load the group too
         self.group = groupme.Group.get(self.bot.group_id) if self.bot else None
 
-    def handler(self, regex=None, case_sensitive=False):
+    def handler(self, regex: str = None, case_sensitive: bool = False) -> typing.Callable[[typing.Callable], typing.Callable]:
         """
         Add a message handler
         """
-        def wrapper(func):
+        def wrapper(func: typing.Callable) -> typing.Callable:
             flags = 0
 
             if not case_sensitive:

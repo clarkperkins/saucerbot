@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import abc
 import requests
+import typing
 from bs4 import BeautifulSoup
 
 
@@ -12,20 +14,21 @@ class MissingBaseError(Exception):
     pass
 
 
-class Parser(object):
-    def __init__(self):
+class Parser(abc.ABC):
+    def __init__(self) -> None:
         super(Parser, self).__init__()
 
-    def parse(self):
-        raise NotImplementedError()
+    @abc.abstractmethod
+    def parse(self) -> typing.Iterable[typing.Dict[str, typing.Any]]:
+        pass
 
 
 class KimonoParser(Parser):
     base = ''
-    fields = ()
+    fields: typing.List[typing.Tuple[str, str]] = []
     url = ''
 
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         super(KimonoParser, self).__init__()
         self.args = args
         if not self.url:
@@ -33,7 +36,7 @@ class KimonoParser(Parser):
 
         r = requests.get(self.url.format(*args))
 
-        self.types = {}
+        self.types: typing.Dict[str, typing.Any] = {}
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
     def parse(self):
@@ -45,7 +48,7 @@ class KimonoParser(Parser):
         for row in self._do_initial_parse():
             yield self.post_process(row)
 
-    def _do_initial_parse(self):
+    def _do_initial_parse(self) -> typing.Iterator[typing.Dict[str, typing.Any]]:
         if not self.base:
             raise MissingBaseError()
 
@@ -95,7 +98,7 @@ class KimonoParser(Parser):
 
             yield next_row
 
-    def post_process(self, row):
+    def post_process(self, row: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
         """
         You may override this method to do any data post-processing.
         By default this will just return the original row.
@@ -109,10 +112,10 @@ class KimonoParser(Parser):
 class NewArrivalsParser(KimonoParser):
     url = 'https://www.beerknurd.com/locations/nashville-flying-saucer'
     base = 'div.view-new-arrivals-block > div > table > tbody > tr'
-    fields = (
+    fields = [
         ('name', 'td.views-field-title'),
         ('date', 'td.views-field-created-1'),
-    )
+    ]
 
     def post_process(self, row):
         row['name'] = row['name'].strip()
@@ -125,10 +128,10 @@ class BridgestoneEventsParser(KimonoParser):
 
     url = 'https://www.bridgestonearena.com/events'
     base = 'div#list > div > div.info.clearfix'
-    fields = (
+    fields = [
         ('name', 'h3 > a'),
         ('date', 'div.date')
-    )
+    ]
 
     def post_process(self, row):
         row['name'] = row['name']['text'].strip()

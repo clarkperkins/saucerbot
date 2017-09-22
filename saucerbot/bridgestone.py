@@ -2,6 +2,7 @@
 
 import random
 import re
+import typing
 from datetime import datetime
 
 from saucerbot.parsers import BridgestoneEventsParser
@@ -26,7 +27,7 @@ __general_quips = [
 ]
 
 
-def get_todays_events():
+def get_todays_events() -> typing.List[typing.Dict[str, typing.Any]]:
     today = datetime.today()
     events = []
     for ev in BridgestoneEventsParser().parse():
@@ -36,7 +37,7 @@ def get_todays_events():
     return events
 
 
-def create_message(event):
+def create_message(event: typing.Dict[str, typing.Any]) -> str:
     template = random.choice(__message_formats)
     time_string = datetime.strptime(event['date'], __bridgestone_time_pattern).strftime('%I:%M')
     preds_match = re.fullmatch('Nashville Predators vs. ([A-Za-z. ]+)', event['name'])

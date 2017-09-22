@@ -14,7 +14,7 @@ APP_HOME = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 with open(os.path.join(APP_HOME, 'config', 'logging.yaml')) as f:
     logging.config.dictConfig(yaml.safe_load(f))
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 # Create our app
 app = SaucerFlask('saucerbot')

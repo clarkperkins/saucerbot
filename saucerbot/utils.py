@@ -4,6 +4,7 @@ import datetime
 import logging
 import os
 import re
+import typing
 
 from elasticsearch import Elasticsearch, RequestError
 import requests
@@ -15,21 +16,21 @@ BREWS_ALIAS_NAME = 'brews-nashville'
 BREWS_URL = 'https://www.beerknurd.com/api/brew/list/13886'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{}'
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
 
 
-def get_es_client():
+def get_es_client() -> Elasticsearch:
     return Elasticsearch(os.environ['BONSAI_URL'])
 
 
-def get_tasted_brews(saucer_id):
+def get_tasted_brews(saucer_id) -> typing.List[typing.Dict[str, typing.Any]]:
     r = requests.get(TASTED_URL.format(saucer_id))
     return r.json()
 
 
-def load_nashville_brews():
+def load_nashville_brews() -> None:
     es = get_es_client()
 
     logger.info("Updating index template")
@@ -128,7 +129,7 @@ def load_nashville_brews():
                     logger.info(f"Error deleting {old_index}.  Leaving it in place.")
 
 
-def get_new_arrivals():
+def get_new_arrivals() -> str:
     parser = NewArrivalsParser()
 
     beers = parser.parse()

@@ -11,7 +11,7 @@ from saucerbot import app, db, groupme, models, utils, the_dores
 CATFACTS_URL = 'https://catfact.ninja/fact'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
 REMOVE_RE = re.compile(r'^(?P<remover>.*) removed (?P<removee>.*) from the group\.$')
 ADD_RE = re.compile(r'^(?P<adder>.*) added (?P<addee>.*) to the group\.$')
@@ -23,7 +23,7 @@ SHAINA_USER_ID = '6830949'
 # Handlers run in the order they were registered
 
 @app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
-def save_saucer_id(message, match):
+def save_saucer_id(message, match) -> None:
     saucer_id = match.group('saucer_id')
 
     tasted_beers = utils.get_tasted_brews(saucer_id)
@@ -56,7 +56,7 @@ def save_saucer_id(message, match):
 
 
 @app.handler()
-def mars(message):
+def mars(message) -> bool:
     """
     Sends a message about mars if a user posts an image
     """
@@ -77,7 +77,7 @@ def mars(message):
 
 
 @app.handler(r'you suck')
-def you_suck_too_coach(message, match):
+def you_suck_too_coach(message, match) -> None:
     """
     Sends 'YOU SUCK TOO COACH'
     """
@@ -85,7 +85,7 @@ def you_suck_too_coach(message, match):
 
 
 @app.handler(r'cat')
-def catfacts(message, match):
+def catfacts(message, match) -> None:
     """
     Sends catfacts!
     """
@@ -95,7 +95,7 @@ def catfacts(message, match):
 
 @app.handler(r'new beers')
 @app.handler(r'new arrivals')
-def new_arrivals(message, match):
+def new_arrivals(message, match) -> None:
     """
     Gets all the new arrivals
     """
@@ -104,27 +104,27 @@ def new_arrivals(message, match):
 
 @app.handler(r'ohhh+')
 @app.handler(r'go dores')
-def go_dores(message, match):
+def go_dores(message, match) -> None:
     app.bot.post("ANCHOR DOWN \u2693\ufe0f")
 
 
 @app.handler(r'anchor down')
-def anchor_down(message, match):
+def anchor_down(message, match) -> None:
     app.bot.post("GO DORES")
 
 
 @app.handler(r'black')
-def black(message, match):
+def black(message, match) -> None:
     app.bot.post("GOLD")
 
 
 @app.handler(r'gold')
-def gold(message, match):
+def gold(message, match) -> None:
     app.bot.post("BLACK")
 
 
 @app.handler()
-def system_messages(message):
+def system_messages(message) -> bool:
     """
     Process system messages
     """
@@ -152,7 +152,7 @@ def system_messages(message):
 
 @app.handler(r'deep dish')
 @app.handler(r'thin crust')
-def pizza(message, match):
+def pizza(message, match) -> None:
     """
     complain about pizza
     """
@@ -160,7 +160,7 @@ def pizza(message, match):
 
 
 @app.handler(r'lit fam')
-def lit(message, match):
+def lit(message, match) -> None:
     """
     battle with the lit bot
     """
@@ -168,25 +168,25 @@ def lit(message, match):
 
 
 @app.handler(r'@saucerbot', case_sensitive=True)
-def dont_at_me(message, match):
+def dont_at_me(message, match) -> None:
     app.bot.post("don't @ me \ud83d\ude44")
 
 
 @app.handler(r'@saucerbot')
 @app.handler(r'@ saucerbot')
-def sneaky(message, match):
+def sneaky(message, match) -> None:
     app.bot.post("you think you're sneaky don't you")
 
 
 @app.handler(r' bot ')
 @app.handler(r'zo')
-def zo(message, match):
+def zo(message, match) -> None:
     app.bot.post("Zo is dead.  Long live saucerbot.")
 
 
 @app.handler(r'pong')
 @app.handler(r'beer pong')
-def troll(meesage, match):
+def troll(meesage, match) -> None:
     filtered = app.group.members().filter(user_id=SHAINA_USER_ID)
 
     if filtered:
@@ -208,7 +208,7 @@ def troll(meesage, match):
 
 @app.handler(r'did the dores win')
 @app.handler(r'did vandy win')
-def did_the_dores_win(message, match):
+def did_the_dores_win(message, match) -> None:
     result = the_dores.did_the_dores_win(True, True)
     if result is None:
         app.bot.post("I couldn't find the Vandy game {emoji}", groupme.attachments.Emoji([[1, 35]]))

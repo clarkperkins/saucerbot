@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import os
 import datetime
 import logging
+import os
+import typing
 from functools import wraps
 
 import click
 
-from saucerbot.bridgestone import create_message, get_todays_events
 from saucerbot import app, db, groupme, utils
+from saucerbot.bridgestone import create_message, get_todays_events
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +18,11 @@ LIKE_IF_POST = "Saucer at 7PM. Like if."
 
 
 @app.cli.command()
-def initdb():
+def initdb() -> None:
     """
     Initializes the database.
     """
     # So the app knows about the models to create
-    from saucerbot import models
 
     # Do the initialization
     db.create_all()
@@ -30,22 +30,22 @@ def initdb():
 
 
 @app.cli.group()
-def remind():
+def remind() -> None:
     """
     Commands for sending reminders
     """
 
 
-def only_mondays(*args, **kwargs):
+def only_mondays(*args, **kwargs) -> typing.Callable:
     """
     Decorator to only send commands on mondays
     """
-    def decorator(func):
+    def decorator(func: typing.Callable) -> typing.Callable:
 
         @click.option('--force', is_flag=True,
                       help='Forces saucerbot to send a reminder on non-mondays')
         @wraps(func)
-        def wrapper(force, *fargs, **fkwargs):
+        def wrapper(force: bool, *fargs, **fkwargs) -> typing.Any:
             today = datetime.datetime.now()
 
             # only call the function if it's a monday
@@ -61,7 +61,7 @@ def only_mondays(*args, **kwargs):
 
 @remind.command('like-if')
 @only_mondays()
-def like_if():
+def like_if() -> None:
     """
     Remind everyone to come to saucer.
     """
@@ -77,7 +77,7 @@ def like_if():
 
 @remind.command('whos-coming')
 @only_mondays()
-def whos_coming():
+def whos_coming() -> None:
     """
     Let everyone know who's coming
     """
@@ -107,7 +107,7 @@ def whos_coming():
 
 
 @app.cli.command('load-nashville-brews')
-def load_nashville_brews():
+def load_nashville_brews() -> None:
     """
     Load all the brews from the Nashville Saucer.
     """
@@ -115,14 +115,14 @@ def load_nashville_brews():
 
 
 @app.cli.group()
-def pr():
+def pr() -> None:
     """
     Helper commands to get PR deploys working
     """
 
 
 @pr.command()
-def create():
+def create() -> None:
     group = groupme.Group.get(os.environ['GROUPME_GROUP_ID'])
 
     app_name = os.environ['HEROKU_APP_NAME']
@@ -137,7 +137,7 @@ def create():
 
 
 @pr.command()
-def destroy():
+def destroy() -> None:
     app_name = os.environ['HEROKU_APP_NAME']
 
     bots = groupme.Bot.list()
