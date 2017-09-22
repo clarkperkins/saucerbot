@@ -5,7 +5,7 @@ import logging
 import math
 import random
 import sys
-import typing
+from typing import Dict, Optional, Tuple
 
 import requests
 
@@ -36,7 +36,7 @@ IN_PROGRESS_MESSAGES = [
 ]
 
 
-def get_football_results(desired_date: datetime.datetime) -> typing.Dict:
+def get_football_results(desired_date: datetime.datetime) -> Optional[Dict]:
     logger.debug('Getting the football results')
     if 1 < desired_date.month < 8:  # don't really care to do football if it's February-July
         return None
@@ -61,7 +61,7 @@ def get_football_results(desired_date: datetime.datetime) -> typing.Dict:
         return None
 
 
-def __get_the_dores_game(scores: typing.Dict) -> typing.Dict:
+def __get_the_dores_game(scores: Dict) -> Optional[Dict]:
     for ev in scores['events']:
         teams = ev['competitions'][0]['competitors']
         for team in teams:
@@ -71,7 +71,7 @@ def __get_the_dores_game(scores: typing.Dict) -> typing.Dict:
     return None
 
 
-def __get_teams(game: typing.Dict) -> typing.Tuple[typing.Dict, typing.Dict]:
+def __get_teams(game: Dict) -> Tuple[Dict, Dict]:
     """
     Extracts the teams from the game. Vandy will be returned first
     :param game: the game information
@@ -103,7 +103,7 @@ def __get_week(desired_date: datetime.datetime) -> int:
 
 
 def did_the_dores_win(print_in_progress: bool = False, print_loss: bool = False,
-                      desired_date: datetime.datetime = None) -> str:
+                      desired_date: datetime.datetime = None) -> Optional[str]:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,
     or a loss with the first argument set to true. Right now it only does football, but basketball

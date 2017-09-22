@@ -4,10 +4,10 @@ import datetime
 import logging
 import os
 import re
-import typing
+from typing import Any, Dict, List
 
-from elasticsearch import Elasticsearch, RequestError
 import requests
+from elasticsearch import Elasticsearch, RequestError
 
 from saucerbot.parsers import NewArrivalsParser
 
@@ -25,7 +25,7 @@ def get_es_client() -> Elasticsearch:
     return Elasticsearch(os.environ['BONSAI_URL'])
 
 
-def get_tasted_brews(saucer_id) -> typing.List[typing.Dict[str, typing.Any]]:
+def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
     r = requests.get(TASTED_URL.format(saucer_id))
     return r.json()
 

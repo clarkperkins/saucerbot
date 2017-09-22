@@ -3,8 +3,8 @@
 import datetime
 import logging
 import os
-import typing
 from functools import wraps
+from typing import Any, Callable
 
 import click
 
@@ -36,16 +36,16 @@ def remind() -> None:
     """
 
 
-def only_mondays(*args, **kwargs) -> typing.Callable:
+def only_mondays(*args, **kwargs) -> Callable:
     """
     Decorator to only send commands on mondays
     """
-    def decorator(func: typing.Callable) -> typing.Callable:
+    def decorator(func: Callable) -> Callable:
 
         @click.option('--force', is_flag=True,
                       help='Forces saucerbot to send a reminder on non-mondays')
         @wraps(func)
-        def wrapper(force: bool, *fargs, **fkwargs) -> typing.Any:
+        def wrapper(force: bool, *fargs, **fkwargs) -> Any:
             today = datetime.datetime.now()
 
             # only call the function if it's a monday

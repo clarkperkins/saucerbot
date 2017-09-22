@@ -2,8 +2,8 @@
 
 import os
 import re
-import typing
 from collections import namedtuple
+from typing import Callable, List, Optional
 
 from flask import Flask
 
@@ -19,19 +19,21 @@ class SaucerFlask(Flask):
 
     def __init__(self, *args, **kwargs) -> None:
         super(SaucerFlask, self).__init__(*args, **kwargs)
-        self.handlers: typing.List[Handler] = []
+        self.handlers: List[Handler] = []
 
         # Find our bot object
         self.bot = groupme.Bot.get(BOT_ID)
 
         # Load the group too
-        self.group = groupme.Group.get(self.bot.group_id) if self.bot else None
+        self.group: Optional[groupme.Group] = None
+        if self.bot:
+            self.group = groupme.Group.get(self.bot.group_id)
 
-    def handler(self, regex: str = None, case_sensitive: bool = False) -> typing.Callable:
+    def handler(self, regex: str = None, case_sensitive: bool = False) -> Callable:
         """
         Add a message handler
         """
-        def wrapper(func: typing.Callable) -> typing.Callable:
+        def wrapper(func: Callable) -> Callable:
             flags = 0
 
             if not case_sensitive:

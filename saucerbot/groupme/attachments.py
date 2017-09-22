@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import typing
+from typing import List
 
 from groupy import config
 from groupy.object.attachments import (
@@ -16,5 +16,5 @@ __all__ = ['Image', 'Location', 'Emoji', 'Mentions', 'Split']
 
 class Emoji(GroupyEmoji):
 
-    def __init__(self, charmap: typing.List[typing.List[int]]) -> None:
+    def __init__(self, charmap: List[List[int]]) -> None:
         super(Emoji, self).__init__(config.EMOJI_PLACEHOLDER, charmap)

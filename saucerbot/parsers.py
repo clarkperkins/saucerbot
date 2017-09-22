@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import abc
+from typing import Any, Dict, Iterable, Iterator, List, Tuple
+
 import requests
-import typing
 from bs4 import BeautifulSoup
 
 
@@ -19,13 +20,13 @@ class Parser(abc.ABC):
         super(Parser, self).__init__()
 
     @abc.abstractmethod
-    def parse(self) -> typing.Iterable[typing.Dict[str, typing.Any]]:
+    def parse(self) -> Iterable[Dict[str, Any]]:
         pass
 
 
 class KimonoParser(Parser):
     base = ''
-    fields: typing.List[typing.Tuple[str, str]] = []
+    fields: List[Tuple[str, str]] = []
     url = ''
 
     def __init__(self, *args) -> None:
@@ -36,7 +37,7 @@ class KimonoParser(Parser):
 
         r = requests.get(self.url.format(*args))
 
-        self.types: typing.Dict[str, typing.Any] = {}
+        self.types: Dict[str, Any] = {}
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
     def parse(self):
@@ -48,7 +49,7 @@ class KimonoParser(Parser):
         for row in self._do_initial_parse():
             yield self.post_process(row)
 
-    def _do_initial_parse(self) -> typing.Iterator[typing.Dict[str, typing.Any]]:
+    def _do_initial_parse(self) -> Iterator[Dict[str, Any]]:
         if not self.base:
             raise MissingBaseError()
 
@@ -98,7 +99,7 @@ class KimonoParser(Parser):
 
             yield next_row
 
-    def post_process(self, row: typing.Dict[str, typing.Any]) -> typing.Dict[str, typing.Any]:
+    def post_process(self, row: Dict[str, Any]) -> Dict[str, Any]:
         """
         You may override this method to do any data post-processing.
         By default this will just return the original row.

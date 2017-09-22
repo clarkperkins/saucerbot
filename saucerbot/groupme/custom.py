@@ -4,9 +4,9 @@
 Module to replace the root groupy package that requires the API key to be in a file
 """
 
-import typing
-from groupy import config
+from typing import Any, Dict, List, Optional
 
+from groupy import config
 from groupy.api import endpoint
 from groupy.object.attachments import Attachment
 from groupy.object.responses import (
@@ -23,7 +23,7 @@ class Bot(GroupyBot):
         super(Bot, self).__init__(**kwargs)
 
     @classmethod
-    def get(cls, bot_id: str):
+    def get(cls, bot_id: str) -> Optional['Bot']:
         if not bot_id:
             return None
 
@@ -32,9 +32,9 @@ class Bot(GroupyBot):
                 return cls(**bot)
         return None
 
-    def post(self, text: str, *attachments: Attachment, picture_url: str = None):
+    def post(self, text: str, *attachments: Attachment, picture_url: str = None) -> bool:
         text = text.format(emoji=config.EMOJI_PLACEHOLDER)
-        raw_attachments: typing.List[typing.Dict] = [a.as_dict() for a in attachments]
+        raw_attachments: List[Dict] = [a.as_dict() for a in attachments]
         return super(Bot, self).post(text, *raw_attachments, picture_url=picture_url)
 
 
@@ -44,8 +44,8 @@ class Message(GroupyMessage):
         super(Message, self).__init__(recipient, **kwargs)
 
         # Save a couple extra properties
-        self.sender_id = kwargs.get('sender_id')
-        self.sender_type = kwargs.get('sender_type')
+        self.sender_id: str = kwargs.get('sender_id')
+        self.sender_type: str = kwargs.get('sender_type')
 
 
 class Group(GroupyGroup):
@@ -54,10 +54,11 @@ class Group(GroupyGroup):
         super(Group, self).__init__(**kwargs)
 
     @classmethod
-    def get(cls, group_id: str):
-        """Refresh the group information from the API.
+    def get(cls, group_id: str) -> 'Group':
         """
-        return Group(**endpoint.Groups.show(group_id))
+        Refresh the group information from the API.
+        """
+        return cls(**endpoint.Groups.show(group_id))
 
-    def bot_message(self, message: typing.Dict[str, typing.Any]) -> Message:
+    def bot_message(self, message: Dict[str, Any]) -> Message:
         return Message(self, **message)
