@@ -1,0 +1,18 @@
+language: python
+python:
+  - "3.6"
+
+sudo: false
+
+before_install:
+  - pip install -U pip
+  - pip install -U setuptools
+
+install:
+  - pip install -U -r requirements.txt
+  - pip install -U -r requirements/testing.txt
+
+# Eventually run tests here, but there are no tests yet :)
+script:
+  - pycodestyle saucerbot
+  - mypy saucerbot

@@ -11,7 +11,11 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-ESPN_FOOTBALL_URL = 'http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?lang=en&region=us&calendartype=blacklist&limit=300&dates={year}&seasontype={season}&week={week}&groups=80'
+ESPN_FOOTBALL_URL = (
+    "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
+    "?lang=en&region=us&calendartype=blacklist&limit=300&dates={year}"
+    "&seasontype={season}&week={week}&groups=80"
+)
 
 WINNING_FORMATS = [
     "Hell yeah! The 'Dores took down the {team} {vandy_score}-{other_score}",
@@ -52,7 +56,8 @@ def get_football_results(desired_date: datetime.datetime) -> typing.Dict:
         game = __get_the_dores_game(scores)
         return game
     else:
-        logger.warning('Received non-success response code: {} -- {}'.format(response.status_code, response.text))
+        logger.warning('Received non-success response code: {} -- {}'.format(response.status_code,
+                                                                             response.text))
         return None
 
 
@@ -82,8 +87,8 @@ def __get_teams(game: typing.Dict) -> typing.Tuple[typing.Dict, typing.Dict]:
 
 def __get_week(desired_date: datetime.datetime) -> int:
     """
-    We're gonna assume that week 1 is always Labor Day  (which, in older seasons before like 2007 wasn't the
-    case, so we may need a better method for this in the future)
+    We're gonna assume that week 1 is always Labor Day  (which, in older seasons before
+    like 2007 wasn't the case, so we may need a better method for this in the future)
     :param desired_date: the date we're checking the week from
     :return: the week number
     """
@@ -100,12 +105,15 @@ def __get_week(desired_date: datetime.datetime) -> int:
 def did_the_dores_win(print_in_progress: bool = False, print_loss: bool = False,
                       desired_date: datetime.datetime = None) -> str:
     """
-    Checks if the dores won on the desired date! It'll return a response in the case of a win, or a loss with the
-    first argument set to true. Right now it only does football, but basketball should be pretty easy to incorporate
+    Checks if the dores won on the desired date! It'll return a response in the case of a win,
+    or a loss with the first argument set to true. Right now it only does football, but basketball
+    should be pretty easy to incorporate
     :param print_in_progress:
-    :param print_loss: if True, will return a message in the event of a loss. If false, None will be returned for a loss
+    :param print_loss: if True, will return a message in the event of a loss. If false, None will
+        be returned for a loss
     :param desired_date: the date to check the score from
-    :return: A String message if Vandy won, then either None or a losing message if we lost, depending on the parameter
+    :return: A String message if Vandy won, then either None or a losing message if we lost,
+        depending on the parameter
     """
     if desired_date is None:
         desired_date = datetime.datetime.now()
@@ -131,6 +139,7 @@ def did_the_dores_win(print_in_progress: bool = False, print_loss: bool = False,
                 return None
         return response.format(team=opponent['team']['displayName'], vandy_score=vandy['score'],
                                other_score=opponent['score'])
+
 
 # Good for testing the feature
 if __name__ == '__main__':

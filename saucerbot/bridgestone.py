@@ -32,7 +32,9 @@ def get_todays_events() -> typing.List[typing.Dict[str, typing.Any]]:
     events = []
     for ev in BridgestoneEventsParser().parse():
         event_date = datetime.strptime(ev['date'], __bridgestone_time_pattern)
-        if today.day == event_date.day and today.month == event_date.month and event_date.hour >= 12:
+        if today.day == event_date.day \
+                and today.month == event_date.month \
+                and event_date.hour >= 12:
             events.append(ev)
     return events
 

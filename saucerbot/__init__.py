@@ -2,7 +2,6 @@
 
 import logging.config
 import os
-import typing
 
 import yaml
 from flask_sqlalchemy import SQLAlchemy, Model as FlaskModel
@@ -28,6 +27,6 @@ db = SQLAlchemy(app)
 Model: FlaskModel = db.Model
 
 # So our views get loaded AFTER the app gets created
-import saucerbot.commands
-import saucerbot.handlers
-import saucerbot.views
+import saucerbot.commands  # noqa
+import saucerbot.handlers  # noqa
+import saucerbot.views  # noqa

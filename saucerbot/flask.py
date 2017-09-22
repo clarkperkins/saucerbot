@@ -27,7 +27,7 @@ class SaucerFlask(Flask):
         # Load the group too
         self.group = groupme.Group.get(self.bot.group_id) if self.bot else None
 
-    def handler(self, regex: str = None, case_sensitive: bool = False) -> typing.Callable[[typing.Callable], typing.Callable]:
+    def handler(self, regex: str = None, case_sensitive: bool = False) -> typing.Callable:
         """
         Add a message handler
         """
