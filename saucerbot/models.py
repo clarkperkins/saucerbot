@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from saucerbot import db
+from saucerbot import db, Model
 
 
-class User(db.Model):
+class User(Model):
     id = db.Column(db.Integer, primary_key=True)
     groupme_id = db.Column(db.String(15), unique=True)
     saucer_id = db.Column(db.String(10), unique=True)
@@ -12,7 +12,7 @@ class User(db.Model):
         return '<User {}>'.format(self.groupme_id)
 
 
-class RemindPost(db.Model):
+class RemindPost(Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     group_id = db.Column(db.String(30))
