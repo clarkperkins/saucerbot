@@ -7,6 +7,7 @@ import random
 import sys
 from typing import Dict, Optional, Tuple
 
+import arrow
 import requests
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ IN_PROGRESS_MESSAGES = [
 ]
 
 
-def get_football_results(desired_date: datetime.datetime) -> Optional[Dict]:
+def get_football_results(desired_date: arrow.Arrow) -> Optional[Dict]:
     logger.debug('Getting the football results')
     if 1 < desired_date.month < 8:  # don't really care to do football if it's February-July
         return None
@@ -85,25 +86,25 @@ def __get_teams(game: Dict) -> Tuple[Dict, Dict]:
         return team2, team1
 
 
-def __get_week(desired_date: datetime.datetime) -> int:
+def __get_week(desired_date: arrow.Arrow) -> int:
     """
     We're gonna assume that week 1 is always Labor Day  (which, in older seasons before
     like 2007 wasn't the case, so we may need a better method for this in the future)
     :param desired_date: the date we're checking the week from
     :return: the week number
     """
-    labor_day = datetime.datetime(desired_date.year, 9, 1)
+    labor_day = arrow.get(datetime.datetime(desired_date.year, 9, 1), 'US/Central')
     while labor_day.weekday() != 0:
-        labor_day = labor_day + datetime.timedelta(days=1)
+        labor_day = labor_day.shift(days=+1)
     # we'll say Thursday is the one we want to calculate from
-    week_1 = labor_day - datetime.timedelta(4)
+    week_1 = labor_day.shift(days=-4)
     diff = desired_date - week_1
     week = int(math.floor(diff.days / 7)) + 1
     return week
 
 
 def did_the_dores_win(print_in_progress: bool = False, print_loss: bool = False,
-                      desired_date: datetime.datetime = None) -> Optional[str]:
+                      desired_date: arrow.Arrow = None) -> Optional[str]:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,
     or a loss with the first argument set to true. Right now it only does football, but basketball
@@ -116,7 +117,7 @@ def did_the_dores_win(print_in_progress: bool = False, print_loss: bool = False,
         depending on the parameter
     """
     if desired_date is None:
-        desired_date = datetime.datetime.now()
+        desired_date = arrow.now('US/Central')
     game = get_football_results(desired_date)
     if game is None:
         logger.debug("No game found")
@@ -144,7 +145,7 @@ def did_the_dores_win(print_in_progress: bool = False, print_loss: bool = False,
 # Good for testing the feature
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        date = datetime.datetime.strptime(sys.argv[1], "%m-%d-%Y")
+        date = arrow.get(sys.argv[1], 'MM-DD-YYYY')
     else:
         date = None
     print(did_the_dores_win(True, True, date))

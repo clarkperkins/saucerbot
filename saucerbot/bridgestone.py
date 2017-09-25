@@ -2,12 +2,13 @@
 
 import random
 import re
-from datetime import datetime
 from typing import Any, Dict, List
+
+import arrow
 
 from saucerbot.parsers import BridgestoneEventsParser
 
-__bridgestone_time_pattern = '%b. %d - %I:%M %p'
+__bridgestone_time_pattern = 'MMM. D - h:mm A'
 __message_formats = [
     "Better get there early: {event} at Bridgestone at {time} tonight!",
     "Just so you know, {event} at Bridgestone tonight at {time}.",
@@ -28,10 +29,10 @@ __general_quips = [
 
 
 def get_todays_events() -> List[Dict[str, Any]]:
-    today = datetime.today()
+    today = arrow.now('US/Central')
     events = []
     for ev in BridgestoneEventsParser().parse():
-        event_date = datetime.strptime(ev['date'], __bridgestone_time_pattern)
+        event_date = arrow.get(ev['date'], __bridgestone_time_pattern)
         if today.day == event_date.day \
                 and today.month == event_date.month \
                 and event_date.hour >= 12:
@@ -41,7 +42,7 @@ def get_todays_events() -> List[Dict[str, Any]]:
 
 def create_message(event: Dict[str, Any]) -> str:
     template = random.choice(__message_formats)
-    time_string = datetime.strptime(event['date'], __bridgestone_time_pattern).strftime('%I:%M')
+    time_string = arrow.get(event['date'], __bridgestone_time_pattern).format('h:mm')
     preds_match = re.fullmatch('Nashville Predators vs. ([A-Za-z. ]+)', event['name'])
     if preds_match:
         team = preds_match.group(1)

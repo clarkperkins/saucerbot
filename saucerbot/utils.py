@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import datetime
 import logging
 import os
 import re
 from typing import Any, Dict, List
 
+import arrow
 import requests
 from elasticsearch import Elasticsearch, RequestError
 
@@ -64,7 +64,7 @@ def load_nashville_brews() -> None:
 
     logger.info(f"Retrieved {len(brews)} nashville brews from beerknurd.com")
 
-    timestamp = datetime.datetime.today().strftime('%Y%m%d-%H%M%S')
+    timestamp = arrow.now('US/Central').format('YYYYMMDD-HHmmss')
 
     index_name = f'{BREWS_ALIAS_NAME}-{timestamp}'
 

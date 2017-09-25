@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import datetime
 import logging
 import os
 from functools import wraps
 from typing import Any, Callable
 
+import arrow
 import click
 
 from saucerbot import app, db, groupme, utils
@@ -46,7 +46,7 @@ def only_mondays(*args, **kwargs) -> Callable:
                       help='Forces saucerbot to send a reminder on non-mondays')
         @wraps(func)
         def wrapper(force: bool, *fargs, **fkwargs) -> Any:
-            today = datetime.datetime.now()
+            today = arrow.now('US/Central')
 
             # only call the function if it's a monday
             if today.weekday() == 0 or force:
