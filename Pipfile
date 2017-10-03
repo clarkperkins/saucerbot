@@ -18,7 +18,7 @@ click = "*"
 elasticsearch = "~=5.0"
 flask = "*"
 "flask-sqlalchemy" = "*"
-lowerpines = { file = 'https://github.com/clarkperkins/lowerpines/archive/bugfix/attachment-problems.zip' }
+lowerpines = { file = 'https://github.com/Bigfootjon/lowerpines/archive/master.zip' }
 gunicorn = "*"
 "psycopg2" = "*"
 pyyaml = "*"

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d8768559c1b254c2b325823cfff93c743ffbc16eacfc42fc7046ff3e2d2acb9d"
+            "sha256": "35145ac0836339bbc8e880b9785ddf9371b18d974274223abad231ce43b962c3"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -113,7 +113,7 @@
             "version": "==2.9.6"
         },
         "lowerpines": {
-            "file": "https://github.com/clarkperkins/lowerpines/archive/bugfix/attachment-problems.zip"
+            "file": "https://github.com/Bigfootjon/lowerpines/archive/master.zip"
         },
         "markupsafe": {
             "hashes": [
