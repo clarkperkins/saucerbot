@@ -123,7 +123,7 @@ def pr() -> None:
 
 @pr.command()
 def create() -> None:
-    group = app.gmi.groups.get(id=os.environ['GROUPME_GROUP_ID'])
+    group = app.gmi.groups.get(group_id=os.environ['GROUPME_GROUP_ID'])
 
     app_name = os.environ['HEROKU_APP_NAME']
 
