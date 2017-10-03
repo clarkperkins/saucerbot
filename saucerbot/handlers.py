@@ -5,8 +5,9 @@ import logging
 import re
 
 import requests
+from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
-from saucerbot import app, db, groupme, models, utils, the_dores
+from saucerbot import app, db, models, utils, the_dores
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
@@ -43,16 +44,11 @@ def save_saucer_id(message, match) -> None:
     db.session.add(user)
     db.session.commit()
 
-    pre_message = "Thanks, "
-    post_message = "!  I saved your Saucer ID."
-    mentions = groupme.attachments.Mentions(
-        [message.user_id],
-        [(len(pre_message), len(message.name) + 1)]
-    )
+    user_attach = RefAttach(message.user_id, f'@{message.name}')
 
-    full_message = '{}@{}{}'.format(pre_message, message.name, post_message)
+    message = "Thanks, " + user_attach + "!  I saved your Saucer ID."
 
-    app.bot.post(full_message, mentions)
+    app.bot.post(message)
 
 
 @app.handler()
@@ -61,16 +57,12 @@ def mars(message) -> bool:
     Sends a message about mars if a user posts an image
     """
     for attachment in message.attachments:
-        if isinstance(attachment, groupme.attachments.Image):
-            pre_message = "That's a cool picture of Mars, "
-            mentions = groupme.attachments.Mentions(
-                [message.user_id],
-                [(len(pre_message), len(message.name) + 1)]
-            )
+        if attachment['type'] == 'image':
+            user_attach = RefAttach(message.user_id, f'@{message.name}')
 
-            full_message = '{}@{}'.format(pre_message, message.name)
+            message = "That's a cool picture of Mars, " + user_attach
 
-            app.bot.post(full_message, mentions)
+            app.bot.post(message)
             return True
 
     return False
@@ -136,15 +128,15 @@ def system_messages(message) -> bool:
     change_name_match = CHANGE_RE.match(message.text)
 
     if remove_match:
-        app.bot.post('{emoji}', groupme.attachments.Emoji([[4, 36]]))
+        app.bot.post(ComplexMessage(EmojiAttach(4, 36)))
         return True
 
     if add_match:
-        app.bot.post('{emoji}', groupme.attachments.Emoji([[2, 44]]))
+        app.bot.post(ComplexMessage(EmojiAttach(2, 44)))
         return True
 
     if change_name_match:
-        app.bot.post('{emoji}', groupme.attachments.Emoji([[1, 81]]))
+        app.bot.post(ComplexMessage(EmojiAttach(1, 81)))
         return True
 
     return False
@@ -187,23 +179,19 @@ def zo(message, match) -> None:
 @app.handler(r'pong')
 @app.handler(r'beer pong')
 def troll(meesage, match) -> None:
-    filtered = app.group.members().filter(user_id=SHAINA_USER_ID)
+    shaina = None
+    for member in app.group.members:
+        if member.user_id == SHAINA_USER_ID:
+            shaina = member
+            break
 
-    if filtered:
-        shaina = filtered[0]
-        mentions = groupme.attachments.Mentions(
-            [SHAINA_USER_ID],
-            [(0, len(shaina.nickname) + 1)]
-        )
-
-        pre_message = '@{}'.format(shaina.nickname)
-        attachments = [mentions]
+    if shaina:
+        pre_message = RefAttach(SHAINA_USER_ID, f'@{shaina.nickname}')
     else:
-        pre_message = 'Shaina'
-        attachments = []
+        pre_message = "Shaina"
 
-    full_message = "{} is the troll".format(pre_message)
-    app.bot.post(full_message, *attachments)
+    message = pre_message + " is the troll"
+    app.bot.post(message)
 
 
 @app.handler(r'did the dores win')
@@ -211,6 +199,6 @@ def troll(meesage, match) -> None:
 def did_the_dores_win(message, match) -> None:
     result = the_dores.did_the_dores_win(True, True)
     if result is None:
-        app.bot.post("I couldn't find the Vandy game {emoji}", groupme.attachments.Emoji([[1, 35]]))
+        app.bot.post("I couldn't find the Vandy game " + EmojiAttach(1, 35))
     else:
         app.bot.post(result)

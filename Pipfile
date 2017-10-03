@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+
+mypy = "*"
+pycodestyle = "*"
+
+
+[packages]
+
+arrow = "*"
+"beautifulsoup4" = "*"
+click = "*"
+elasticsearch = "~=5.0"
+flask = "*"
+"flask-sqlalchemy" = "*"
+lowerpines = { file = 'https://github.com/clarkperkins/lowerpines/archive/bugfix/attachment-problems.zip' }
+gunicorn = "*"
+"psycopg2" = "*"
+pyyaml = "*"
+requests = "*"
+sqlalchemy = "*"
+
+
+[requires]
+python_version = "3.6"

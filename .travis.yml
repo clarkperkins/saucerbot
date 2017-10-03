@@ -4,15 +4,15 @@ python:
 
 sudo: false
 
+cache: pip
+
 before_install:
-  - pip install -U pip
-  - pip install -U setuptools
+  - pip install pipenv --upgrade
 
 install:
-  - pip install -U -r requirements.txt
-  - pip install -U -r requirements/testing.txt
+  - pipenv install --dev
 
 # Eventually run tests here, but there are no tests yet :)
 script:
-  - pycodestyle saucerbot
-  - mypy saucerbot
+  - pipenv run pycodestyle saucerbot
+  - pipenv run mypy saucerbot

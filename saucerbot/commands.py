@@ -8,7 +8,7 @@ from typing import Any, Callable
 import arrow
 import click
 
-from saucerbot import app, db, groupme, utils
+from saucerbot import app, db, utils
 from saucerbot.bridgestone import create_message, get_todays_events
 
 logger = logging.getLogger(__name__)
@@ -123,13 +123,13 @@ def pr() -> None:
 
 @pr.command()
 def create() -> None:
-    group = groupme.Group.get(os.environ['GROUPME_GROUP_ID'])
+    group = app.gmi.groups.get(id=os.environ['GROUPME_GROUP_ID'])
 
     app_name = os.environ['HEROKU_APP_NAME']
 
-    new_bot = groupme.Bot.create(
-        app_name,
+    new_bot = app.gmi.bots.create(
         group,
+        app_name,
         callback_url='https://{}.herokuapp.com/hooks/groupme/'.format(app_name),
     )
 
@@ -140,9 +140,7 @@ def create() -> None:
 def destroy() -> None:
     app_name = os.environ['HEROKU_APP_NAME']
 
-    bots = groupme.Bot.list()
-
-    for bot in bots:
+    for bot in app.gmi.bots:
         if bot.name == app_name:
             logger.info("Destroying bot: {} <{}>".format(bot.name, bot.bot_id))
-            bot.destroy()
+            bot.delete()

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import abc
 from typing import Any, Dict, Iterable, Iterator, List, Tuple
 
 import requests
@@ -15,22 +14,13 @@ class MissingBaseError(Exception):
     pass
 
 
-class Parser(abc.ABC):
-    def __init__(self) -> None:
-        super(Parser, self).__init__()
-
-    @abc.abstractmethod
-    def parse(self) -> Iterable[Dict[str, Any]]:
-        pass
-
-
-class KimonoParser(Parser):
+class Parser(object):
     base = ''
     fields: List[Tuple[str, str]] = []
     url = ''
 
-    def __init__(self, *args) -> None:
-        super(KimonoParser, self).__init__()
+    def __init__(self, *args: Any) -> None:
+        super(Parser, self).__init__()
         self.args = args
         if not self.url:
             raise ValueError('Value for url required.')
@@ -40,11 +30,11 @@ class KimonoParser(Parser):
         self.types: Dict[str, Any] = {}
         self.soup = BeautifulSoup(r.text, 'html.parser')
 
-    def parse(self):
+    def parse(self) -> Iterable[Dict[str, Any]]:
         """
         Parse the data from the html page associated with the given URL.
         :return: All the records
-        :rtype: list
+        :rtype: Iterable
         """
         for row in self._do_initial_parse():
             yield self.post_process(row)
@@ -110,7 +100,7 @@ class KimonoParser(Parser):
         return row
 
 
-class NewArrivalsParser(KimonoParser):
+class NewArrivalsParser(Parser):
     url = 'https://www.beerknurd.com/locations/nashville-flying-saucer'
     base = 'div.view-new-arrivals-block > div > table > tbody > tr'
     fields = [
@@ -125,13 +115,12 @@ class NewArrivalsParser(KimonoParser):
         return row
 
 
-class BridgestoneEventsParser(KimonoParser):
-
+class BridgestoneEventsParser(Parser):
     url = 'https://www.bridgestonearena.com/events'
     base = 'div#list > div > div.info.clearfix'
     fields = [
         ('name', 'h3 > a'),
-        ('date', 'div.date')
+        ('date', 'div.date'),
     ]
 
     def post_process(self, row):

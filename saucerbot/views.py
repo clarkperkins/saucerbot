@@ -5,6 +5,7 @@ import logging
 
 from flask import request
 from flask.json import jsonify
+from lowerpines.endpoints.message import Message
 
 from saucerbot import app, the_dores
 
@@ -18,7 +19,7 @@ def groupme():
     logger.info('Received raw message: {}'.format(json.dumps(message)))
 
     # Load it as a groupme message
-    message = app.group.bot_message(message)
+    message: Message = Message.from_json(app.gmi, message)
 
     # We don't want to accidentally respond to ourself
     if message.sender_type == 'bot' and message.name == 'saucerbot':
@@ -28,7 +29,7 @@ def groupme():
 
     # Call all our handlers
     for handler in app.handlers:
-        logger.debug('Trying message handler {} ...'.format(handler.func.__name__))
+        logger.debug(f"Trying message handler {handler.func.__name__} ...")
 
         if handler.regex:
             # This is a regex handler, special case
