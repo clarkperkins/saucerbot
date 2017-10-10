@@ -8,6 +8,7 @@ name = "pypi"
 
 mypy = "*"
 pycodestyle = "*"
+pytest = "*"
 
 
 [packages]
