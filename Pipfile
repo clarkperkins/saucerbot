@@ -9,6 +9,7 @@ name = "pypi"
 mypy = "*"
 pycodestyle = "*"
 pytest = "*"
+"requests-mock" = "*"
 
 
 [packages]
