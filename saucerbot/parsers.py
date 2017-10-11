@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import Any, Dict, Iterable, Iterator, List, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Tuple, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -45,7 +45,7 @@ class Parser(object):
 
         # Scrape the fields out of the html
         for row in self.soup.select(self.base):
-            next_row = {}
+            next_row: Dict[str, Any] = {}
             for field, selector in self.fields:
                 columns = row.select(selector)
 
