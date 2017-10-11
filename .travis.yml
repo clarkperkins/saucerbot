@@ -11,8 +11,10 @@ before_install:
 
 install:
   - pipenv install --dev
+  - pip install -e .
 
 # Eventually run tests here, but there are no tests yet :)
 script:
   - pipenv run pycodestyle saucerbot
   - pipenv run mypy saucerbot
+  - pipenv run pytest
