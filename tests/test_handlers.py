@@ -63,7 +63,9 @@ def test_mars(app):
             "user_id": "abcdef"
         }
 
-        handlers.mars(Message.from_json(app.gmi, raw_message))
+        ret = handlers.mars(Message.from_json(app.gmi, raw_message))
+
+        assert ret
 
 
 def test_mars_no_message(app):
@@ -87,4 +89,7 @@ def test_mars_no_message(app):
             "user_id": "abcdef"
         }
 
-        handlers.mars(Message.from_json(app.gmi, raw_message))
+        ret = handlers.mars(Message.from_json(app.gmi, raw_message))
+
+        assert not ret
+
