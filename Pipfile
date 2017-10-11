@@ -10,6 +10,7 @@ mypy = "*"
 pycodestyle = "*"
 pytest = "*"
 "requests-mock" = "*"
+"pytest-cov" = "*"
 
 
 [packages]
