@@ -1,4 +1,5 @@
 [[source]]
+
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
@@ -9,9 +10,10 @@ name = "pypi"
 mypy = "*"
 pycodestyle = "*"
 pytest = "*"
-"requests-mock" = "*"
-"pytest-cov" = "*"
-"pytest-flask" = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+requests-mock = "*"
+saucerbot = {path = ".", editable = true}
 
 
 [packages]
@@ -21,7 +23,7 @@ arrow = "*"
 click = "*"
 elasticsearch = "~=5.0"
 flask = "*"
-"flask-sqlalchemy" = "*"
+flask-sqlalchemy = "*"
 lowerpines = { file = 'https://github.com/Bigfootjon/lowerpines/archive/master.zip' }
 gunicorn = "*"
 "psycopg2" = "*"
@@ -31,4 +33,5 @@ sqlalchemy = "*"
 
 
 [requires]
+
 python_version = "3.6"
