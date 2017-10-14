@@ -11,6 +11,7 @@ pycodestyle = "*"
 pytest = "*"
 "requests-mock" = "*"
 "pytest-cov" = "*"
+"pytest-flask" = "*"
 
 
 [packages]

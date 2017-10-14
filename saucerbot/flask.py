@@ -38,9 +38,6 @@ class SaucerFlask(Flask):
         except (NoneFoundException, MultipleFoundException) as e:
             logger.debug(f"Failed to load bot:  {e}")
 
-        print(self.bot)
-        print(self.group)
-
     def handler(self, regex: str = None, case_sensitive: bool = False) -> Callable:
         """
         Add a message handler

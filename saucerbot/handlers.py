@@ -70,7 +70,7 @@ def mars(message: Message) -> bool:
 
 
 @app.handler(r'you suck')
-def you_suck_too_coach(message: Message, match) -> None:
+def you_suck_too_coach() -> None:
     """
     Sends 'YOU SUCK TOO COACH'
     """
@@ -78,7 +78,7 @@ def you_suck_too_coach(message: Message, match) -> None:
 
 
 @app.handler(r'cat')
-def catfacts(message: Message, match) -> None:
+def catfacts() -> None:
     """
     Sends catfacts!
     """
@@ -88,7 +88,7 @@ def catfacts(message: Message, match) -> None:
 
 @app.handler(r'new beers')
 @app.handler(r'new arrivals')
-def new_arrivals(message: Message, match) -> None:
+def new_arrivals() -> None:
     """
     Gets all the new arrivals
     """
@@ -97,22 +97,22 @@ def new_arrivals(message: Message, match) -> None:
 
 @app.handler(r'ohhh+')
 @app.handler(r'go dores')
-def go_dores(message: Message, match) -> None:
+def go_dores() -> None:
     app.bot.post("ANCHOR DOWN \u2693\ufe0f")
 
 
 @app.handler(r'anchor down')
-def anchor_down(message: Message, match) -> None:
+def anchor_down() -> None:
     app.bot.post("GO DORES")
 
 
 @app.handler(r'black')
-def black(message: Message, match) -> None:
+def black() -> None:
     app.bot.post("GOLD")
 
 
 @app.handler(r'gold')
-def gold(message: Message, match) -> None:
+def gold() -> None:
     app.bot.post("BLACK")
 
 
@@ -145,7 +145,7 @@ def system_messages(message: Message) -> bool:
 
 @app.handler(r'deep dish')
 @app.handler(r'thin crust')
-def pizza(message: Message, match) -> None:
+def pizza() -> None:
     """
     complain about pizza
     """
@@ -153,7 +153,7 @@ def pizza(message: Message, match) -> None:
 
 
 @app.handler(r'lit fam')
-def lit(message: Message, match) -> None:
+def lit() -> None:
     """
     battle with the lit bot
     """
@@ -161,25 +161,25 @@ def lit(message: Message, match) -> None:
 
 
 @app.handler(r'@saucerbot', case_sensitive=True)
-def dont_at_me(message: Message, match) -> None:
+def dont_at_me() -> None:
     app.bot.post("don't @ me \ud83d\ude44")
 
 
 @app.handler(r'@saucerbot')
 @app.handler(r'@ saucerbot')
-def sneaky(message: Message, match) -> None:
+def sneaky() -> None:
     app.bot.post("you think you're sneaky don't you")
 
 
 @app.handler(r' bot ')
 @app.handler(r'zo')
-def zo(message: Message, match) -> None:
+def zo() -> None:
     app.bot.post("Zo is dead.  Long live saucerbot.")
 
 
 @app.handler(r'pong')
 @app.handler(r'beer pong')
-def troll(meesage: Message, match) -> None:
+def troll() -> None:
     shaina = None
     for member in app.group.members:
         if member.user_id == SHAINA_USER_ID:
@@ -197,7 +197,7 @@ def troll(meesage: Message, match) -> None:
 
 @app.handler(r'did the dores win')
 @app.handler(r'did vandy win')
-def did_the_dores_win(message: Message, match) -> None:
+def did_the_dores_win() -> None:
     result = the_dores.did_the_dores_win(True, True)
     if result is None:
         app.bot.post("I couldn't find the Vandy game " + EmojiAttach(1, 35))

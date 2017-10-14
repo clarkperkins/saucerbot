@@ -2,6 +2,7 @@
 
 import json
 import logging
+import inspect
 
 from flask import request
 from flask.json import jsonify
@@ -36,7 +37,17 @@ def groupme():
             match = handler.regex.search(message.text)
             if match:
                 # We matched!  Now call our handler and break out of the loop
-                handler.func(message, match)
+
+                # We want to see what arguments our function takes, though.
+                sig = inspect.signature(handler.func)
+
+                kwargs = {}
+                if 'message' in sig.parameters:
+                    kwargs['message'] = message
+                if 'match' in sig.parameters:
+                    kwargs['match'] = match
+
+                handler.func(**kwargs)
                 message_sent = True
                 break
         else:
