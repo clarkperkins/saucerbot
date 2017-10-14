@@ -2,9 +2,11 @@
 
 import json
 import logging
+import inspect
 
 from flask import request
 from flask.json import jsonify
+from lowerpines.endpoints.message import Message
 
 from saucerbot import app, the_dores
 
@@ -18,7 +20,7 @@ def groupme():
     logger.info('Received raw message: {}'.format(json.dumps(message)))
 
     # Load it as a groupme message
-    message = app.group.bot_message(message)
+    message: Message = Message.from_json(app.gmi, message)
 
     # We don't want to accidentally respond to ourself
     if message.sender_type == 'bot' and message.name == 'saucerbot':
@@ -28,14 +30,24 @@ def groupme():
 
     # Call all our handlers
     for handler in app.handlers:
-        logger.debug('Trying message handler {} ...'.format(handler.func.__name__))
+        logger.debug(f"Trying message handler {handler.func.__name__} ...")
 
         if handler.regex:
             # This is a regex handler, special case
             match = handler.regex.search(message.text)
             if match:
                 # We matched!  Now call our handler and break out of the loop
-                handler.func(message, match)
+
+                # We want to see what arguments our function takes, though.
+                sig = inspect.signature(handler.func)
+
+                kwargs = {}
+                if 'message' in sig.parameters:
+                    kwargs['message'] = message
+                if 'match' in sig.parameters:
+                    kwargs['match'] = match
+
+                handler.func(**kwargs)
                 message_sent = True
                 break
         else:

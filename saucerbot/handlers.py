@@ -5,8 +5,10 @@ import logging
 import re
 
 import requests
+from lowerpines.endpoints.message import Message
+from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
-from saucerbot import app, db, groupme, models, utils, the_dores
+from saucerbot import app, db, models, utils, the_dores
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
@@ -23,7 +25,7 @@ SHAINA_USER_ID = '6830949'
 # Handlers run in the order they were registered
 
 @app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
-def save_saucer_id(message, match) -> None:
+def save_saucer_id(message: Message, match) -> None:
     saucer_id = match.group('saucer_id')
 
     tasted_beers = utils.get_tasted_brews(saucer_id)
@@ -43,41 +45,32 @@ def save_saucer_id(message, match) -> None:
     db.session.add(user)
     db.session.commit()
 
-    pre_message = "Thanks, "
-    post_message = "!  I saved your Saucer ID."
-    mentions = groupme.attachments.Mentions(
-        [message.user_id],
-        [(len(pre_message), len(message.name) + 1)]
-    )
+    user_attach = RefAttach(message.user_id, f'@{message.name}')
 
-    full_message = '{}@{}{}'.format(pre_message, message.name, post_message)
+    message = "Thanks, " + user_attach + "!  I saved your Saucer ID."
 
-    app.bot.post(full_message, mentions)
+    app.bot.post(message)
 
 
 @app.handler()
-def mars(message) -> bool:
+def mars(message: Message) -> bool:
     """
     Sends a message about mars if a user posts an image
     """
     for attachment in message.attachments:
-        if isinstance(attachment, groupme.attachments.Image):
-            pre_message = "That's a cool picture of Mars, "
-            mentions = groupme.attachments.Mentions(
-                [message.user_id],
-                [(len(pre_message), len(message.name) + 1)]
-            )
+        if attachment['type'] == 'image':
+            user_attach = RefAttach(message.user_id, f'@{message.name}')
 
-            full_message = '{}@{}'.format(pre_message, message.name)
+            message = "That's a cool picture of Mars, " + user_attach
 
-            app.bot.post(full_message, mentions)
+            app.bot.post(message)
             return True
 
     return False
 
 
 @app.handler(r'you suck')
-def you_suck_too_coach(message, match) -> None:
+def you_suck_too_coach() -> None:
     """
     Sends 'YOU SUCK TOO COACH'
     """
@@ -85,7 +78,7 @@ def you_suck_too_coach(message, match) -> None:
 
 
 @app.handler(r'cat')
-def catfacts(message, match) -> None:
+def catfacts() -> None:
     """
     Sends catfacts!
     """
@@ -95,7 +88,7 @@ def catfacts(message, match) -> None:
 
 @app.handler(r'new beers')
 @app.handler(r'new arrivals')
-def new_arrivals(message, match) -> None:
+def new_arrivals() -> None:
     """
     Gets all the new arrivals
     """
@@ -104,27 +97,27 @@ def new_arrivals(message, match) -> None:
 
 @app.handler(r'ohhh+')
 @app.handler(r'go dores')
-def go_dores(message, match) -> None:
+def go_dores() -> None:
     app.bot.post("ANCHOR DOWN \u2693\ufe0f")
 
 
 @app.handler(r'anchor down')
-def anchor_down(message, match) -> None:
+def anchor_down() -> None:
     app.bot.post("GO DORES")
 
 
 @app.handler(r'black')
-def black(message, match) -> None:
+def black() -> None:
     app.bot.post("GOLD")
 
 
 @app.handler(r'gold')
-def gold(message, match) -> None:
+def gold() -> None:
     app.bot.post("BLACK")
 
 
 @app.handler()
-def system_messages(message) -> bool:
+def system_messages(message: Message) -> bool:
     """
     Process system messages
     """
@@ -136,15 +129,15 @@ def system_messages(message) -> bool:
     change_name_match = CHANGE_RE.match(message.text)
 
     if remove_match:
-        app.bot.post('{emoji}', groupme.attachments.Emoji([[4, 36]]))
+        app.bot.post(ComplexMessage(EmojiAttach(4, 36)))
         return True
 
     if add_match:
-        app.bot.post('{emoji}', groupme.attachments.Emoji([[2, 44]]))
+        app.bot.post(ComplexMessage(EmojiAttach(2, 44)))
         return True
 
     if change_name_match:
-        app.bot.post('{emoji}', groupme.attachments.Emoji([[1, 81]]))
+        app.bot.post(ComplexMessage(EmojiAttach(1, 81)))
         return True
 
     return False
@@ -152,7 +145,7 @@ def system_messages(message) -> bool:
 
 @app.handler(r'deep dish')
 @app.handler(r'thin crust')
-def pizza(message, match) -> None:
+def pizza() -> None:
     """
     complain about pizza
     """
@@ -160,7 +153,7 @@ def pizza(message, match) -> None:
 
 
 @app.handler(r'lit fam')
-def lit(message, match) -> None:
+def lit() -> None:
     """
     battle with the lit bot
     """
@@ -168,49 +161,45 @@ def lit(message, match) -> None:
 
 
 @app.handler(r'@saucerbot', case_sensitive=True)
-def dont_at_me(message, match) -> None:
+def dont_at_me() -> None:
     app.bot.post("don't @ me \ud83d\ude44")
 
 
 @app.handler(r'@saucerbot')
 @app.handler(r'@ saucerbot')
-def sneaky(message, match) -> None:
+def sneaky() -> None:
     app.bot.post("you think you're sneaky don't you")
 
 
 @app.handler(r' bot ')
 @app.handler(r'zo')
-def zo(message, match) -> None:
+def zo() -> None:
     app.bot.post("Zo is dead.  Long live saucerbot.")
 
 
 @app.handler(r'pong')
 @app.handler(r'beer pong')
-def troll(meesage, match) -> None:
-    filtered = app.group.members().filter(user_id=SHAINA_USER_ID)
+def troll() -> None:
+    shaina = None
+    for member in app.group.members:
+        if member.user_id == SHAINA_USER_ID:
+            shaina = member
+            break
 
-    if filtered:
-        shaina = filtered[0]
-        mentions = groupme.attachments.Mentions(
-            [SHAINA_USER_ID],
-            [(0, len(shaina.nickname) + 1)]
-        )
-
-        pre_message = '@{}'.format(shaina.nickname)
-        attachments = [mentions]
+    if shaina:
+        pre_message = RefAttach(SHAINA_USER_ID, f'@{shaina.nickname}')
     else:
-        pre_message = 'Shaina'
-        attachments = []
+        pre_message = "Shaina"
 
-    full_message = "{} is the troll".format(pre_message)
-    app.bot.post(full_message, *attachments)
+    message = pre_message + " is the troll"
+    app.bot.post(message)
 
 
 @app.handler(r'did the dores win')
 @app.handler(r'did vandy win')
-def did_the_dores_win(message, match) -> None:
+def did_the_dores_win() -> None:
     result = the_dores.did_the_dores_win(True, True)
     if result is None:
-        app.bot.post("I couldn't find the Vandy game {emoji}", groupme.attachments.Emoji([[1, 35]]))
+        app.bot.post("I couldn't find the Vandy game " + EmojiAttach(1, 35))
     else:
         app.bot.post(result)

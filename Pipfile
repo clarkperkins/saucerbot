@@ -1,0 +1,37 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+
+mypy = "*"
+pycodestyle = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-flask = "*"
+requests-mock = "*"
+saucerbot = {path = ".", editable = true}
+
+
+[packages]
+
+arrow = "*"
+"beautifulsoup4" = "*"
+click = "*"
+elasticsearch = "~=5.0"
+flask = "*"
+flask-sqlalchemy = "*"
+lowerpines = { file = 'https://github.com/Bigfootjon/lowerpines/archive/master.zip' }
+gunicorn = "*"
+"psycopg2" = "*"
+pyyaml = "*"
+requests = "*"
+sqlalchemy = "*"
+
+
+[requires]
+
+python_version = "3.6"
