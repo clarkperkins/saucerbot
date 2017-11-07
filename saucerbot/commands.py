@@ -83,7 +83,7 @@ def whos_coming() -> None:
     """
     # Since the bot post response is empty, search through the old posts to
     # find the most recent one matching the text
-    for message in app.group.messages():
+    for message in app.group.messages.recent():
         if message.text == LIKE_IF_POST and message.name == 'saucerbot':
             num_likes = len(message.favorited_by)
 
