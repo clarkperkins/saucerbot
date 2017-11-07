@@ -97,10 +97,8 @@ def whos_coming() -> None:
                 phrase = '{} people are'.format(num_likes)
                 ending = ''
 
-            if app.bot.post("Looks like {} coming tonight.{}".format(phrase, ending)):
-                logger.info('Successfully sent reminder message.')
-            else:
-                logger.warning('Failed to send reminder message')
+            app.bot.post("Looks like {} coming tonight.{}".format(phrase, ending))
+            logger.info('Successfully sent reminder message.')
 
             # We sent a message already, don't send another
             break
