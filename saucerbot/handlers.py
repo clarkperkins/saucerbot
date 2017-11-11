@@ -171,6 +171,11 @@ def sneaky() -> None:
     app.bot.post("you think you're sneaky don't you")
 
 
+@app.handler(r'like if')
+def like_if() -> None:
+    app.bot.post("Hey that's my job")
+
+
 @app.handler(r' bot ')
 @app.handler(r'zo')
 def zo() -> None:
