@@ -5,10 +5,11 @@ import logging
 import re
 
 import requests
+import random
 from lowerpines.endpoints.message import Message
 from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
-from saucerbot import app, db, models, utils, the_dores
+from saucerbot import app, db, models, utils, the_dores, janet
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
@@ -203,3 +204,19 @@ def did_the_dores_win() -> None:
         app.bot.post("I couldn't find the Vandy game " + EmojiAttach(1, 35))
     else:
         app.bot.post(result)
+
+
+@app.handler(r'@janet')
+def ask_janet(message: Message) -> None:
+    terms = janet.select_terms_from_message(message)
+    if len(terms) is 0 or random.random() < 0.125:
+        terms = 'cactus'  # CACTUS!!!
+    photos = janet.search_flickr(','.join(terms))
+    if photos is None or len(photos) is 0:
+        app.bot.post("Sorry! I couldn't find anything for {}".format(terms))
+    else:
+        url = janet.select_url(photos)
+        groupme_image = janet.add_to_groupme_img_service(url)
+        app.bot.post(janet.create_message(groupme_image))
+
+
