@@ -3,6 +3,7 @@ import os
 import re
 import logging
 import random
+import json
 from saucerbot import app
 from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ImageAttach, ComplexMessage
@@ -12,7 +13,8 @@ logger: logging.Logger = logging.getLogger(__name__)
 janet_messages = [
     "I think THIS is what you're looking for!",
     "Ride or die!",
-    "Here you go!"
+    "Here you go!",
+    "Found it!"
 ]
 
 
@@ -20,10 +22,19 @@ def get_api_key() -> str:
     return os.getenv('FLICKR_API_KEY', None)
 
 
+def unwrap_flickr_response(text: str):
+    if text.startswith('jsonFlickrApi('):
+        return text[len('jsonFlickrApi('): -1]
+    return text
+
+
 def search_flickr(terms) -> []:
+    api_key = get_api_key()
+    if api_key is None:
+        raise EnvironmentError("Expected environment variable FLICKR_API_KEY, none found")
     args = {
-        'api_key': get_api_key(),
-        'method': 'flick.photos.search',
+        'api_key': api_key,
+        'method': 'flickr.photos.search',
         'extras': 'url_m',
         'text': terms,
         'format': 'json'
@@ -33,7 +44,8 @@ def search_flickr(terms) -> []:
         logger.info("Failed to search flickr: status code {}".format(resp.status_code))
         logger.debug("Response: {}".format(resp.text))
         return None
-    return resp.json()['photos']['photo']
+    text = unwrap_flickr_response(resp.text)
+    return json.loads(text)['photos']['photo']
 
 
 def select_url(photos) -> str:
@@ -41,18 +53,21 @@ def select_url(photos) -> str:
     return random.choice(urls)
 
 
-def sanitize_terms(terms) -> str:
-    if terms is None:
-        return ''
-    return ''.join([i for i in str(terms) if i.isalnum()])
+def get_stop_words():
+    saucerbot_dir = os.path.split(__file__)[0]
+    stopwords = open(saucerbot_dir + '/resources/stopwords.txt', 'r')
+    words = [word.strip() for word in stopwords]
+    stopwords.close()
+    return words
 
-blacklist_words = ['find', 'for', 'get', 'janet', 'picture', 'search', 'show', 'that', 'the', 'this', 'you']
+
+blacklist_words = get_stop_words()
 
 
 def select_terms_from_message(message: str) -> list:
-    alphabetic_only = re.compile('[^a-z\w]').sub('', message.lower())
-    words = set(re.compile('\w+').split(alphabetic_only))
-    words = [w for w in words if w not in blacklist_words and len(w) > 2]
+    alphabetic_only = re.compile('[^a-z\s]').sub('', message.lower())
+    words = set(re.compile('\s+').split(alphabetic_only))
+    words = [w for w in words if len(w) > 2 and w not in blacklist_words]
     if len(words) <= 3:
         return words
     else:

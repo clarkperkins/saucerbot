@@ -208,10 +208,10 @@ def did_the_dores_win() -> None:
 
 @app.handler(r'@janet')
 def ask_janet(message: Message) -> None:
-    terms = janet.select_terms_from_message(message)
+    terms = janet.select_terms_from_message(message.text)
     if len(terms) is 0 or random.random() < 0.125:
-        terms = 'cactus'  # CACTUS!!!
-    photos = janet.search_flickr(','.join(terms))
+        terms = ['cactus']  # CACTUS!!!
+    photos = janet.search_flickr(terms)
     if photos is None or len(photos) is 0:
         app.bot.post("Sorry! I couldn't find anything for {}".format(terms))
     else:
