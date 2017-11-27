@@ -5,6 +5,7 @@ import re
 from typing import Any, Dict, List
 
 import arrow
+from arrow.parser import ParserError
 
 from saucerbot.parsers import BridgestoneEventsParser
 
@@ -32,7 +33,11 @@ def get_todays_events() -> List[Dict[str, Any]]:
     today = arrow.now('US/Central')
     events = []
     for ev in BridgestoneEventsParser().parse():
-        event_date = arrow.get(ev['date'], __bridgestone_time_pattern)
+        try:
+            event_date = arrow.get(ev['date'], __bridgestone_time_pattern)
+        except ParserError:
+            # Date won't parse, just skip it
+            continue
         if today.day == event_date.day \
                 and today.month == event_date.month \
                 and event_date.hour >= 12:
