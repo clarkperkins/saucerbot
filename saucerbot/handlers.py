@@ -22,10 +22,10 @@ CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
 SHAINA_USER_ID = '6830949'
 
-SAUCERBOT_PREFIX_LIST = [
+SAUCERBOT_MESSAGE_LIST = [
     "Shut up, ",
     "Go away, ",
-    PostprocessingAttach('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif') + ' ',
+    PostprocessingAttach('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
 ]
 
 
@@ -39,7 +39,10 @@ def user_named_saucerbot(message: Message) -> bool:
     # Send something dumb
     user_attach = RefAttach(message.user_id, f'@{message.name}')
 
-    message = random.choice(SAUCERBOT_PREFIX_LIST) + user_attach
+    message = random.choice(SAUCERBOT_MESSAGE_LIST)
+
+    if isinstance(message, str):
+        message = message + user_attach
 
     app.bot.post(message)
 
