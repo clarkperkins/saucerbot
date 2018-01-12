@@ -32,7 +32,7 @@ with io.open(os.path.join(root_dir, 'README.rst'), encoding='utf-8') as f:
 
 # Load the package's __version__.py module as a dictionary.
 about = {}
-with open(os.path.join(root_dir, NAME, '__version__.py')) as f:
+with io.open(os.path.join(root_dir, NAME, '__version__.py')) as f:
     exec(f.read(), about)
 
 

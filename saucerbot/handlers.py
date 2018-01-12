@@ -2,6 +2,7 @@
 
 
 import logging
+import random
 import re
 
 import requests
@@ -21,8 +22,33 @@ CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
 SHAINA_USER_ID = '6830949'
 
+SAUCERBOT_MESSAGE_LIST = [
+    "Shut up, ",
+    "Go away, ",
+    "Go find your own name, ",
+    ComplexMessage('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
+]
+
 
 # Handlers run in the order they were registered
+
+@app.handler()
+def user_named_saucerbot(message: Message) -> bool:
+    if message.name != 'saucerbot':
+        return False
+
+    # Send something dumb
+    user_attach = RefAttach(message.user_id, f'@{message.name}')
+
+    message = random.choice(SAUCERBOT_MESSAGE_LIST)
+
+    if isinstance(message, str):
+        message = message + user_attach
+
+    app.bot.post(message)
+
+    return True
+
 
 @app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
 def save_saucer_id(message: Message, match) -> None:
