@@ -25,6 +25,7 @@ SHAINA_USER_ID = '6830949'
 SAUCERBOT_MESSAGE_LIST = [
     "Shut up, ",
     "Go away, ",
+    "Go find your own name, ",
     ComplexMessage('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
 ]
 
