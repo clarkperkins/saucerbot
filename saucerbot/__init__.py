@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import io
 import logging.config
 import os
 
@@ -11,7 +12,7 @@ from saucerbot.flask import SaucerFlask
 APP_HOME = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 # Configure logging
-with open(os.path.join(APP_HOME, 'config', 'logging.yaml')) as f:
+with io.open(os.path.join(APP_HOME, 'config', 'logging.yaml'), 'rt') as f:
     logging.config.dictConfig(yaml.safe_load(f))
 
 logger: logging.Logger = logging.getLogger(__name__)
