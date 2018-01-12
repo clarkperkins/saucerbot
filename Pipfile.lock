@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "41805e33ac913e3a98293569a118649c62ac97f3d1c734ce744a7dc1bcbf9b79"
+            "sha256": "42505afde1e39b849126613fa234892472cf49ba6590965ce58dcf5ac9b56685"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -113,7 +113,10 @@
             "version": "==2.10"
         },
         "lowerpines": {
-            "file": "https://github.com/clarkperkins/lowerpines/archive/feature/postprocessing-attach.zip"
+            "hashes": [
+                "sha256:382db9427bd9a3c17b61adc0bd45681a9f368b550074ee99607fe39b8c15f823"
+            ],
+            "version": "==0.4.0"
         },
         "markupsafe": {
             "hashes": [

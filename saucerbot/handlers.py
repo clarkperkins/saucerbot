@@ -7,7 +7,7 @@ import re
 
 import requests
 from lowerpines.endpoints.message import Message
-from lowerpines.message import ComplexMessage, EmojiAttach, PostprocessingAttach, RefAttach
+from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
 from saucerbot import app, db, models, utils, the_dores
 
