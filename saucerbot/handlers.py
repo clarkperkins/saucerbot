@@ -4,9 +4,10 @@
 import logging
 import re
 
+import random
 import requests
 from lowerpines.endpoints.message import Message
-from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
+from lowerpines.message import ComplexMessage, EmojiAttach, PostprocessingAttach, RefAttach
 
 from saucerbot import app, db, models, utils, the_dores
 
@@ -21,8 +22,29 @@ CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
 SHAINA_USER_ID = '6830949'
 
+SAUCERBOT_PREFIX_LIST = [
+    "Shut up, ",
+    "Go away, ",
+    PostprocessingAttach('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif') + ' ',
+]
+
 
 # Handlers run in the order they were registered
+
+@app.handler()
+def user_named_saucerbot(message: Message) -> bool:
+    if message.name != 'saucerbot':
+        return False
+
+    # Send something dumb
+    user_attach = RefAttach(message.user_id, f'@{message.name}')
+
+    message = random.choice(SAUCERBOT_PREFIX_LIST) + user_attach
+
+    app.bot.post(message)
+
+    return True
+
 
 @app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
 def save_saucer_id(message: Message, match) -> None:
