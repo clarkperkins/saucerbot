@@ -2,9 +2,9 @@
 
 
 import logging
+import random
 import re
 
-import random
 import requests
 from lowerpines.endpoints.message import Message
 from lowerpines.message import ComplexMessage, EmojiAttach, PostprocessingAttach, RefAttach
@@ -25,7 +25,7 @@ SHAINA_USER_ID = '6830949'
 SAUCERBOT_MESSAGE_LIST = [
     "Shut up, ",
     "Go away, ",
-    PostprocessingAttach('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
+    ComplexMessage(PostprocessingAttach('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif')),
 ]
 
 
