@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 
 import arrow
 import requests
+from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch, RequestError
 
 from saucerbot.parsers import NewArrivalsParser
@@ -127,6 +128,12 @@ def load_nashville_brews() -> None:
                     es.indices.delete(old_index)
                 except RequestError:
                     logger.info(f"Error deleting {old_index}.  Leaving it in place.")
+
+
+def get_insult() -> str:
+    r = requests.get('http://www.robietherobot.com/insult-generator.htm')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    return soup.select('center > table > tr > td > h1')[0].text.strip()
 
 
 def get_new_arrivals() -> str:

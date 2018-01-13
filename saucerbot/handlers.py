@@ -26,7 +26,9 @@ SAUCERBOT_MESSAGE_LIST = [
     "Shut up, ",
     "Go away, ",
     "Go find your own name, ",
+    "Stop being an asshole, ",
     ComplexMessage('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
+    'random',
 ]
 
 
@@ -41,6 +43,14 @@ def user_named_saucerbot(message: Message) -> bool:
     user_attach = RefAttach(message.user_id, f'@{message.name}')
 
     message = random.choice(SAUCERBOT_MESSAGE_LIST)
+
+    if message == 'random':
+        insult = utils.get_insult()
+        prefix = "Stop being a"
+        if insult[0].lower() in ['a', 'e', 'i', 'o', 'u']:
+            prefix = prefix + 'n'
+
+        message = prefix + ' ' + insult + ', '
 
     if isinstance(message, str):
         message = message + user_attach
