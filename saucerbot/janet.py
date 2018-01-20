@@ -55,7 +55,7 @@ def search_flickr(terms: List[str]) -> Optional[List]:
 
 
 def select_url(photos: List[Dict]) -> str:
-    urls = [photo['url_m'] for photo in photos]
+    urls = [photo['url_m'] for photo in photos if 'url_m' in photo]
     return random.choice(urls)
 
 
