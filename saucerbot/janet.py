@@ -1,12 +1,18 @@
-import requests
-import os
-import re
-import logging
-import random
+# -*- coding: utf-8 -*-
+
 import json
-from saucerbot import app
+import logging
+from typing import Dict, List, Optional, Collection
+
+import io
+import os
+import random
+import re
+import requests
 from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ImageAttach, ComplexMessage
+
+from saucerbot import app, APP_HOME
 
 flickr_url = 'https://api.flickr.com/services/rest/'
 logger: logging.Logger = logging.getLogger(__name__)
@@ -18,17 +24,17 @@ janet_messages = [
 ]
 
 
-def get_api_key() -> str:
+def get_api_key() -> Optional[str]:
     return os.getenv('FLICKR_API_KEY', None)
 
 
-def unwrap_flickr_response(text: str):
+def unwrap_flickr_response(text: str) -> str:
     if text.startswith('jsonFlickrApi('):
         return text[len('jsonFlickrApi('): -1]
     return text
 
 
-def search_flickr(terms) -> []:
+def search_flickr(terms: List[str]) -> Optional[List]:
     api_key = get_api_key()
     if api_key is None:
         raise EnvironmentError("Expected environment variable FLICKR_API_KEY, none found")
@@ -48,14 +54,14 @@ def search_flickr(terms) -> []:
     return json.loads(text)['photos']['photo']
 
 
-def select_url(photos) -> str:
+def select_url(photos: List[Dict]) -> str:
     urls = [photo['url_m'] for photo in photos]
     return random.choice(urls)
 
 
-def get_stop_words():
-    saucerbot_dir = os.path.split(__file__)[0]
-    stopwords = open(saucerbot_dir + '/resources/stopwords.txt', 'r')
+def get_stop_words() -> List[str]:
+    stopwords_file = os.path.join(APP_HOME, 'resources', 'stopwords.txt')
+    stopwords = io.open(stopwords_file, 'rt')
     words = [word.strip() for word in stopwords]
     stopwords.close()
     return words
@@ -64,12 +70,12 @@ def get_stop_words():
 blacklist_words = get_stop_words()
 
 
-def select_terms_from_message(message: str) -> list:
+def select_terms_from_message(message: str) -> List[str]:
     alphabetic_only = re.compile('[^a-z\s]').sub('', message.lower())
     words = set(re.compile('\s+').split(alphabetic_only))
-    words = [w for w in words if len(w) > 2 and w not in blacklist_words]
+    words = {w for w in words if len(w) > 2 and w not in blacklist_words}
     if len(words) <= 3:
-        return words
+        return list(words)
     else:
         return random.sample(words, 3)
 
@@ -82,4 +88,3 @@ def add_to_groupme_img_service(image_url: str) -> str:
 def create_message(url: str) -> ComplexMessage:
     message = random.choice(janet_messages)
     return ImageAttach(url) + message
-

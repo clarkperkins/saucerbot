@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
 import logging
 import random
 import re
 
 import requests
-import random
 from lowerpines.endpoints.message import Message
 from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
@@ -259,5 +257,3 @@ def ask_janet(message: Message) -> None:
         url = janet.select_url(photos)
         groupme_image = janet.add_to_groupme_img_service(url)
         app.bot.post(janet.create_message(groupme_image))
-
-
