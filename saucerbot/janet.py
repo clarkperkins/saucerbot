@@ -60,7 +60,7 @@ def select_url(photos: List[Dict]) -> str:
 
 
 def get_stop_words() -> List[str]:
-    stopwords_file = os.path.join(APP_HOME, 'resources', 'stopwords.txt')
+    stopwords_file = os.path.join(APP_HOME, 'saucerbot', 'resources', 'stopwords.txt')
     stopwords = io.open(stopwords_file, 'rt')
     words = [word.strip() for word in stopwords]
     stopwords.close()
