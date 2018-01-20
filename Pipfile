@@ -24,7 +24,7 @@ click = "*"
 elasticsearch = "~=5.0"
 flask = "*"
 flask-sqlalchemy = "*"
-lowerpines = { file = 'https://github.com/Bigfootjon/lowerpines/archive/master.zip' }
+lowerpines = "*"
 gunicorn = "*"
 "psycopg2" = "*"
 pyyaml = "*"

@@ -65,12 +65,10 @@ def like_if() -> None:
     """
     Remind everyone to come to saucer.
     """
-    todays_events = get_todays_events()
-    if app.bot.post(LIKE_IF_POST):
-        logger.info('Successfully sent reminder message.')
-    else:
-        logger.warning('Failed to send reminder message')
+    app.bot.post(LIKE_IF_POST)
+    logger.info('Successfully sent reminder message.')
 
+    todays_events = get_todays_events()
     if len(todays_events) > 0:
         app.bot.post(create_message(todays_events[0]))
 

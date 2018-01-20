@@ -23,7 +23,7 @@ def groupme():
     message: Message = Message.from_json(app.gmi, message)
 
     # We don't want to accidentally respond to ourself
-    if message.sender_type == 'bot' and message.name == 'saucerbot':
+    if message.sender_type == 'bot' and 'saucerbot' in message.name:
         return jsonify({'message_sent': False})
 
     message_sent = False

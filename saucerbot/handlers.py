@@ -2,6 +2,7 @@
 
 
 import logging
+import random
 import re
 
 import requests
@@ -22,8 +23,43 @@ CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
 SHAINA_USER_ID = '6830949'
 
+SAUCERBOT_MESSAGE_LIST = [
+    "Shut up, ",
+    "Go away, ",
+    "Go find your own name, ",
+    "Stop being an asshole, ",
+    ComplexMessage('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
+    'random',
+]
+
 
 # Handlers run in the order they were registered
+
+@app.handler()
+def user_named_saucerbot(message: Message) -> bool:
+    if message.name != 'saucerbot':
+        return False
+
+    # Send something dumb
+    user_attach = RefAttach(message.user_id, f'@{message.name}')
+
+    message = random.choice(SAUCERBOT_MESSAGE_LIST)
+
+    if message == 'random':
+        insult = utils.get_insult()
+        prefix = "Stop being a"
+        if insult[0].lower() in ['a', 'e', 'i', 'o', 'u']:
+            prefix = prefix + 'n'
+
+        message = prefix + ' ' + insult + ', '
+
+    if isinstance(message, str):
+        message = message + user_attach
+
+    app.bot.post(message)
+
+    return True
+
 
 @app.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
 def save_saucer_id(message: Message, match) -> None:
@@ -170,6 +206,11 @@ def dont_at_me() -> None:
 @app.handler(r'@ saucerbot')
 def sneaky() -> None:
     app.bot.post("you think you're sneaky don't you")
+
+
+@app.handler(r'like if')
+def like_if() -> None:
+    app.bot.post("Hey that's my job")
 
 
 @app.handler(r' bot ')
