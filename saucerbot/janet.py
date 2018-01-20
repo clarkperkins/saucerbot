@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Dict, List, Optional, Collection
+from typing import Dict, List, Optional
 
 import io
 import os
