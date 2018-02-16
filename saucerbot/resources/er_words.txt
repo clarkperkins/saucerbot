@@ -169,7 +169,6 @@ anker
 annotator
 announcer
 annular
-another
 anreder
 ansbacher
 answer
@@ -950,7 +949,6 @@ brookner
 brookover
 brookshier
 brosser
-brother
 brougher
 brouwer
 browder
@@ -2302,7 +2300,6 @@ eutsler
 evader
 evander
 evaporator
-ever
 evildoer
 evilsizer
 evilsizor
@@ -2640,7 +2637,6 @@ forefinger
 foreigner
 forerunner
 forester
-forever
 forfeiture
 forger
 forister
@@ -3699,10 +3695,8 @@ housholder
 hovater
 hovatter
 hover
-how're
 hower
 howerter
-however
 howitzer
 howler
 howsare
@@ -5404,8 +5398,6 @@ montpelier
 montrealer
 moondreamer
 moorer
-moreover
-morever
 morgenthaler
 mortar
 morter
@@ -5445,7 +5437,6 @@ mowrer
 moyer
 mozer
 mr
-mr.
 msgr
 muammar
 muckraker
@@ -5589,7 +5580,6 @@ neumiller
 neuner
 neuser
 neuter
-never
 newbauer
 newberger
 newburger
@@ -5661,7 +5651,6 @@ norther
 northerner
 noteholder
 notetaker
-nother
 notter
 november
 novinger
@@ -5787,10 +5776,8 @@ ostermeier
 ostermeyer
 ostermiller
 ostrander
-other
 otter
 oubre
-our
 ouster
 outer
 outfielder
@@ -5803,7 +5790,6 @@ outperformer
 outrider
 outrigger
 outsider
-over
 overacker
 overeager
 overexposure
@@ -6356,7 +6342,6 @@ raster
 rastetter
 ratepayer
 rater
-rather
 rathgeber
 rathskeller
 ratier
@@ -7438,7 +7423,6 @@ sinner
 sinor
 sire
 sisler
-sister
 sitler
 sitter
 sittler
@@ -7857,7 +7841,6 @@ stenographer
 stentor
 stepladder
 stepper
-stepsister
 sterilizer
 stermer
 sternberger
@@ -8529,7 +8512,6 @@ umpire
 unabomber
 uncapher
 uncover
-under
 underachiever
 undercover
 underkoffler
@@ -8916,18 +8898,10 @@ weyerhaeuser
 weymer
 whacker
 whaler
-what're
-whatever
 whatsoever
 wheelabrator
 wheeler
 wheelwriter
-whenever
-where're
-wherever
-whether
-which're
-whichever
 whicker
 whimper
 whiner
@@ -8953,10 +8927,7 @@ whitner
 whittaker
 whittier
 whizzer
-who're
-whoever
 wholesaler
-whomever
 whomsoever
 whopper
 whosoever
