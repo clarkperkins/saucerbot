@@ -28,6 +28,8 @@ quips = {
     "Gimme 5 <person>!": emojis[3:]
 }
 
+PERCENT_CHANCE = int(os.environ.get("BARELY_KNOW_HER_CHANCE", 35))
+
 
 def get_er_words() -> Set[str]:
     er_words_file = os.path.join(APP_HOME, 'saucerbot', 'resources', 'er_words.txt')
@@ -40,7 +42,7 @@ matching_words = get_er_words()
 
 
 def i_barely_know_her(message: Message):
-    if message.text is not None and random.choice(range(0, 10)) <= 5:
+    if message.text is not None and random.choice(range(0, 100)) < PERCENT_CHANCE:
         quip = get_quip(message)
         if quip is not None:
             app.bot.post(quip)
