@@ -260,5 +260,12 @@ def ask_janet(message: Message) -> None:
 
 
 @app.handler()
-def i_barely_know_her(message: Message) -> None:
-    barely.i_barely_know_her(message)
+def i_barely_know_her(message: Message) -> bool:
+    return barely.i_barely_know_her(message)
+
+
+@app.handler(r'69')
+@app.handler(r'sixty-nine')
+@app.handler(r'sixty nine')
+def teenage_saucerbot(message: Message) -> None:
+    app.bot.post('Nice \U0001f44c')

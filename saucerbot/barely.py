@@ -24,8 +24,11 @@ quips = {
     "Props to <person>, I barely know her though": emojis,
     "heh heh heh {match}": emojis,
     "{match}?! wowwww <person>": emojis,
-    "Idk, <person>, I barely know her": emojis,
-    "Gimme 5 <person>!": emojis[3:]
+    "Idk, <person>, I don't know her well enough to {match}": emojis,
+    "Gimme 5 <person>!": emojis[3:],
+    '{match}? Brian would be proud': emojis,
+    'Dang <person>, I barely know her': emojis,
+    '{match}? Come on, <person> don\'t leave me hangin': emojis[3:]
 }
 
 PERCENT_CHANCE = int(os.environ.get("BARELY_KNOW_HER_CHANCE", 35))
@@ -38,14 +41,17 @@ def get_er_words() -> Set[str]:
     er_words.close()
     return set(words)
 
+
 matching_words = get_er_words()
 
 
-def i_barely_know_her(message: Message):
+def i_barely_know_her(message: Message) -> bool:
     if message.text is not None and random.choice(range(0, 100)) < PERCENT_CHANCE:
         quip = get_quip(message)
         if quip is not None:
             app.bot.post(quip)
+            return True
+    return False
 
 
 def get_quip(message: Message):
@@ -59,13 +65,8 @@ def get_quip(message: Message):
         emoji = random.choice(quips[quip])
         split_quip = quip.format(match=match).split('<person>')
         if len(split_quip) > 1:
-            return split_quip[0] + RefAttach(message.user_id, '@{}'.format(message.name)) + split_quip[1] + ' ' + emoji
+            user_ref = RefAttach(message.user_id, '@{}'.format(message.name))
+            return split_quip[0] + user_ref + split_quip[1] + ' ' + emoji
         else:
             return split_quip[0] + ' ' + emoji
     return None
-
-
-
-
-
-
