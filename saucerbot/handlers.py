@@ -8,7 +8,7 @@ import requests
 from lowerpines.endpoints.message import Message
 from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
-from saucerbot import app, db, models, utils, the_dores, janet
+from saucerbot import app, db, models, utils, the_dores, janet, barely
 
 CATFACTS_URL = 'https://catfact.ninja/fact'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{user_id}'
@@ -257,3 +257,15 @@ def ask_janet(message: Message) -> None:
         url = janet.select_url(photos)
         groupme_image = janet.add_to_groupme_img_service(url)
         app.bot.post(janet.create_message(groupme_image))
+
+
+@app.handler()
+def i_barely_know_her(message: Message) -> bool:
+    return barely.i_barely_know_her(message)
+
+
+@app.handler(r'69')
+@app.handler(r'sixty-nine')
+@app.handler(r'sixty nine')
+def teenage_saucerbot(message: Message) -> None:
+    app.bot.post('Nice \U0001f44c')
