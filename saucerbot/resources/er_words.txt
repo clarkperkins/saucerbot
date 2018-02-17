@@ -140,7 +140,6 @@ amor
 amphitheater
 amphitheatre
 amplifier
-amr
 amritsar
 amsler
 amspacher
@@ -2998,7 +2997,6 @@ goalkeeper
 gobbler
 gober
 gochnauer
-
 goehner
 goeller
 goellner
@@ -3687,7 +3685,6 @@ hotelier
 hotter
 hottinger
 hotwire
-hour
 householder
 housekeeper
 houser
@@ -4136,7 +4133,6 @@ kever
 kevlar
 keyser
 keysor
-kia
 kibler
 kicker
 kicklighter
@@ -5437,7 +5433,6 @@ mowrer
 moyer
 mozer
 mr
-msgr
 muammar
 muckraker
 muddier
@@ -5672,9 +5667,6 @@ nutcracker
 nutter
 nydegger
 nylander
-o'conner
-o'connor
-o'haver
 ober
 oberholtzer
 oberlander
@@ -8264,7 +8256,6 @@ theatre
 theiler
 thelander
 theodor
-there're
 thereafter
 thermometer
 thermonuclear
@@ -8931,7 +8922,6 @@ wholesaler
 whomsoever
 whopper
 whosoever
-why're
 wiater
 wibbenmeyer
 wicker
