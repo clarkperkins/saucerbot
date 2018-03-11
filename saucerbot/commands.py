@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-from functools import wraps
 from typing import Any, Callable
 
 import arrow
 import click
+import heroku3
+import os
+from functools import wraps
+from heroku3.api import Heroku
+from heroku3.models.app import App
 
 from saucerbot import app, db, utils
 from saucerbot.bridgestone import create_message, get_todays_events
 
 logger = logging.getLogger(__name__)
-
 
 LIKE_IF_POST = "Saucer at 7PM. Like if."
 
@@ -40,6 +42,7 @@ def only_mondays(*args, **kwargs) -> Callable:
     """
     Decorator to only send commands on mondays
     """
+
     def decorator(func: Callable) -> Callable:
 
         @click.option('--force', is_flag=True,
@@ -92,10 +95,10 @@ def whos_coming() -> None:
                 phrase = 'only 1 person is'
                 ending = ' \ud83d\ude22'
             else:
-                phrase = '{} people are'.format(num_likes)
+                phrase = f'{num_likes} people are'
                 ending = ''
 
-            app.bot.post("Looks like {} coming tonight.{}".format(phrase, ending))
+            app.bot.post(f"Looks like {phrase} coming tonight.{ending}")
             logger.info('Successfully sent reminder message.')
 
             # We sent a message already, don't send another
@@ -126,10 +129,18 @@ def create() -> None:
     new_bot = app.gmi.bots.create(
         group,
         app_name,
-        callback_url='https://{}.herokuapp.com/hooks/groupme/'.format(app_name),
+        callback_url=f'https://{app_name}.herokuapp.com/hooks/groupme/',
     )
 
-    logger.info("Created bot with ID: {}".format(new_bot.bot_id))
+    logger.info(f"Created bot with ID: {new_bot.bot_id}")
+
+    heroku_conn: Heroku = heroku3.from_key(os.environ['HEROKU_API_KEY'])
+
+    heroku_app: App = heroku_conn.app(os.environ['HEROKU_APP_NAME'])
+
+    heroku_app.update_config({'GROUPME_BOT_ID': new_bot.bot_id})
+
+    logger.info("Added BOT_ID variable to heroku app")
 
 
 @pr.command()
@@ -138,5 +149,5 @@ def destroy() -> None:
 
     for bot in app.gmi.bots:
         if bot.name == app_name:
-            logger.info("Destroying bot: {} <{}>".format(bot.name, bot.bot_id))
+            logger.info(f"Destroying bot: {bot.name} <{bot.bot_id}>")
             bot.delete()
