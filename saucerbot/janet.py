@@ -42,6 +42,8 @@ def search_flickr(terms: List[str]) -> Optional[List]:
         'api_key': api_key,
         'method': 'flickr.photos.search',
         'extras': 'url_m',
+        'sort': 'relevance',
+        'per_page': 40,
         'text': terms,
         'format': 'json'
     }
