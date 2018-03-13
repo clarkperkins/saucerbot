@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import io
 import logging.config
-import os
 
+import io
+import os
 import yaml
 from flask_sqlalchemy import SQLAlchemy, Model as FlaskModel
 

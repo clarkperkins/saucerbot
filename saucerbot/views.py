@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import inspect
 import json
 import logging
-import inspect
 
 from flask import request
 from flask.json import jsonify
