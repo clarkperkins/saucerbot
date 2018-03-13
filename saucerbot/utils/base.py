@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
+import re
 from typing import Any, Dict, List
 
 import arrow
-import os
-import re
 import requests
 from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch, RequestError
 
-from saucerbot.parsers import NewArrivalsParser
+from saucerbot.utils.parsers import NewArrivalsParser
 
 # This url is specific to nashville
 BREWS_ALIAS_NAME = 'brews-nashville'

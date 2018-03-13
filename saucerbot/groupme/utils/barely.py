@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from typing import Set
-
 import io
 import os
 import random
 import re
+from typing import Set
+
+from django.conf import settings
 from lowerpines.endpoints.message import Message
 from lowerpines.message import RefAttach
 
-from saucerbot import app, APP_HOME
+from saucerbot.groupme.utils.gmi import post_message
 
 emojis = [
     '\U0001f44c',   # ok sign
@@ -39,11 +40,9 @@ PERCENT_CHANCE = int(os.environ.get("BARELY_KNOW_HER_CHANCE", 35))
 
 
 def get_er_words() -> Set[str]:
-    er_words_file = os.path.join(APP_HOME, 'saucerbot', 'resources', 'er_words.txt')
-    er_words = io.open(er_words_file, 'rt')
-    words = [word.strip() for word in er_words]
-    er_words.close()
-    return set(words)
+    er_words_file = os.path.join(settings.BASE_DIR, 'saucerbot', 'resources', 'er_words.txt')
+    with io.open(er_words_file, 'rt') as er_words:
+        return set(word.strip() for word in er_words)
 
 
 matching_words = get_er_words()
@@ -53,7 +52,7 @@ def i_barely_know_her(message: Message) -> bool:
     if message.text is not None and random.choice(range(0, 100)) < PERCENT_CHANCE:
         quip = get_quip(message)
         if quip is not None:
-            app.bot.post(quip)
+            post_message(quip)
             return True
     return False
 

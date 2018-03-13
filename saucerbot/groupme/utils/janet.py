@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
+import io
 import json
 import logging
-from typing import Dict, List, Optional
-
-import io
 import os
 import random
 import re
+from typing import Dict, List, Optional
+
 import requests
+from django.conf import settings
 from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ImageAttach, ComplexMessage
 
-from saucerbot import app, APP_HOME
+from saucerbot.groupme.utils import get_gmi
 
 flickr_url = 'https://api.flickr.com/services/rest/'
 logger: logging.Logger = logging.getLogger(__name__)
@@ -24,10 +25,6 @@ janet_messages = [
 ]
 
 
-def get_api_key() -> Optional[str]:
-    return os.getenv('FLICKR_API_KEY', None)
-
-
 def unwrap_flickr_response(text: str) -> str:
     if text.startswith('jsonFlickrApi('):
         return text[len('jsonFlickrApi('): -1]
@@ -35,11 +32,8 @@ def unwrap_flickr_response(text: str) -> str:
 
 
 def search_flickr(terms: List[str]) -> Optional[List]:
-    api_key = get_api_key()
-    if api_key is None:
-        raise EnvironmentError("Expected environment variable FLICKR_API_KEY, none found")
     args = {
-        'api_key': api_key,
+        'api_key': settings.FLICKR_API_KEY,
         'method': 'flickr.photos.search',
         'extras': 'url_m',
         'sort': 'relevance',
@@ -62,7 +56,7 @@ def select_url(photos: List[Dict]) -> str:
 
 
 def get_stop_words() -> List[str]:
-    stopwords_file = os.path.join(APP_HOME, 'saucerbot', 'resources', 'stopwords.txt')
+    stopwords_file = os.path.join(settings.BASE_DIR, 'saucerbot', 'resources', 'stopwords.txt')
     stopwords = io.open(stopwords_file, 'rt')
     words = [word.strip() for word in stopwords]
     stopwords.close()
@@ -84,7 +78,7 @@ def select_terms_from_message(message: str) -> List[str]:
 
 def add_to_groupme_img_service(image_url: str) -> str:
     img_data = requests.get(image_url).content
-    return ImageConvertRequest(img_data, app.gmi).result
+    return ImageConvertRequest(img_data, get_gmi()).result
 
 
 def create_message(url: str) -> ComplexMessage:

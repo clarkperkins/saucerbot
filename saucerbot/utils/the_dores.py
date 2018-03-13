@@ -3,11 +3,11 @@
 import datetime
 import logging
 import math
+import random
 import sys
 from typing import Dict, Optional, Tuple
 
 import arrow
-import random
 import requests
 
 logger = logging.getLogger(__name__)

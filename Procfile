@@ -1,1 +1,1 @@
-web: gunicorn saucerbot:app
+web: gunicorn saucerbot.wsgi

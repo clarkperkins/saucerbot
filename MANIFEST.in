@@ -1,3 +1,3 @@
 include README.rst
 include MANIFEST.in
-recursive-include saucerbot/resources *
+recursive-include groupme/resources *

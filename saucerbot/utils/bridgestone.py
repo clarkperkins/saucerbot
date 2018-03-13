@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import random
+import re
 from typing import Any, Dict, List
 
 import arrow
-import random
-import re
 from arrow.parser import ParserError
 
-from saucerbot.parsers import BridgestoneEventsParser
+from saucerbot.utils.parsers import BridgestoneEventsParser
 
 __bridgestone_time_pattern = 'MMM. D - h:mm A'
 __message_formats = [

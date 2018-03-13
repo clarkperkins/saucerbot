@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 GROUPME_API_URL = 'https://api.groupme.com/v3'
 
 
-def get_sample_message(app, text, attachments=None):
+def get_sample_message(bot, text, attachments=None):
     return {
         'attachments': attachments or [],
         'avatar_url': "https://example.com/avatar.jpeg",
         'created_at': 1507611755,
-        'group_id': app.group.group_id,
+        'group_id': bot.group.group_id,
         'id': "1234567890",
         'name': "Foo Bar",
         'sender_id': "abcdef",
@@ -44,11 +44,11 @@ def fail_on_post():
     return callback
 
 
-def test_mars(app):
-    from saucerbot import handlers
+def test_mars(bot):
+    from saucerbot.groupme import handlers
 
     expected = {
-        'bot_id': app.bot.bot_id,
+        'bot_id': bot.bot_id,
         'text': "That's a cool picture of Mars, @Foo Bar",
         'attachments': [
             {
@@ -62,29 +62,29 @@ def test_mars(app):
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
 
-        raw_message = get_sample_message(app, "", [{'type': "image"}])
+        raw_message = get_sample_message(bot, "", [{'type': "image"}])
 
-        ret = handlers.mars(Message.from_json(app.gmi, raw_message))
+        ret = handlers.mars(Message.from_json(bot.gmi, raw_message))
 
         assert ret
 
 
-def test_mars_no_message(app):
-    from saucerbot import handlers
+def test_mars_no_message(bot):
+    from saucerbot.groupme import handlers
 
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
 
-        raw_message = get_sample_message(app, "", [])
+        raw_message = get_sample_message(bot, "", [])
 
-        ret = handlers.mars(Message.from_json(app.gmi, raw_message))
+        ret = handlers.mars(Message.from_json(bot.gmi, raw_message))
 
         assert not ret
 
 
-def test_zo(app, client):
+def test_zo(bot, client):
     expected = {
-        'bot_id': app.bot.bot_id,
+        'bot_id': bot.bot_id,
         'text': "Zo is dead.  Long live saucerbot.",
         'attachments': [],
     }
@@ -92,9 +92,9 @@ def test_zo(app, client):
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
 
-        sample_message = get_sample_message(app, 'zo')
+        sample_message = get_sample_message(bot, 'zo')
 
-        ret = client.post('/hooks/groupme/', content_type='application/json',
+        ret = client.post('/groupme/callbacks/saucerbot/', content_type='application/json',
                           data=json.dumps(sample_message))
 
         assert ret.status_code == 200
@@ -102,9 +102,9 @@ def test_zo(app, client):
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
 
-        sample_message = get_sample_message(app, 'hey there bot hey')
+        sample_message = get_sample_message(bot, 'hey there bot hey')
 
-        ret = client.post('/hooks/groupme/', content_type='application/json',
+        ret = client.post('/groupme/callbacks/saucerbot/', content_type='application/json',
                           data=json.dumps(sample_message))
 
         assert ret.status_code == 200
@@ -112,9 +112,9 @@ def test_zo(app, client):
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
 
-        sample_message = get_sample_message(app, 'bot')
+        sample_message = get_sample_message(bot, 'bot')
 
-        ret = client.post('/hooks/groupme/', content_type='application/json',
+        ret = client.post('/groupme/callbacks/saucerbot/', content_type='application/json',
                           data=json.dumps(sample_message))
 
         assert ret.status_code == 200
