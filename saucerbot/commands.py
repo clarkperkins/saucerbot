@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-from functools import wraps
 from typing import Any, Callable
 
 import arrow
 import click
+import os
+from functools import wraps
+from lowerpines.message import RefAttach
 
 from saucerbot import app, db, utils
 from saucerbot.bridgestone import create_message, get_todays_events
@@ -79,6 +80,8 @@ def whos_coming() -> None:
     """
     Let everyone know who's coming
     """
+    user_id_map = {m.user_id: m.nickname for m in app.group.members}
+
     # Since the bot post response is empty, search through the old posts to
     # find the most recent one matching the text
     for message in app.group.messages.recent():
@@ -92,10 +95,18 @@ def whos_coming() -> None:
                 phrase = 'only 1 person is'
                 ending = ' \ud83d\ude22'
             else:
-                phrase = '{} people are'.format(num_likes)
+                phrase = f'{num_likes} people are'
                 ending = ''
 
-            app.bot.post("Looks like {} coming tonight.{}".format(phrase, ending))
+            app.bot.post(f"Looks like {phrase} coming tonight.{ending}")
+
+            if num_likes > 0:
+                likes_message = 'Save seats for'
+                for user_id in message.favorited_by:
+                    likes_message += ' ' + RefAttach(user_id, f'@{user_id_map[user_id]}')
+
+                app.bot.post(likes_message)
+
             logger.info('Successfully sent reminder message.')
 
             # We sent a message already, don't send another
@@ -126,7 +137,7 @@ def create() -> None:
     new_bot = app.gmi.bots.create(
         group,
         app_name,
-        callback_url='https://{}.herokuapp.com/hooks/groupme/'.format(app_name),
+        callback_url=f'https://{app_name}.herokuapp.com/hooks/groupme/',
     )
 
     logger.info("Created bot with ID: {}".format(new_bot.bot_id))
@@ -138,5 +149,5 @@ def destroy() -> None:
 
     for bot in app.gmi.bots:
         if bot.name == app_name:
-            logger.info("Destroying bot: {} <{}>".format(bot.name, bot.bot_id))
+            logger.info(f"Destroying bot: {bot.name} <{bot.bot_id}>")
             bot.delete()

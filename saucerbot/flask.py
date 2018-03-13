@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import Callable, List, Optional
+
 import os
 import re
 from collections import namedtuple
-from typing import Callable, List, Optional
-
 from flask import Flask
 from lowerpines.endpoints import bot, group
 from lowerpines.exceptions import NoneFoundException, MultipleFoundException

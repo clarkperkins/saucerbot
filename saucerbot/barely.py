@@ -1,11 +1,15 @@
-import random
-import os
-import io
-import re
+# -*- coding: utf-8 -*-
+
 from typing import Set
-from saucerbot import app, APP_HOME
+
+import io
+import os
+import random
+import re
 from lowerpines.endpoints.message import Message
 from lowerpines.message import RefAttach
+
+from saucerbot import app, APP_HOME
 
 emojis = [
     '\U0001f44c',   # ok sign

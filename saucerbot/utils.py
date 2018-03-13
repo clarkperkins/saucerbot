@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import re
 from typing import Any, Dict, List
 
 import arrow
+import os
+import re
 import requests
 from bs4 import BeautifulSoup
 from elasticsearch import Elasticsearch, RequestError
