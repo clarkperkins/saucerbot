@@ -1,37 +1,30 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [dev-packages]
-
 mypy = "*"
 pycodestyle = "*"
 pytest = "*"
 pytest-cov = "*"
-pytest-flask = "*"
+pytest-django = "*"
 requests-mock = "*"
-saucerbot = {path = ".", editable = true}
-
+#saucerbot = {path = ".", editable = true}
 
 [packages]
-
 arrow = "*"
 "beautifulsoup4" = "*"
-click = "*"
+brotlipy = "*"
+django = "*"
+djangorestframework = "*"
+dj-database-url = "*"
 elasticsearch = "~=5.0"
-flask = "*"
-flask-sqlalchemy = "*"
 lowerpines = "*"
 gunicorn = "*"
-"psycopg2" = "*"
-pyyaml = "*"
+"psycopg2-binary" = "*"
 requests = "*"
-sqlalchemy = "*"
-
+whitenoise = "*"
 
 [requires]
-
 python_version = "3.6"

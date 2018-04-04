@@ -96,10 +96,10 @@ GROUP = {
 }
 
 
-@pytest.fixture(name='app')
-def setup_app(monkeypatch, tmpdir):
+@pytest.fixture(name='bot')
+def setup_bot(monkeypatch, tmpdir):
     """
-    Create a flask app for saucerbot tests
+    Create a bot for saucerbot tests
     """
     monkeypatch.setenv('GROUPME_API_KEY', '123456')
     monkeypatch.setenv('GROUPME_BOT_ID', '123456')
@@ -110,6 +110,10 @@ def setup_app(monkeypatch, tmpdir):
         m.get(GROUPME_API_URL + '/groups?page=1&per_page=100', json=GROUP)
 
         # Just import the app and return it
-        from saucerbot import app
+        from saucerbot.groupme.utils import get_bot, get_group
 
-        return app
+        # Cache the group first
+        get_group()
+
+        # Then return the bot
+        return get_bot()

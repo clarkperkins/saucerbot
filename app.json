@@ -7,6 +7,9 @@
     "pr-predestroy": "python manage.py pr destroy"
   },
   "env": {
+    "DJANGO_SECRET_KEY": {
+      "generator": "secret"
+    },
     "HEROKU_APP_NAME": {
       "required": true
     },
