@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a07016f5e55b2c30bf8bc29cfc49dbfddc8d99c846df08c6d68c97748802c5ab"
+            "sha256": "b323963f0eadc4fbfd019a3cec512a4ce0b2b1fe78cf8fef2b2283be88dd2c99"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -131,11 +131,11 @@
         },
         "djangorestframework": {
             "hashes": [
-                "sha256:bb9d74756a6b157bfb2e395b200b11f87c837f45f5e097b2308ed7a526e7dcbe",
-                "sha256:be299fb3f289e22ddca0ff88294924cd06aa3bcfa5043f72792d2a18d96dabe8"
+                "sha256:b6714c3e4b0f8d524f193c91ecf5f5450092c2145439ac2769711f7eba89a9d9",
+                "sha256:c375e4f95a3a64fccac412e36fb42ba36881e52313ec021ef410b40f67cddca4"
             ],
             "index": "pypi",
-            "version": "==3.8.0"
+            "version": "==3.8.2"
         },
         "elasticsearch": {
             "hashes": [
@@ -420,6 +420,10 @@
             ],
             "index": "pypi",
             "version": "==1.4.0"
+        },
+        "saucerbot": {
+            "editable": true,
+            "path": "."
         },
         "six": {
             "hashes": [

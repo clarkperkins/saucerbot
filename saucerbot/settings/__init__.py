@@ -163,6 +163,7 @@ LOGGING = {
 }
 
 # Pull a few things from the heroku environment
+HEROKU_APP_NAME = os.environ.get('HEROKU_APP_NAME')
 GROUPME_API_KEY = os.environ.get('GROUPME_API_KEY')
 GROUPME_BOT_ID = os.environ.get('GROUPME_BOT_ID')
 FLICKR_API_KEY = os.environ.get('FLICKR_API_KEY')

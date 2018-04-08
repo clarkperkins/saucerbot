@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
 import re
 from typing import Any, Dict, List
 
 import arrow
 import requests
 from bs4 import BeautifulSoup
+from django.conf import settings
 from elasticsearch import Elasticsearch, RequestError
 
 from saucerbot.utils.parsers import NewArrivalsParser
@@ -17,13 +17,13 @@ BREWS_ALIAS_NAME = 'brews-nashville'
 BREWS_URL = 'https://www.beerknurd.com/api/brew/list/13886'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{}'
 
-logger: logging.Logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
 
 
 def get_es_client() -> Elasticsearch:
-    return Elasticsearch(os.environ['BONSAI_URL'])
+    return Elasticsearch(settings.ELASTICSEARCH_URL)
 
 
 def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
