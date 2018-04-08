@@ -42,7 +42,7 @@ def load_nashville_brews() -> None:
         {
             'template': 'brews-*',
             'mappings': {
-                'beer': {
+                'brew': {
                     'properties': {
                         'name': {'type': 'text'},
                         'store_id': {'type': 'keyword'},
