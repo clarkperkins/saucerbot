@@ -10,7 +10,7 @@ pytest = "*"
 pytest-cov = "*"
 pytest-django = "*"
 requests-mock = "*"
-#saucerbot = {path = ".", editable = true}
+saucerbot = {path = ".", editable = true}
 
 [packages]
 arrow = "*"

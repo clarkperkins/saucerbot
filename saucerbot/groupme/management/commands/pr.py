@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
 
 from saucerbot.groupme.utils import get_gmi
@@ -26,9 +26,9 @@ class Command(BaseCommand):
             self.destroy()
 
     def create(self) -> None:
-        group = get_gmi().groups.get(group_id=os.environ['GROUPME_GROUP_ID'])
+        group = get_gmi().groups.get(group_id=settings.GROUPME_GROUP_ID)
 
-        app_name = os.environ['HEROKU_APP_NAME']
+        app_name = settings.HEROKU_APP_NAME
 
         new_bot = get_gmi().bots.create(
             group,
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         logger.info("Created bot with ID: {}".format(new_bot.bot_id))
 
     def destroy(self) -> None:
-        app_name = os.environ['HEROKU_APP_NAME']
+        app_name = settings.HEROKU_APP_NAME
 
         for bot in get_gmi().bots:
             if bot.name == app_name:
