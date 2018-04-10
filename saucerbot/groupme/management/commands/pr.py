@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
@@ -26,7 +27,7 @@ class Command(BaseCommand):
             self.destroy()
 
     def create(self) -> None:
-        group = get_gmi().groups.get(group_id=settings.GROUPME_GROUP_ID)
+        group = get_gmi().groups.get(group_id=os.environ.get('GROUPME_GROUP_ID'))
 
         app_name = settings.HEROKU_APP_NAME
 

@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import io
+import json
 import logging
+import os
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterable, List, Optional
 
 import arrow
 import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
 from elasticsearch import Elasticsearch, RequestError
+from elasticsearch.helpers import bulk
 
 from saucerbot.utils.parsers import NewArrivalsParser
 
@@ -22,8 +26,16 @@ logger = logging.getLogger(__name__)
 ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
 
 
+__global_es_clients: Dict[str, Elasticsearch] = {}
+
+
 def get_es_client() -> Elasticsearch:
-    return Elasticsearch(settings.ELASTICSEARCH_URL)
+    es_url = settings.ELASTICSEARCH_URL
+
+    if es_url not in __global_es_clients:
+        __global_es_clients[es_url] = Elasticsearch(es_url)
+
+    return __global_es_clients[es_url]
 
 
 def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
@@ -31,39 +43,64 @@ def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
     return r.json()
 
 
-def load_nashville_brews() -> None:
+def update_templates() -> None:
+    logger.info("Updating elasticsearch index templates")
+
+    templates_dir = os.path.join(settings.BASE_DIR, 'saucerbot',
+                                 'resources', 'elasticsearch', 'templates')
+
     es = get_es_client()
 
-    logger.info("Updating index template")
+    for template in os.listdir(templates_dir):
+        name, _, ext = template.rpartition('.')
 
-    # Make sure the template is there
-    es.indices.put_template(
-        'brews',
-        {
-            'template': 'brews-*',
-            'mappings': {
-                'brew': {
-                    'properties': {
-                        'name': {'type': 'text'},
-                        'store_id': {'type': 'keyword'},
-                        'brewer': {'type': 'text'},
-                        'city': {'type': 'text'},
-                        'country': {'type': 'text'},
-                        'container': {'type': 'keyword'},
-                        'style': {'type': 'text'},
-                        'description': {'type': 'text'},
-                        'stars': {'type': 'long'},
-                        'reviews': {'type': 'long'},
-                        'abv': {'type': 'float'},
-                    }
-                }
-            }
-        }
-    )
+        if ext != 'json':
+            logger.warning(f"Located a non-json template file: {template}. Ignoring.")
+            continue
 
+        with io.open(os.path.join(templates_dir, template), 'rt') as f:
+            template_json = json.load(f)
+
+        es.indices.put_template(name, template_json)
+
+
+def get_nashville_brews(index_name: str) -> Iterable[Dict[str, Any]]:
     brews = requests.get(BREWS_URL).json()
 
     logger.info(f"Retrieved {len(brews)} nashville brews from beerknurd.com")
+
+    # generator of all the brews
+    def gen():
+        for brew in brews:
+            brew_id = brew.pop('brew_id')
+            brew['reviews'] = int(brew['reviews'])
+            if not brew['city']:
+                brew.pop('city')
+            if not brew['country']:
+                brew.pop('country')
+            brew['description'] = brew['description'].strip()
+            if brew['description'].startswith('<p>'):
+                brew['description'] = brew['description'][3:]
+            if brew['description'].endswith('</p>'):
+                brew['description'] = brew['description'][:-4]
+            abv_match = ABV_RE.search(brew['description'])
+            if abv_match:
+                brew['abv'] = float(abv_match.group('abv'))
+
+            yield {
+                '_index': index_name,
+                '_type': 'brew',
+                '_id': brew_id,
+                '_source': brew,
+            }
+
+    return gen()
+
+
+def load_nashville_brews() -> None:
+    es = get_es_client()
+
+    update_templates()
 
     timestamp = arrow.now('US/Central').format('YYYYMMDD-HHmmss')
 
@@ -72,20 +109,10 @@ def load_nashville_brews() -> None:
     # Manually create the index
     es.indices.create(index_name)
 
+    # Download & load the brews
+    brews = get_nashville_brews(index_name)
     logger.info(f"Loading brews into {index_name}")
-
-    # index all the brews
-    for brew in brews:
-        brew_id = brew.pop('brew_id')
-        brew['reviews'] = int(brew['reviews'])
-        if not brew['city']:
-            brew.pop('city')
-        if not brew['country']:
-            brew.pop('country')
-        abv_match = ABV_RE.search(brew['description'])
-        if abv_match:
-            brew['abv'] = float(abv_match.group('abv'))
-        es.index(index_name, 'brew', brew, brew_id)
+    bulk(es, brews)
 
     alias_actions = []
 
@@ -128,6 +155,30 @@ def load_nashville_brews() -> None:
                     es.indices.delete(old_index)
                 except RequestError:
                     logger.info(f"Error deleting {old_index}.  Leaving it in place.")
+
+
+def brew_info(search_term: str) -> str:
+    es = get_es_client()
+
+    response = es.search(BREWS_ALIAS_NAME, body={
+        'query': {
+            'match': {
+                'name': search_term
+            }
+        }
+    })
+
+    total_hits = response['hits']['total']
+
+    if total_hits < 1:
+        return f"No beers found matching '{search_term}'"
+
+    best_match = response['hits']['hits'][0]['_source']
+
+    message = f"{total_hits} match{'' if total_hits == 1 else 'es'} found for '{search_term}'\n" \
+              f"Best match is {best_match['name']}:\n"
+
+    return message + best_match['description']
 
 
 def get_insult() -> str:
