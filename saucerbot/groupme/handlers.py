@@ -11,7 +11,13 @@ from lowerpines.message import ComplexMessage, EmojiAttach, Message, RefAttach
 
 from saucerbot.groupme.models import User
 from saucerbot.groupme.utils import get_group, i_barely_know_her, janet, post_message
-from saucerbot.utils import did_the_dores_win, get_insult, get_tasted_brews, get_new_arrivals
+from saucerbot.utils import (
+    brew_info,
+    did_the_dores_win,
+    get_insult,
+    get_tasted_brews,
+    get_new_arrivals,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +40,6 @@ SAUCERBOT_MESSAGE_LIST = [
     'random',
 ]
 
-
 Handler = namedtuple('Handler', ['regex', 'func'])
 
 
@@ -47,6 +52,7 @@ class HandlerRegistry:
         """
         Add a message handler
         """
+
         def wrapper(func: Callable) -> Callable:
             flags = 0
 
@@ -113,6 +119,12 @@ def save_saucer_id(message: Message, match) -> None:
     message = "Thanks, " + user_attach + f"!  I {action} your Saucer ID."
 
     post_message(message)
+
+
+@registry.handler(r'^info (?P<search_text>.+)$')
+def search_brews(match) -> None:
+    search_text = match.group('search_text').strip()
+    post_message(brew_info(search_text))
 
 
 @registry.handler()
