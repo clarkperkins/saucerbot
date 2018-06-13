@@ -67,8 +67,8 @@ blacklist_words = get_stop_words()
 
 
 def select_terms_from_message(message: str) -> List[str]:
-    alphabetic_only = re.compile('[^a-z\s]').sub('', message.lower())
-    words = set(re.compile('\s+').split(alphabetic_only))
+    alphabetic_only = re.compile(r'[^a-z\s]').sub('', message.lower())
+    words = set(re.compile(r'\s+').split(alphabetic_only))
     words = {w for w in words if len(w) > 2 and w not in blacklist_words}
     if len(words) <= 3:
         return list(words)

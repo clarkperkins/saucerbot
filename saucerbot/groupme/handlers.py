@@ -12,7 +12,7 @@ from lowerpines.message import ComplexMessage, EmojiAttach, Message, RefAttach
 from saucerbot.groupme.models import User
 from saucerbot.groupme.utils import get_group, i_barely_know_her, janet, post_message
 from saucerbot.utils import (
-    brew_info,
+    brew_searcher,
     did_the_dores_win,
     get_insult,
     get_tasted_brews,
@@ -124,7 +124,7 @@ def save_saucer_id(message: Message, match) -> None:
 @registry.handler(r'^info (?P<search_text>.+)$')
 def search_brews(match) -> None:
     search_text = match.group('search_text').strip()
-    post_message(brew_info(search_text))
+    post_message(brew_searcher.brew_info(search_text))
 
 
 @registry.handler()
