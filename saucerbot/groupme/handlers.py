@@ -5,12 +5,14 @@ import os
 import random
 import re
 from collections import namedtuple
+from datetime import datetime
 from typing import Callable
 
+import arrow
 import requests
 from lowerpines.message import ComplexMessage, EmojiAttach, Message, RefAttach
 
-from saucerbot.groupme.models import User
+from saucerbot.groupme.models import User, HistoricalNickname
 from saucerbot.groupme.utils import get_group, i_barely_know_her, janet, post_message
 from saucerbot.utils import (
     brew_searcher,
@@ -83,6 +85,62 @@ registry = HandlerRegistry()
 
 
 # Handlers run in the order they were registered
+
+def nickname_entry(nickname: str, timestamp: arrow.Arrow) -> None:
+    # Lookup the user id
+    user_id = None
+    for member in get_group().members:
+        if member.nickname == nickname:
+            user_id = member.user_id
+            break
+
+    if not user_id:
+        logger.warning(f"Failed to find user_id for {nickname}... Could not log nickname")
+
+    HistoricalNickname.objects.create(
+        groupme_id=user_id,
+        timestamp=timestamp.datetime,
+        nickname=nickname,
+    )
+
+@registry.handler()
+def system_messages(message: Message) -> bool:
+    """
+    Process system messages
+    """
+    if not message.system:
+        return False
+
+    remove_match = REMOVE_RE.match(message.text)
+    add_match = ADD_RE.match(message.text)
+    change_name_match = CHANGE_RE.match(message.text)
+
+    timestamp = arrow.get(datetime.fromtimestamp(int(message.created_at)), 'US/Central')
+
+    if remove_match:
+        post_message(ComplexMessage(EmojiAttach(4, 36)))
+        return True
+
+    if add_match:
+        post_message(ComplexMessage(EmojiAttach(2, 44)))
+
+        # Log the new member
+        new_member = add_match.group('addee')
+        nickname_entry(new_member, timestamp)
+
+        return True
+
+    if change_name_match:
+        post_message(ComplexMessage(EmojiAttach(1, 81)))
+
+        # Log the name change
+        new_name = change_name_match.group('new_name')
+        nickname_entry(new_name, timestamp)
+
+        return True
+
+    return False
+
 
 @registry.handler()
 def user_named_saucerbot(message: Message) -> bool:
@@ -198,33 +256,6 @@ def black() -> None:
 @registry.handler(r'gold')
 def gold() -> None:
     post_message("BLACK")
-
-
-@registry.handler()
-def system_messages(message: Message) -> bool:
-    """
-    Process system messages
-    """
-    if not message.system:
-        return False
-
-    remove_match = REMOVE_RE.match(message.text)
-    add_match = ADD_RE.match(message.text)
-    change_name_match = CHANGE_RE.match(message.text)
-
-    if remove_match:
-        post_message(ComplexMessage(EmojiAttach(4, 36)))
-        return True
-
-    if add_match:
-        post_message(ComplexMessage(EmojiAttach(2, 44)))
-        return True
-
-    if change_name_match:
-        post_message(ComplexMessage(EmojiAttach(1, 81)))
-        return True
-
-    return False
 
 
 @registry.handler(r'deep dish')
