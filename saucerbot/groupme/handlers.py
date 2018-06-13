@@ -103,6 +103,7 @@ def nickname_entry(nickname: str, timestamp: arrow.Arrow) -> None:
         nickname=nickname,
     )
 
+
 @registry.handler()
 def system_messages(message: Message) -> bool:
     """
@@ -349,3 +350,15 @@ def handle_barely_know_her(message: Message) -> bool:
 @registry.handler(r'sixty nine')
 def teenage_saucerbot() -> None:
     post_message('Nice \U0001f44c')
+
+
+@registry.handler(r'whoami')
+def whoami(message: Message) -> None:
+    nicknames = HistoricalNickname.objects.filter(groupme_id=message.user_id)
+
+    response = ''
+
+    for nickname in nicknames:
+        response += f'{nickname.nickname} {nickname.timestamp}\n'
+
+    post_message(response)
