@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import re
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List
 
 import arrow
 import requests
@@ -26,53 +26,62 @@ logger = logging.getLogger(__name__)
 ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
 
 
-__global_es_clients: Dict[str, Elasticsearch] = {}
+class BrewsLoaderUtil:
 
+    def __init__(self):
+        self.es = Elasticsearch(settings.ELASTICSEARCH_URL)
 
-def get_es_client() -> Elasticsearch:
-    es_url = settings.ELASTICSEARCH_URL
+        timestamp = arrow.now('US/Central').format('YYYYMMDD-HHmmss')
 
-    if es_url not in __global_es_clients:
-        __global_es_clients[es_url] = Elasticsearch(es_url)
+        self.index_name = f'{BREWS_ALIAS_NAME}-{timestamp}'
 
-    return __global_es_clients[es_url]
+    def expand_brew(self, brew):
+        action = {
+            'index': {
+                '_index': self.index_name,
+                '_type': 'brew',
+                '_id': brew.pop('brew_id'),
+            }
+        }
+        return action, brew
 
+    def update_templates(self) -> None:
+        logger.info("Updating elasticsearch index templates")
 
-def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
-    r = requests.get(TASTED_URL.format(saucer_id))
-    return r.json()
+        templates_dir = os.path.join(settings.BASE_DIR, 'saucerbot',
+                                     'resources', 'elasticsearch', 'templates')
 
+        for template in os.listdir(templates_dir):
+            name, _, ext = template.rpartition('.')
 
-def update_templates() -> None:
-    logger.info("Updating elasticsearch index templates")
+            if ext != 'json':
+                logger.warning(f"Located a non-json template file: {template}. Ignoring.")
+                continue
 
-    templates_dir = os.path.join(settings.BASE_DIR, 'saucerbot',
-                                 'resources', 'elasticsearch', 'templates')
+            with io.open(os.path.join(templates_dir, template), 'rt') as f:
+                template_json = json.load(f)
 
-    es = get_es_client()
+            self.es.indices.put_template(name, template_json)
 
-    for template in os.listdir(templates_dir):
-        name, _, ext = template.rpartition('.')
+    def load_nashville_brews(self) -> None:
+        self.update_templates()
 
-        if ext != 'json':
-            logger.warning(f"Located a non-json template file: {template}. Ignoring.")
-            continue
+        # Download & load the brews
+        brews = self.get_nashville_brews()
+        logger.info(f"Loading brews into {self.index_name}")
+        bulk(self.es, brews, expand_action_callback=self.expand_brew)
 
-        with io.open(os.path.join(templates_dir, template), 'rt') as f:
-            template_json = json.load(f)
+        # Clean things up
+        self.update_alias()
+        self.cleanup_old_indices()
 
-        es.indices.put_template(name, template_json)
+    @staticmethod
+    def get_nashville_brews() -> Iterable[Dict[str, Any]]:
+        brews: List[Dict[str, Any]] = requests.get(BREWS_URL).json()
 
+        logger.info(f"Retrieved {len(brews)} nashville brews from beerknurd.com")
 
-def get_nashville_brews(index_name: str) -> Iterable[Dict[str, Any]]:
-    brews = requests.get(BREWS_URL).json()
-
-    logger.info(f"Retrieved {len(brews)} nashville brews from beerknurd.com")
-
-    # generator of all the brews
-    def gen():
         for brew in brews:
-            brew_id = brew.pop('brew_id')
             brew['reviews'] = int(brew['reviews'])
             if not brew['city']:
                 brew.pop('city')
@@ -87,98 +96,87 @@ def get_nashville_brews(index_name: str) -> Iterable[Dict[str, Any]]:
             if abv_match:
                 brew['abv'] = float(abv_match.group('abv'))
 
-            yield {
-                '_index': index_name,
-                '_type': 'brew',
-                '_id': brew_id,
-                '_source': brew,
+            yield brew
+
+    def update_alias(self) -> None:
+        alias_actions = []
+
+        # Remove old indices
+        if self.es.indices.exists_alias(name=BREWS_ALIAS_NAME):
+            old_indices = self.es.indices.get_alias(name=BREWS_ALIAS_NAME)
+            for index in old_indices:
+                logger.info(f"Marking {index} for deletion")
+                alias_actions.append({
+                    'remove_index': {'index': index},
+                })
+
+        logger.info(f"Adding {self.index_name} to the {BREWS_ALIAS_NAME} alias")
+        # Add the new index
+        alias_actions.append({
+            'add': {'index': self.index_name, 'alias': BREWS_ALIAS_NAME},
+        })
+
+        # Perform the update
+        try:
+            self.es.indices.update_aliases({'actions': alias_actions})
+        except RequestError:
+            logger.warning("There was an error updating the indices.  "
+                           "Will only add the new index & not delete old indices.")
+            self.es.indices.put_alias(self.index_name, BREWS_ALIAS_NAME)
+
+    def cleanup_old_indices(self) -> None:
+        # Grab all the matching indices
+        old_indices = self.es.indices.get(f'{BREWS_ALIAS_NAME}-*')
+
+        del old_indices[self.index_name]
+
+        if old_indices:
+            logger.info("Cleaning up old indices...")
+
+            # Try deleting any indices that didn't already get deleted
+            for old_index in old_indices:
+                if old_index != self.index_name:
+                    logger.info(f"Deleting {old_index}...")
+                    try:
+                        self.es.indices.delete(old_index)
+                    except RequestError:
+                        logger.info(f"Error deleting {old_index}.  Leaving it in place.")
+
+
+class BrewsSearchUtil:
+    def __init__(self):
+        self.es = Elasticsearch(settings.ELASTICSEARCH_URL)
+
+    def brew_info(self, search_term: str) -> str:
+        response = self.es.search(BREWS_ALIAS_NAME, body={
+            'query': {
+                'match': {
+                    'name': search_term
+                }
             }
+        })
 
-    return gen()
+        total_hits = response['hits']['total']
 
+        if total_hits < 1:
+            return f"No beers found matching '{search_term}'"
 
-def load_nashville_brews() -> None:
-    es = get_es_client()
+        best_match = response['hits']['hits'][0]['_source']
 
-    update_templates()
+        message = f"{total_hits} match{'' if total_hits == 1 else 'es'} " \
+                  f"found for '{search_term}'\n" \
+                  f"Best match is {best_match['name']}:\n"
 
-    timestamp = arrow.now('US/Central').format('YYYYMMDD-HHmmss')
-
-    index_name = f'{BREWS_ALIAS_NAME}-{timestamp}'
-
-    # Manually create the index
-    es.indices.create(index_name)
-
-    # Download & load the brews
-    brews = get_nashville_brews(index_name)
-    logger.info(f"Loading brews into {index_name}")
-    bulk(es, brews)
-
-    alias_actions = []
-
-    # Remove old indices
-    if es.indices.exists_alias(name=BREWS_ALIAS_NAME):
-        old_indices = es.indices.get_alias(name=BREWS_ALIAS_NAME)
-        for index in old_indices:
-            logger.info(f"Marking {index} for deletion")
-            alias_actions.append({
-                'remove_index': {'index': index},
-            })
-
-    logger.info(f"Adding {index_name} to the {BREWS_ALIAS_NAME} alias")
-    # Add the new index
-    alias_actions.append({
-        'add': {'index': index_name, 'alias': BREWS_ALIAS_NAME},
-    })
-
-    # Perform the update
-    try:
-        es.indices.update_aliases({'actions': alias_actions})
-    except RequestError:
-        logger.warning("There was an error updating the indices.  "
-                       "Will only add the new index & not delete old indices.")
-        es.indices.put_alias(index_name, BREWS_ALIAS_NAME)
-
-    # Grab all the matching indices
-    old_indices = es.indices.get(f'{BREWS_ALIAS_NAME}-*')
-
-    del old_indices[index_name]
-
-    if old_indices:
-        logger.info("Cleaning up old indices...")
-
-        # Try deleting any indices that didn't already get deleted
-        for old_index in old_indices:
-            if old_index != index_name:
-                logger.info(f"Deleting {old_index}...")
-                try:
-                    es.indices.delete(old_index)
-                except RequestError:
-                    logger.info(f"Error deleting {old_index}.  Leaving it in place.")
+        return message + best_match['description']
 
 
-def brew_info(search_term: str) -> str:
-    es = get_es_client()
+# Create a singleton instance
+brew_searcher = BrewsSearchUtil()
 
-    response = es.search(BREWS_ALIAS_NAME, body={
-        'query': {
-            'match': {
-                'name': search_term
-            }
-        }
-    })
 
-    total_hits = response['hits']['total']
-
-    if total_hits < 1:
-        return f"No beers found matching '{search_term}'"
-
-    best_match = response['hits']['hits'][0]['_source']
-
-    message = f"{total_hits} match{'' if total_hits == 1 else 'es'} found for '{search_term}'\n" \
-              f"Best match is {best_match['name']}:\n"
-
-    return message + best_match['description']
+def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
+    r = requests.get(TASTED_URL.format(saucer_id))
+    return r.json()
 
 
 def get_insult() -> str:
