@@ -65,6 +65,7 @@ class BrewsLoaderUtil:
 
     def load_nashville_brews(self) -> None:
         self.update_templates()
+        self.es.indices.create(self.index_name)
 
         # Download & load the brews
         brews = self.get_nashville_brews()
