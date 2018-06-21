@@ -133,7 +133,8 @@ def mars(message: Message) -> bool:
     Sends a message about mars if a user posts an image
     """
     for attachment in message.attachments:
-        if attachment['type'] == 'image':
+        # Only send a message 10% of the time
+        if attachment['type'] == 'image' and random.random() < 0.1:
             user_attach = RefAttach(message.user_id, f'@{message.name}')
 
             message = "That's a cool picture of Mars, " + user_attach
