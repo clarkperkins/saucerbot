@@ -1,3 +1,0 @@
-include README.rst
-include MANIFEST.in
-recursive-include groupme/resources *
