@@ -37,6 +37,19 @@ def ensure_post(data, ret):
     return callback
 
 
+def ensure_post_metadata(data, ret):
+    def callback(request, context):
+        stripped_expected = dict(data)
+        stripped_actual = dict(request.json())
+        del stripped_actual['text']
+        for att in stripped_actual['attachments']:
+            del att['loci']
+
+        assert stripped_expected == stripped_actual
+        return ret
+    return callback
+
+
 def fail_on_post():
     def callback(request, context):
         raise AssertionError('Request shouldn\'t have been sent!!!!')
@@ -49,22 +62,20 @@ def test_mars(bot):
 
     expected = {
         'bot_id': bot.bot_id,
-        'text': "That's a cool picture of Mars, @Foo Bar",
         'attachments': [
             {
                 'type': 'mentions',
-                'loci': [[31, 8]],
                 'user_ids': ['abcdef'],
             }
         ]
     }
 
     with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
+        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post_metadata(expected, ' '))
 
         raw_message = get_sample_message(bot, "", [{'type': "image"}])
 
-        ret = handlers.mars(Message.from_json(bot.gmi, raw_message))
+        ret = handlers.mars(Message.from_json(bot.gmi, raw_message), 1)
 
         assert ret
 
@@ -77,7 +88,7 @@ def test_mars_no_message(bot):
 
         raw_message = get_sample_message(bot, "", [])
 
-        ret = handlers.mars(Message.from_json(bot.gmi, raw_message))
+        ret = handlers.mars(Message.from_json(bot.gmi, raw_message), 1)
 
         assert not ret
 

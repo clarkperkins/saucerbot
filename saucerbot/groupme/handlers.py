@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 import random
 import re
 from collections import namedtuple
@@ -40,11 +41,20 @@ SAUCERBOT_MESSAGE_LIST = [
     'random',
 ]
 
+PICTURE_RESPONSE_CHANCE = float(os.environ.get("PICTURE_RESPONSE_CHANCE", 15)) / 100.0
+PICTURE_RESPONSES = [
+    "That's a cool picture of Mars!",
+    "I'm gonna make that my new phone background!",
+    "NSFW.",
+    "Quit using up all my data!",
+    "Did you take that yourself?",
+    "I think I'm in that picture!"
+]
+
 Handler = namedtuple('Handler', ['regex', 'func'])
 
 
 class HandlerRegistry:
-
     def __init__(self):
         self.handlers = []
 
@@ -128,16 +138,15 @@ def search_brews(match) -> None:
 
 
 @registry.handler()
-def mars(message: Message) -> bool:
+def mars(message: Message, chances: float = PICTURE_RESPONSE_CHANCE) -> bool:
     """
     Sends a message about mars if a user posts an image
     """
     for attachment in message.attachments:
-        if attachment['type'] == 'image':
+        if attachment['type'] == 'image' and random.random() < chances:
             user_attach = RefAttach(message.user_id, f'@{message.name}')
-
-            message = "That's a cool picture of Mars, " + user_attach
-
+            response = random.choice(PICTURE_RESPONSES)
+            message = response[:-1] + ", " + user_attach + response[-1]
             post_message(message)
             return True
 
