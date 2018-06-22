@@ -140,18 +140,20 @@ def search_brews(match) -> None:
 
 @registry.handler()
 def mars(message: Message) -> bool:
-    """
-    Sends a message about mars if a user posts an image
-    """
-    for attachment in message.attachments:
-        if attachment['type'] == 'image':
-            user_attach = RefAttach(message.user_id, f'@{message.name}')
+    return mars_helper(message, PICTURE_RESPONSE_CHANCE)
 
-            if random.random() < PICTURE_RESPONSE_CHANCE:
-                response = random.choice(PICTURE_RESPONSES)
-                message = response[:-1] + ", " + user_attach + response[-1]
-                post_message(message)
-                return True
+
+def mars_helper(message: Message, chances: float) -> bool:
+    """
+        Sends a message about mars if a user posts an image
+        """
+    for attachment in message.attachments:
+        if attachment['type'] == 'image' and random.random() < chances:
+            user_attach = RefAttach(message.user_id, f'@{message.name}')
+            response = random.choice(PICTURE_RESPONSES)
+            message = response[:-1] + ", " + user_attach + response[-1]
+            post_message(message)
+            return True
 
     return False
 

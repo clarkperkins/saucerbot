@@ -64,7 +64,7 @@ def test_mars(bot):
 
         raw_message = get_sample_message(bot, "", [{'type': "image"}])
 
-        ret = handlers.mars(Message.from_json(bot.gmi, raw_message))
+        ret = handlers.mars_helper(Message.from_json(bot.gmi, raw_message), 1)
 
         assert ret
 
