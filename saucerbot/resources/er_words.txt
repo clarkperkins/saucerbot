@@ -49,7 +49,6 @@ affolter
 aflutter
 afrikaner
 afshar
-after
 afterburner
 agar
 ager
@@ -2380,7 +2379,6 @@ farquhar
 farrer
 farrier
 farrior
-farther
 farver
 fasbender
 fassbender
@@ -2754,7 +2752,6 @@ furner
 furniture
 furrer
 furrier
-further
 fuselier
 fusner
 fussner
@@ -8330,7 +8327,6 @@ toddler
 todhunter
 toepfer
 toffler
-together
 tolar
 toler
 toliver
