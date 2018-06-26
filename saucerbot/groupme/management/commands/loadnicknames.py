@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = "Load all nicknames into the database"
 
     def handle(self, *args, **options) -> None:
-        timestamp = arrow.now('US/Central')
+        timestamp = arrow.utcnow()
 
         nickname_list = []
 

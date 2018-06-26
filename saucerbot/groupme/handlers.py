@@ -116,7 +116,8 @@ def system_messages(message: Message) -> bool:
     add_match = ADD_RE.match(message.text)
     change_name_match = CHANGE_RE.match(message.text)
 
-    timestamp = arrow.get(datetime.fromtimestamp(int(message.created_at)), 'US/Central')
+    # Grab an arrow time in UTC
+    timestamp = arrow.get(message.created_at)
 
     if remove_match:
         post_message(ComplexMessage(EmojiAttach(4, 36)))
@@ -354,11 +355,16 @@ def teenage_saucerbot() -> None:
 
 @registry.handler(r'whoami')
 def whoami(message: Message) -> None:
-    nicknames = HistoricalNickname.objects.filter(groupme_id=message.user_id)
+    nicknames = HistoricalNickname.objects.filter(groupme_id=message.user_id).order_by('-timestamp')
 
     response = ''
 
-    for nickname in nicknames:
-        response += f'{nickname.nickname} {nickname.timestamp}\n'
+    # We only care about central time!
+    now = arrow.now('US/Central')
 
-    post_message(response)
+    for nickname in nicknames:
+        timestamp = arrow.get(nickname.timestamp)
+        response += f'{nickname.nickname} {timestamp.humanize(now)}\n'
+
+    if response:
+        post_message(response)
