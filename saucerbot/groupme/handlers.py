@@ -177,7 +177,7 @@ def save_saucer_id(message: Message, match) -> None:
     tasted_beers = get_tasted_brews(saucer_id)
 
     if len(tasted_beers) == 0:
-        post_message("Hmmm, it looks like {} isn't a valid Saucer ID.".format(saucer_id))
+        post_message(f"Hmmm, it looks like {saucer_id} isn't a valid Saucer ID.")
 
     # Otherwise it's valid.  Just update or create
     user, created = User.objects.update_or_create(groupme_id=message.user_id,
@@ -334,7 +334,7 @@ def ask_janet(message: Message) -> None:
         terms = ['cactus']  # CACTUS!!!
     photos = janet.search_flickr(terms)
     if photos is None or len(photos) is 0:
-        post_message("Sorry! I couldn't find anything for {}".format(terms))
+        post_message(f"Sorry! I couldn't find anything for {terms}")
     else:
         url = janet.select_url(photos)
         groupme_image = janet.add_to_groupme_img_service(url)
