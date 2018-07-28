@@ -5,6 +5,7 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
+from lowerpines.bot import Bot
 
 from saucerbot.groupme.utils import get_gmi
 
@@ -31,13 +32,13 @@ class Command(BaseCommand):
 
         app_name = settings.HEROKU_APP_NAME
 
-        new_bot = get_gmi().bots.create(
+        new_bot: Bot = get_gmi().bots.create(
             group,
             app_name,
             callback_url=f'https://{app_name}.herokuapp.com/groupme/callbacks/{app_name}/',
         )
 
-        logger.info("Created bot with ID: {}".format(new_bot.bot_id))
+        logger.info(f"Created bot with ID: {new_bot.bot_id}")
 
     def destroy(self) -> None:
         app_name = settings.HEROKU_APP_NAME

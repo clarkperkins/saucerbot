@@ -5,12 +5,14 @@ import os
 import random
 import re
 from collections import namedtuple
+from datetime import datetime
 from typing import Callable
 
+import arrow
 import requests
 from lowerpines.message import ComplexMessage, EmojiAttach, Message, RefAttach
 
-from saucerbot.groupme.models import User
+from saucerbot.groupme.models import User, HistoricalNickname
 from saucerbot.groupme.utils import get_group, i_barely_know_her, janet, post_message
 from saucerbot.utils import (
     brew_searcher,
@@ -84,6 +86,64 @@ registry = HandlerRegistry()
 
 # Handlers run in the order they were registered
 
+def nickname_entry(nickname: str, timestamp: arrow.Arrow) -> None:
+    # Lookup the user id
+    user_id = None
+    for member in get_group().members:
+        if member.nickname == nickname:
+            user_id = member.user_id
+            break
+
+    if not user_id:
+        logger.warning(f"Failed to find user_id for {nickname}... Could not log nickname")
+
+    HistoricalNickname.objects.create(
+        groupme_id=user_id,
+        timestamp=timestamp.datetime,
+        nickname=nickname,
+    )
+
+
+@registry.handler()
+def system_messages(message: Message) -> bool:
+    """
+    Process system messages
+    """
+    if not message.system:
+        return False
+
+    remove_match = REMOVE_RE.match(message.text)
+    add_match = ADD_RE.match(message.text)
+    change_name_match = CHANGE_RE.match(message.text)
+
+    # Grab an arrow time in UTC
+    timestamp = arrow.get(message.created_at)
+
+    if remove_match:
+        post_message(ComplexMessage(EmojiAttach(4, 36)))
+        return True
+
+    if add_match:
+        post_message(ComplexMessage(EmojiAttach(2, 44)))
+
+        # Log the new member
+        new_member = add_match.group('addee')
+        nickname_entry(new_member, timestamp)
+
+        return True
+
+    if change_name_match:
+        post_message(ComplexMessage(EmojiAttach(1, 81)))
+
+        # Log the name change
+        new_name = change_name_match.group('new_name')
+        nickname_entry(new_name, timestamp)
+
+        return True
+
+    return False
+
+
 @registry.handler()
 def user_named_saucerbot(message: Message) -> bool:
     if message.name != 'saucerbot':
@@ -117,7 +177,7 @@ def save_saucer_id(message: Message, match) -> None:
     tasted_beers = get_tasted_brews(saucer_id)
 
     if len(tasted_beers) == 0:
-        post_message("Hmmm, it looks like {} isn't a valid Saucer ID.".format(saucer_id))
+        post_message(f"Hmmm, it looks like {saucer_id} isn't a valid Saucer ID.")
 
     # Otherwise it's valid.  Just update or create
     user, created = User.objects.update_or_create(groupme_id=message.user_id,
@@ -200,33 +260,6 @@ def gold() -> None:
     post_message("BLACK")
 
 
-@registry.handler()
-def system_messages(message: Message) -> bool:
-    """
-    Process system messages
-    """
-    if not message.system:
-        return False
-
-    remove_match = REMOVE_RE.match(message.text)
-    add_match = ADD_RE.match(message.text)
-    change_name_match = CHANGE_RE.match(message.text)
-
-    if remove_match:
-        post_message(ComplexMessage(EmojiAttach(4, 36)))
-        return True
-
-    if add_match:
-        post_message(ComplexMessage(EmojiAttach(2, 44)))
-        return True
-
-    if change_name_match:
-        post_message(ComplexMessage(EmojiAttach(1, 81)))
-        return True
-
-    return False
-
-
 @registry.handler(r'deep dish')
 @registry.handler(r'thin crust')
 def pizza() -> None:
@@ -301,7 +334,7 @@ def ask_janet(message: Message) -> None:
         terms = ['cactus']  # CACTUS!!!
     photos = janet.search_flickr(terms)
     if photos is None or len(photos) is 0:
-        post_message("Sorry! I couldn't find anything for {}".format(terms))
+        post_message(f"Sorry! I couldn't find anything for {terms}")
     else:
         url = janet.select_url(photos)
         groupme_image = janet.add_to_groupme_img_service(url)
@@ -318,3 +351,20 @@ def handle_barely_know_her(message: Message) -> bool:
 @registry.handler(r'sixty nine')
 def teenage_saucerbot() -> None:
     post_message('Nice \U0001f44c')
+
+
+@registry.handler(r'whoami')
+def whoami(message: Message) -> None:
+    nicknames = HistoricalNickname.objects.filter(groupme_id=message.user_id).order_by('-timestamp')
+
+    response = ''
+
+    # We only care about central time!
+    now = arrow.now('US/Central')
+
+    for nickname in nicknames:
+        timestamp = arrow.get(nickname.timestamp)
+        response += f'{nickname.nickname} {timestamp.humanize(now)}\n'
+
+    if response:
+        post_message(response)

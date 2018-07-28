@@ -10,14 +10,13 @@ pytest = "*"
 pytest-cov = "*"
 pytest-django = "*"
 requests-mock = "*"
-saucerbot = {path = ".", editable = true}
 
 [packages]
 arrow = "*"
 "beautifulsoup4" = "*"
 brotlipy = "*"
-django = "*"
-djangorestframework = "*"
+django = "~=2.0.0"
+djangorestframework = "~=3.8.0"
 dj-database-url = "*"
 elasticsearch = "~=6.0"
 lowerpines = "*"
@@ -27,4 +26,4 @@ requests = "*"
 whitenoise = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"

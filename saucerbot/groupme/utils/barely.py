@@ -68,7 +68,7 @@ def get_quip(message: Message):
         emoji = random.choice(quips[quip])
         split_quip = quip.format(match=match).split('<person>')
         if len(split_quip) > 1:
-            user_ref = RefAttach(message.user_id, '@{}'.format(message.name))
+            user_ref = RefAttach(message.user_id, f'@{message.name}')
             return split_quip[0] + user_ref + split_quip[1] + ' ' + emoji
         else:
             return split_quip[0] + ' ' + emoji

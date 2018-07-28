@@ -20,7 +20,9 @@ class GroupMeMessageParser(JSONParser):
               media_type: str = None,
               parser_context: str = None) -> Message:
         parsed_content = super().parse(stream, media_type, parser_context)
-        logger.info('Received raw message: {}'.format(json.dumps(parsed_content)))
+        if logger.level <= logging.INFO:
+            raw_json = json.dumps(parsed_content)
+            logger.info(f'Received raw message: {raw_json}')
 
         # Load it as a groupme message
         try:

@@ -43,8 +43,8 @@ def search_flickr(terms: List[str]) -> Optional[List]:
     }
     resp = requests.get(flickr_url, params=args)
     if resp.status_code >= 300 or resp.status_code < 200:
-        logger.info("Failed to search flickr: status code {}".format(resp.status_code))
-        logger.debug("Response: {}".format(resp.text))
+        logger.info(f"Failed to search flickr: status code {resp.status_code}")
+        logger.debug(f"Response: {resp.text}")
         return None
     text = unwrap_flickr_response(resp.text)
     return json.loads(text)['photos']['photo']
