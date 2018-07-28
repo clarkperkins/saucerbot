@@ -14,7 +14,7 @@ class MissingBaseError(Exception):
     pass
 
 
-class Parser(object):
+class Parser:
     base = ''
     fields: List[Tuple[str, str]] = []
     url = ''
@@ -49,7 +49,7 @@ class Parser(object):
             for field, selector in self.fields:
                 columns = row.select(selector)
 
-                if len(columns) == 0:
+                if not columns:
                     # Handle missing field
                     next_type = self.types.get(field)
                     if not next_type:

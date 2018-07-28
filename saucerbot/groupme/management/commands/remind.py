@@ -48,7 +48,7 @@ class Command(BaseCommand):
         logger.info('Successfully sent reminder message.')
 
         todays_events = get_todays_events()
-        if len(todays_events) > 0:
+        if todays_events:
             post_message(create_message(todays_events[0]))
 
     def whos_coming(self) -> None:

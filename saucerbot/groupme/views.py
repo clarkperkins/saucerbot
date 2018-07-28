@@ -34,7 +34,7 @@ class GroupMeCallbacks(APIView):
         message_sent = False
 
         # Call all our handlers
-        for handler in registry.handlers:
+        for handler in registry:
             logger.debug(f"Trying message handler {handler.func.__name__} ...")
 
             if handler.regex:

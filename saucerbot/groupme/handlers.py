@@ -4,9 +4,7 @@ import logging
 import os
 import random
 import re
-from collections import namedtuple
-from datetime import datetime
-from typing import Callable
+from typing import Callable, List, NamedTuple, Optional, Pattern
 
 import arrow
 import requests
@@ -53,12 +51,13 @@ PICTURE_RESPONSES = [
     "I think I'm in that picture!"
 ]
 
-Handler = namedtuple('Handler', ['regex', 'func'])
+
+class Handler(NamedTuple):
+    regex: Optional[Pattern[str]]
+    func: Callable
 
 
-class HandlerRegistry:
-    def __init__(self):
-        self.handlers = []
+class HandlerRegistry(List[Handler]):
 
     def handler(self, regex: str = None, case_sensitive: bool = False) -> Callable:
         """
@@ -71,7 +70,7 @@ class HandlerRegistry:
             if not case_sensitive:
                 flags = flags | re.IGNORECASE
 
-            self.handlers.append(Handler(
+            self.append(Handler(
                 re.compile(regex, flags) if regex else None,
                 func,
             ))
@@ -176,12 +175,12 @@ def save_saucer_id(message: Message, match) -> None:
 
     tasted_beers = get_tasted_brews(saucer_id)
 
-    if len(tasted_beers) == 0:
+    if not tasted_beers:
         post_message(f"Hmmm, it looks like {saucer_id} isn't a valid Saucer ID.")
 
     # Otherwise it's valid.  Just update or create
-    user, created = User.objects.update_or_create(groupme_id=message.user_id,
-                                                  defaults={'saucer_id': saucer_id})
+    _, created = User.objects.update_or_create(groupme_id=message.user_id,
+                                               defaults={'saucer_id': saucer_id})
 
     user_attach = RefAttach(message.user_id, f'@{message.name}')
 
@@ -319,7 +318,7 @@ def troll() -> None:
 
 @registry.handler(r'did the dores win')
 @registry.handler(r'did vandy win')
-def did_the_dores_win() -> None:
+def dores_win() -> None:
     result = did_the_dores_win(True, True)
     if result is None:
         post_message("I couldn't find the Vandy game " + EmojiAttach(1, 35))

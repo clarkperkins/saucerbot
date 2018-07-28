@@ -1,10 +1,12 @@
 language: python
-python:
-  - "3.6"
-
-sudo: false
+python: 3.7
+dist: xenial
+sudo: required
 
 cache: pip
+
+env:
+  - DJANGO_ENV=test
 
 before_install:
   - pip install pipenv --upgrade
@@ -14,5 +16,6 @@ install:
 
 script:
   - pipenv run pycodestyle saucerbot
+#  - pipenv run pylint saucerbot
   - pipenv run mypy saucerbot
   - pipenv run pytest
