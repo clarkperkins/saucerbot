@@ -57,7 +57,13 @@ class Handler(NamedTuple):
     func: Callable
 
 
-class HandlerRegistry(List[Handler]):
+class HandlerRegistry:
+
+    def __init__(self):
+        self.handlers: List[Handler] = []
+
+    def __iter__(self):
+        return iter(self.handlers)
 
     def handler(self, regex: str = None, case_sensitive: bool = False) -> Callable:
         """
@@ -70,7 +76,7 @@ class HandlerRegistry(List[Handler]):
             if not case_sensitive:
                 flags = flags | re.IGNORECASE
 
-            self.append(Handler(
+            self.handlers.append(Handler(
                 re.compile(regex, flags) if regex else None,
                 func,
             ))

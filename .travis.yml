@@ -16,6 +16,6 @@ install:
 
 script:
   - pipenv run pycodestyle saucerbot
-#  - pipenv run pylint saucerbot
+  - pipenv run pylint saucerbot
   - pipenv run mypy saucerbot
   - pipenv run pytest

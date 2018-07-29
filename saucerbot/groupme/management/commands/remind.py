@@ -23,10 +23,10 @@ class Command(BaseCommand):
                             help="Forces saucerbot to send a reminder on non-mondays")
         subparsers = parser.add_subparsers(dest='subcommand', title='subcommands')
         subparsers.required = True
-        like_if = subparsers.add_parser('like-if', cmd=self,
-                                        help="Remind everyone to come to saucer.")
-        whos_coming = subparsers.add_parser('whos-coming', cmd=self,
-                                            help="Let everyone know who's coming.")
+        subparsers.add_parser('like-if', cmd=self,
+                              help="Remind everyone to come to saucer.")
+        subparsers.add_parser('whos-coming', cmd=self,
+                              help="Let everyone know who's coming.")
 
     def handle(self, *args, **options) -> None:
         today = arrow.now('US/Central')
@@ -40,7 +40,8 @@ class Command(BaseCommand):
         elif options['subcommand'] == 'whos-coming':
             self.whos_coming()
 
-    def like_if(self) -> None:
+    @staticmethod
+    def like_if() -> None:
         """
         Remind everyone to come to saucer.
         """
@@ -51,7 +52,8 @@ class Command(BaseCommand):
         if todays_events:
             post_message(create_message(todays_events[0]))
 
-    def whos_coming(self) -> None:
+    @staticmethod
+    def whos_coming() -> None:
         """
         Let everyone know who's coming
         """

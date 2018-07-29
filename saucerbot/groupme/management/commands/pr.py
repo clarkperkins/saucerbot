@@ -18,8 +18,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser: CommandParser):
         subparsers = parser.add_subparsers(dest='subcommand', title='subcommands')
         subparsers.required = True
-        create = subparsers.add_parser('create', cmd=self)
-        destroy = subparsers.add_parser('destroy', cmd=self)
+        subparsers.add_parser('create', cmd=self)
+        subparsers.add_parser('destroy', cmd=self)
 
     def handle(self, *args, **options) -> None:
         if options['subcommand'] == 'create':
@@ -27,7 +27,8 @@ class Command(BaseCommand):
         elif options['subcommand'] == 'destroy':
             self.destroy()
 
-    def create(self) -> None:
+    @staticmethod
+    def create() -> None:
         group = get_gmi().groups.get(group_id=os.environ.get('GROUPME_GROUP_ID'))
 
         app_name = settings.HEROKU_APP_NAME
@@ -40,7 +41,8 @@ class Command(BaseCommand):
 
         logger.info(f"Created bot with ID: {new_bot.bot_id}")
 
-    def destroy(self) -> None:
+    @staticmethod
+    def destroy() -> None:
         app_name = settings.HEROKU_APP_NAME
 
         for bot in get_gmi().bots:
