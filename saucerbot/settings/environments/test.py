@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from saucerbot.settings import *
+SECRET_KEY = 'abcdef123456'
 
 DEBUG = True
 

@@ -101,8 +101,6 @@ def setup_bot(monkeypatch, tmpdir):
     """
     Create a bot for saucerbot tests
     """
-    monkeypatch.setenv('GROUPME_API_KEY', '123456')
-    monkeypatch.setenv('GROUPME_BOT_ID', '123456')
     monkeypatch.setenv('DATABASE_URL', f'sqlite:///{tmpdir}/test.db')
 
     with requests_mock.Mocker() as m:

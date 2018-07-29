@@ -62,7 +62,7 @@ def get_quip(message: Message):
     for word in re.split(r'[^a-zA-Z]', message.text):
         if word.strip().lower() in matching_words:
             matches.append(word.strip().lower())
-    if len(matches) > 0:
+    if matches:
         match = max(matches, key=str.__len__)
         quip = random.choice(list(quips.keys()))
         emoji = random.choice(quips[quip])

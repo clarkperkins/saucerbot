@@ -23,6 +23,7 @@ class GroupMeCallbacks(APIView):
     renderer_classes = [JSONRenderer]
     content_negotiation_class = GroupMeCallbackNegotiation
 
+    # pylint: disable=no-self-use
     def post(self, request: Request, name: str, **kwargs) -> Response:
         # Specify the type of our message for type checking
         message: Message = request.data
@@ -34,7 +35,7 @@ class GroupMeCallbacks(APIView):
         message_sent = False
 
         # Call all our handlers
-        for handler in registry.handlers:
+        for handler in registry:
             logger.debug(f"Trying message handler {handler.func.__name__} ...")
 
             if handler.regex:
@@ -71,6 +72,7 @@ class GroupMeCallbacks(APIView):
 
 class DoresWinCallback(APIView):
 
+    # pylint: disable=no-self-use
     def post(self, request: Request, **kwargs) -> Response:
         result = did_the_dores_win(False, False)
         if result:

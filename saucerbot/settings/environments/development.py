@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from saucerbot.settings import *
+SECRET_KEY = 'abcdef123456'
 
 DEBUG = True
 

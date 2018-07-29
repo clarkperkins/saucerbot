@@ -14,7 +14,7 @@ class MissingBaseError(Exception):
     pass
 
 
-class Parser(object):
+class Parser:
     base = ''
     fields: List[Tuple[str, str]] = []
     url = ''
@@ -39,6 +39,49 @@ class Parser(object):
         for row in self._do_initial_parse():
             yield self.post_process(row)
 
+    def _process_row(self, row, field, selector) -> Any:
+        columns = row.select(selector)
+
+        if not columns:
+            # Handle missing field
+            next_type = self.types.get(field)
+            if not next_type:
+                # try to guess it
+                next_type = selector.split(' > ')[-1].split(':')[0]
+
+            if next_type:
+                if next_type == 'a':
+                    return {
+                        'text': '',
+                        'href': ''
+                    }
+                else:
+                    return ''
+
+            return None
+        elif len(columns) > 1:
+            raise RowMismatchError()
+
+        # grab the first one
+        column = columns[0]
+
+        # Check to make sure it's the correct type
+        if field in self.types:
+            if self.types[field] != column.name:
+                raise RowMismatchError()
+
+        self.types[field] = column.name
+
+        if column.name == 'a':
+            return {
+                'text': column.text,
+                'href': column.attrs.get('href')
+            }
+        elif column.name == 'img':
+            return column.attrs.get('src')
+        else:
+            return column.text
+
     def _do_initial_parse(self) -> Iterator[Dict[str, Any]]:
         if not self.base:
             raise MissingBaseError()
@@ -47,45 +90,9 @@ class Parser(object):
         for row in self.soup.select(self.base):
             next_row: Dict[str, Any] = {}
             for field, selector in self.fields:
-                columns = row.select(selector)
-
-                if len(columns) == 0:
-                    # Handle missing field
-                    next_type = self.types.get(field)
-                    if not next_type:
-                        # try to guess it
-                        next_type = selector.split(' > ')[-1].split(':')[0]
-                    if next_type:
-                        if next_type == 'a':
-                            next_row[field] = {
-                                'text': '',
-                                'href': ''
-                            }
-                        else:
-                            next_row[field] = ''
-                    continue
-                elif len(columns) > 1:
-                    raise RowMismatchError()
-
-                # grab the first one
-                column = columns[0]
-
-                # Check to make sure it's the correct type
-                if field in self.types:
-                    if self.types[field] != column.name:
-                        raise RowMismatchError()
-
-                self.types[field] = column.name
-
-                if column.name == 'a':
-                    next_row[field] = {
-                        'text': column.text,
-                        'href': column.attrs.get('href')
-                    }
-                elif column.name == 'img':
-                    next_row[field] = column.attrs.get('src')
-                else:
-                    next_row[field] = column.text
+                next_field = self._process_row(row, field, selector)
+                if next_field:
+                    next_row[field] = next_field
 
             yield next_row
 
@@ -97,6 +104,7 @@ class Parser(object):
         :return: the transformed row
         :rtype: dict
         """
+        # pylint: disable=no-self-use
         return row
 
 
