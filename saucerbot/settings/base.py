@@ -19,6 +19,13 @@ import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Pull a few things from the heroku environment
+HEROKU_APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME', '')
+GROUPME_API_KEY: Optional[str] = os.environ.get('GROUPME_API_KEY')
+GROUPME_BOT_ID: Optional[str] = os.environ.get('GROUPME_BOT_ID')
+FLICKR_API_KEY: Optional[str] = os.environ.get('FLICKR_API_KEY')
+ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -26,8 +33,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# Only allow herokuapp.com for now
-ALLOWED_HOSTS = ['.herokuapp.com']
+# Allow only the herokuapp domain and clarkperkins
+ALLOWED_HOSTS = [f'{HEROKU_APP_NAME}.herokuapp.com', 'saucerbot.clarkperkins.com']
 
 
 # Application definition
@@ -124,11 +131,3 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-# Pull a few things from the heroku environment
-HEROKU_APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME')
-GROUPME_API_KEY: Optional[str] = os.environ.get('GROUPME_API_KEY')
-GROUPME_BOT_ID: Optional[str] = os.environ.get('GROUPME_BOT_ID')
-FLICKR_API_KEY: Optional[str] = os.environ.get('FLICKR_API_KEY')
-ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
