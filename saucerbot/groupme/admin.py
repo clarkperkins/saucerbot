@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# from django.contrib import admin
+from django.contrib import admin
 
-# Register your models here.
+from saucerbot.groupme import models
+
+admin.site.register(models.User)
+admin.site.register(models.HistoricalNickname)

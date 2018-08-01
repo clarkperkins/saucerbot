@@ -3,6 +3,7 @@
 import io
 import json
 import logging
+from typing import BinaryIO
 
 from rest_framework.exceptions import ParseError
 
@@ -26,24 +27,40 @@ SAMPLE_MESSAGE = {
 }
 
 
+class IOHelper(io.BytesIO):
+
+    def __init__(self, initial_bytes=None):
+        super().__init__(initial_bytes)
+        self.wrapper = io.TextIOWrapper(self)
+
+
+def get_stream(data: dict) -> BinaryIO:
+    """
+    Build a raw stream containing the serialized json provided from data.
+    The caller is responsible for closing the returned stream.
+    :param data: dict to serialize
+    :return:
+    """
+    stream = IOHelper()
+
+    # use the underlying wrapper
+    json.dump(data, stream.wrapper, ensure_ascii=False)
+    stream.wrapper.seek(0)
+
+    return stream
+
+
 def test_groupme_parser():
     parser = GroupMeMessageParser()
 
-    # Build the stream as expected by the parser
-    with io.BytesIO() as stream, io.TextIOWrapper(stream) as wrapper:
-        json.dump(SAMPLE_MESSAGE, wrapper)
-        wrapper.seek(0)
-
+    with get_stream(SAMPLE_MESSAGE) as stream:
         message = parser.parse(stream)
 
     assert message.name == "Foo Bar"
     assert message.attachments == []
     assert message.user_id == "abcdef"
 
-    with io.BytesIO() as stream, io.TextIOWrapper(stream) as wrapper:
-        wrapper.write("{}")
-        wrapper.seek(0)
-
+    with get_stream({}) as stream:
         try:
             parser.parse(stream)
             raise AssertionError('Expected a parse error')

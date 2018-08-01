@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import IO
+from typing import BinaryIO
 
 from lowerpines.message import Message
 from rest_framework.exceptions import ParseError
@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class GroupMeMessageParser(JSONParser):
+    # Allow this to parse anything. The groupme callback messages don't specify the json media type.
+    media_type = '*/*'
 
-    def parse(self, stream: IO,
+    def parse(self, stream: BinaryIO,
               media_type: str = None,
               parser_context: str = None) -> Message:
         parsed_content = super().parse(stream, media_type, parser_context)
