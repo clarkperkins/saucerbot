@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import json
 import logging
 
@@ -27,5 +26,5 @@ class GroupMeMessageParser(JSONParser):
         # Load it as a groupme message
         try:
             return Message.from_json(get_gmi(), parsed_content)
-        except Exception as e:
-            raise ParseError(f'Failed to load message as groupme message - {e}')
+        except Exception:
+            raise ParseError('Invalid GroupMe message')
