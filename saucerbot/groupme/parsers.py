@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-
 import json
 import logging
+from typing import IO
 
-from django.http.request import HttpRequest
 from lowerpines.message import Message
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import JSONParser
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class GroupMeMessageParser(JSONParser):
 
-    def parse(self, stream: HttpRequest,
+    def parse(self, stream: IO,
               media_type: str = None,
               parser_context: str = None) -> Message:
         parsed_content = super().parse(stream, media_type, parser_context)
@@ -27,5 +26,5 @@ class GroupMeMessageParser(JSONParser):
         # Load it as a groupme message
         try:
             return Message.from_json(get_gmi(), parsed_content)
-        except Exception as e:
-            raise ParseError(f'Failed to load message as groupme message - {e}')
+        except Exception:
+            raise ParseError('Invalid GroupMe message')

@@ -4,6 +4,7 @@ import inspect
 import logging
 
 from lowerpines.message import Message
+from rest_framework.exceptions import ParseError
 from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -27,6 +28,9 @@ class GroupMeCallbacks(APIView):
     def post(self, request: Request, name: str, **kwargs) -> Response:
         # Specify the type of our message for type checking
         message: Message = request.data
+
+        if not message:
+            raise ParseError('Invalid GroupMe message')
 
         # We don't want to accidentally respond to ourself
         if message.sender_type == 'bot' and name in message.name:
