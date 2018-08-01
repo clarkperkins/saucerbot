@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from saucerbot.groupme.handlers import registry
-from saucerbot.groupme.negotiation import GroupMeCallbackNegotiation
 from saucerbot.groupme.parsers import GroupMeMessageParser
 from saucerbot.groupme.utils import post_message
 from saucerbot.utils import did_the_dores_win
@@ -22,7 +21,6 @@ logger = logging.getLogger(__name__)
 class GroupMeCallbacks(APIView):
     parser_classes = [GroupMeMessageParser]
     renderer_classes = [JSONRenderer]
-    content_negotiation_class = GroupMeCallbackNegotiation
 
     # pylint: disable=no-self-use
     def post(self, request: Request, name: str, **kwargs) -> Response:
