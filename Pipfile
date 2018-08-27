@@ -13,6 +13,7 @@ djangorestframework = "~=3.8.0"
 elasticsearch = "~=6.2.0"
 gunicorn = "*"
 lowerpines = "*"
+newrelic = "*"
 "psycopg2-binary" = "*"
 requests = "*"
 whitenoise = {version = "*", extras = ["brotli"]}
