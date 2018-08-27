@@ -23,9 +23,9 @@ class Command(BaseCommand):
                             help="Forces saucerbot to send a reminder on non-mondays")
         subparsers = parser.add_subparsers(dest='subcommand', title='subcommands')
         subparsers.required = True
-        subparsers.add_parser('like-if', cmd=self,
+        subparsers.add_parser('like-if',
                               help="Remind everyone to come to saucer.")
-        subparsers.add_parser('whos-coming', cmd=self,
+        subparsers.add_parser('whos-coming',
                               help="Let everyone know who's coming.")
 
     def handle(self, *args, **options) -> None:
