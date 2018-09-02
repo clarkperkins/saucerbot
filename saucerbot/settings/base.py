@@ -40,6 +40,7 @@ ALLOWED_HOSTS = [f'{HEROKU_APP_NAME}.herokuapp.com', 'saucerbot.clarkperkins.com
 # Application definition
 
 INSTALLED_APPS = [
+    'scout_apm.django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,3 +129,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+# Scout config
+SCOUT_NAME = HEROKU_APP_NAME
