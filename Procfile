@@ -1,1 +1,1 @@
-web: newrelic-admin run-program gunicorn saucerbot.wsgi
+web: gunicorn saucerbot.wsgi

@@ -13,9 +13,9 @@ djangorestframework = "~=3.8.0"
 elasticsearch = "~=6.2.0"
 gunicorn = "*"
 lowerpines = "*"
-newrelic = "*"
 "psycopg2-binary" = "*"
 requests = "*"
+scout-apm = "*"
 whitenoise = {version = "*", extras = ["brotli"]}
 
 [dev-packages]
