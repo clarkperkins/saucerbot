@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# Remove this disable once https://github.com/timothycrosley/isort/pull/719 is merged / released
+# pylint: disable=wrong-import-order
+
 import io
 import json
 import logging
@@ -40,7 +43,7 @@ class Brew:
     description: str
     stars: int
     reviews: int
-    abv: Optional[float] = field(default=None)
+    abv: Optional[float] = field(default=None)  # type: ignore  # To be removed when mypy fixes this
 
     def __post_init__(self):
         if isinstance(self.stars, str):
@@ -75,7 +78,7 @@ class BrewsLoaderUtil:
                 '_id': brew.brew_id,
             }
         }
-        raw_brew = asdict(brew)
+        raw_brew: Dict[str, Any] = asdict(brew)
         raw_brew.pop('brew_id')
         return action, raw_brew
 
