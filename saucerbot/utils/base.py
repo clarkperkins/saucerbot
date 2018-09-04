@@ -5,7 +5,8 @@ import json
 import logging
 import os
 import re
-from typing import Any, Dict, Iterable, List
+from dataclasses import asdict, dataclass, field
+from typing import Any, Dict, Iterable, List, Optional
 
 import arrow
 import requests
@@ -26,6 +27,37 @@ logger = logging.getLogger(__name__)
 ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
 
 
+@dataclass
+class Brew:
+    brew_id: str
+    name: str
+    store_id: str
+    brewer: str
+    city: Optional[str]
+    country: Optional[str]
+    container: str
+    style: str
+    description: str
+    stars: int
+    reviews: int
+    abv: Optional[float] = field(default=None)
+
+    def __post_init__(self):
+        if isinstance(self.stars, str):
+            self.stars = int(self.stars)
+        if isinstance(self.reviews, str):
+            self.reviews = int(self.reviews)
+        if not self.city:
+            self.city = None
+        if not self.country:
+            self.country = None
+        if not self.abv:
+            # Try to pull the abv out of the description if it's not provided
+            abv_match = ABV_RE.search(self.description)
+            if abv_match:
+                self.abv = float(abv_match.group('abv'))
+
+
 class BrewsLoaderUtil:
 
     def __init__(self):
@@ -35,15 +67,17 @@ class BrewsLoaderUtil:
 
         self.index_name = f'{BREWS_ALIAS_NAME}-{timestamp}'
 
-    def expand_brew(self, brew):
+    def expand_brew(self, brew: Brew):
         action = {
             'index': {
                 '_index': self.index_name,
                 '_type': 'brew',
-                '_id': brew.pop('brew_id'),
+                '_id': brew.brew_id,
             }
         }
-        return action, brew
+        raw_brew = asdict(brew)
+        raw_brew.pop('brew_id')
+        return action, raw_brew
 
     def update_templates(self) -> None:
         logger.info("Updating elasticsearch index templates")
@@ -77,27 +111,17 @@ class BrewsLoaderUtil:
         self.cleanup_old_indices()
 
     @staticmethod
-    def get_nashville_brews() -> Iterable[Dict[str, Any]]:
+    def get_nashville_brews() -> Iterable[Brew]:
         brews: List[Dict[str, Any]] = requests.get(BREWS_URL).json()
 
         logger.info(f"Retrieved {len(brews)} nashville brews from beerknurd.com")
 
         for brew in brews:
-            brew['reviews'] = int(brew['reviews'])
-            if not brew['city']:
-                brew.pop('city')
-            if not brew['country']:
-                brew.pop('country')
-            brew['description'] = brew['description'].strip()
-            if brew['description'].startswith('<p>'):
-                brew['description'] = brew['description'][3:]
-            if brew['description'].endswith('</p>'):
-                brew['description'] = brew['description'][:-4]
-            abv_match = ABV_RE.search(brew['description'])
-            if abv_match:
-                brew['abv'] = float(abv_match.group('abv'))
+            # Clean the html
+            desc = BeautifulSoup(brew['description'], features='html.parser').text
+            brew['description'] = desc.strip()
 
-            yield brew
+            yield Brew(**brew)
 
     def update_alias(self) -> None:
         alias_actions = []
