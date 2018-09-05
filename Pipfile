@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 arrow = "*"
 "beautifulsoup4" = "*"
+channels = "~=2.1.0"
+channels-redis = "*"
 dj-database-url = "*"
 django = "~=2.1.0"
 django-split-settings = "*"
@@ -16,9 +18,12 @@ lowerpines = "*"
 "psycopg2-binary" = "*"
 requests = "*"
 scout-apm = "*"
+uvicorn = "*"
 whitenoise = {version = "*", extras = ["brotli"]}
 
 [dev-packages]
+ipython = "*"
+locustio = "*"
 mypy = "*"
 pycodestyle = "*"
 pylint = "*"
