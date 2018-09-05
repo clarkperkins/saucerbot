@@ -5,9 +5,11 @@ import logging
 import random
 import uuid
 from datetime import datetime
+
 from locust import HttpLocust, TaskSet, task
 
 logger = logging.getLogger(__name__)
+
 SENTENCES = [
     ("puppy", "car", "rabbit", "girl", "monkey"),
     ("runs", "hits", "jumps", "drives", "barfs"),
@@ -18,6 +20,7 @@ SENTENCES = [
 
 def get_sample_message():
     created_at = int(datetime.now().timestamp())
+
     return {
         'attachments': [],
         'avatar_url': "https://example.com/avatar.jpeg",
