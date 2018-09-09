@@ -41,6 +41,7 @@ ALLOWED_HOSTS = [f'{HEROKU_APP_NAME}.herokuapp.com', 'saucerbot.clarkperkins.com
 
 INSTALLED_APPS = [
     'scout_apm.django',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'saucerbot.groupme.apps.GroupMeConfig',
+    'saucerbot.groupme',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +82,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'saucerbot.wsgi.application'
 
+ASGI_APPLICATION = 'saucerbot.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
