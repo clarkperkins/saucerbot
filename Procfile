@@ -1,1 +1,1 @@
-web: gunicorn saucerbot.asgi -k uvicorn.workers.UvicornWorker
+web: daphne saucerbot.asgi:application -b 0.0.0.0 -p $PORT --access-log -
