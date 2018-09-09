@@ -25,6 +25,7 @@ GROUPME_API_KEY: Optional[str] = os.environ.get('GROUPME_API_KEY')
 GROUPME_BOT_ID: Optional[str] = os.environ.get('GROUPME_BOT_ID')
 FLICKR_API_KEY: Optional[str] = os.environ.get('FLICKR_API_KEY')
 ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
+REDIS_URL: Optional[str] = os.environ.get('REDIS_URL')
 
 
 # Quick-start development settings - unsuitable for production
@@ -88,7 +89,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+            'hosts': [REDIS_URL] if REDIS_URL else None,
         },
     },
 }
