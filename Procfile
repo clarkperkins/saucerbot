@@ -1,1 +1,1 @@
-web: daphne saucerbot.asgi:application -b 0.0.0.0 -p $PORT --access-log -
+web: hypercorn saucerbot.asgi:application -b 0.0.0.0:$PORT -k $WEB_CONCURRENCY --access-log -
