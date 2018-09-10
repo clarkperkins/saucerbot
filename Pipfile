@@ -13,17 +13,14 @@ django = "~=2.1.0"
 django-split-settings = "*"
 djangorestframework = "~=3.8.0"
 elasticsearch = "~=6.2.0"
-gunicorn = "*"
+Hypercorn = "*"
 lowerpines = "*"
 "psycopg2-binary" = "*"
 requests = "*"
 scout-apm = "!=1.3.6"
-uvicorn = "*"
 whitenoise = {version = "*", extras = ["brotli"]}
 
 [dev-packages]
-ipython = "*"
-locustio = "*"
 mypy = "*"
 pycodestyle = "*"
 pylint = "*"
