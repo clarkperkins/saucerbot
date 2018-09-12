@@ -1,1 +1,1 @@
-web: hypercorn saucerbot.asgi:application -b 0.0.0.0:$PORT -k $WEB_CONCURRENCY --access-log -
+web: gunicorn saucerbot.asgi -k uvicorn.workers.UvicornWorker
