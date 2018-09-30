@@ -1,0 +1,11 @@
+{
+  "name": "saucerbot",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-domain-manager": "^2.6.5",
+    "serverless-python-requirements": "^4.2.4",
+    "serverless-wsgi": "^1.5.1"
+  }
+}

@@ -20,7 +20,7 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Pull a few things from the heroku environment
-HEROKU_APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME', '')
+APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME', '')
 GROUPME_API_KEY: Optional[str] = os.environ.get('GROUPME_API_KEY')
 GROUPME_BOT_ID: Optional[str] = os.environ.get('GROUPME_BOT_ID')
 FLICKR_API_KEY: Optional[str] = os.environ.get('FLICKR_API_KEY')
@@ -33,14 +33,13 @@ ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# Allow only the herokuapp domain and clarkperkins
-ALLOWED_HOSTS = [f'{HEROKU_APP_NAME}.herokuapp.com', 'saucerbot.clarkperkins.com']
+# Allow only the APIG domain and clarkperkins
+ALLOWED_HOSTS = [f'{APP_NAME}.clarkperkins.com', '.execute-api.us-east-1.amazonaws.com']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'scout_apm.django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -126,10 +125,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'https://static.clarkperkins.com/saucerbot/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-# Scout config
-SCOUT_NAME = HEROKU_APP_NAME
+
+# Configure AWS
+
+AWS_STORAGE_BUCKET_NAME = 'static.clarkperkins.com'
+AWS_LOCATION = 'saucerbot/'
+AWS_DEFAULT_ACL = 'public-read'
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_CUSTOM_DOMAIN = 'static.clarkperkins.com'
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
