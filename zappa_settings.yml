@@ -1,0 +1,9 @@
+staging:
+  aws_region: us-east-1
+  django_settings: saucerbot.settings
+  profile_name: clarkperkins
+  project_name: saucerbot
+  runtime: python3.6
+  s3_bucket: saucerbot
+  aws_environment_variables:
+    DJANGO_ENV: production
