@@ -43,7 +43,7 @@ class Brew:
     description: str
     stars: int
     reviews: int
-    abv: Optional[float] = field(default=None)  # type: ignore  # To be removed when mypy fixes this
+    abv: Optional[float] = field(default=None)
 
     def __post_init__(self):
         if isinstance(self.stars, str):
