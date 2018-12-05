@@ -235,13 +235,15 @@ def catfacts() -> None:
     post_message(catfact['fact'])
 
 
-@registry.handler(r'new beers')
-@registry.handler(r'new arrivals')
-def new_arrivals() -> None:
+@registry.handler(r'new beers( (?P<location>[a-z]+))?')
+@registry.handler(r'new arrivals( (?P<location>[a-z]+))?')
+def new_arrivals(match) -> None:
     """
     Gets all the new arrivals
     """
-    post_message(get_new_arrivals())
+    location = match.group('location') or 'nashville'
+
+    post_message(get_new_arrivals(location.lower()))
 
 
 @registry.handler(r'ohhh+')

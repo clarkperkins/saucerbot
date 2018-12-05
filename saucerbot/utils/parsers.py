@@ -26,6 +26,7 @@ class Parser:
             raise ValueError('Value for url required.')
 
         r = requests.get(self.url.format(*args))
+        r.raise_for_status()
 
         self.types: Dict[str, Any] = {}
         self.soup = BeautifulSoup(r.text, 'html.parser')
@@ -109,7 +110,7 @@ class Parser:
 
 
 class NewArrivalsParser(Parser):
-    url = 'https://www.beerknurd.com/locations/nashville-flying-saucer'
+    url = 'https://www.beerknurd.com/locations/{}-flying-saucer'
     base = 'div.view-new-arrivals-block > div > table > tbody > tr'
     fields = [
         ('name', 'td.views-field-title'),
