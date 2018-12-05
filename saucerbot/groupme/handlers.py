@@ -337,10 +337,10 @@ def dores_win() -> None:
 @registry.handler(r'@janet')
 def ask_janet(message: Message) -> None:
     terms = janet.select_terms_from_message(message.text)
-    if len(terms) is 0 or random.random() < 0.125:
+    if not terms or random.random() < 0.125:
         terms = ['cactus']  # CACTUS!!!
     photos = janet.search_flickr(terms)
-    if photos is None or len(photos) is 0:
+    if not photos:
         post_message(f"Sorry! I couldn't find anything for {terms}")
     else:
         url = janet.select_url(photos)
