@@ -215,9 +215,9 @@ def get_insult() -> str:
 
 def get_new_arrivals(location: str) -> str:
     try:
-        parser = NewArrivalsParser(location)
+        parser = NewArrivalsParser(location.lower().replace(' ', '-'))
     except requests.HTTPError:
-        return f"Uh oh, looks like there's no saucer in {location.capitalize()}!"
+        return f"Uh oh, looks like there's no saucer in {location}!"
 
     beers = parser.parse()
 
