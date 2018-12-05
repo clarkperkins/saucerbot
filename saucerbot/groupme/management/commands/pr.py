@@ -18,8 +18,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser: CommandParser):
         subparsers = parser.add_subparsers(dest='subcommand', title='subcommands')
         subparsers.required = True
-        subparsers.add_parser('create', cmd=self)
-        subparsers.add_parser('destroy', cmd=self)
+        subparsers.add_parser('create')
+        subparsers.add_parser('destroy')
 
     def handle(self, *args, **options) -> None:
         if options['subcommand'] == 'create':

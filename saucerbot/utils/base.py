@@ -192,8 +192,8 @@ class BrewsSearchUtil:
         best_match = response['hits']['hits'][0]['_source']
 
         message = f"{total_hits} match{'' if total_hits == 1 else 'es'} " \
-                  f"found for '{search_term}'\n" \
-                  f"Best match is {best_match['name']}:\n"
+            f"found for '{search_term}'\n" \
+            f"Best match is {best_match['name']}:\n"
 
         return message + best_match['description']
 
@@ -213,8 +213,11 @@ def get_insult() -> str:
     return soup.select('center > table > tr > td > h1')[0].text.strip()
 
 
-def get_new_arrivals() -> str:
-    parser = NewArrivalsParser()
+def get_new_arrivals(location: str) -> str:
+    try:
+        parser = NewArrivalsParser(location.lower().replace(' ', '-'))
+    except requests.HTTPError:
+        return f"Uh oh, looks like there's no saucer in {location}!"
 
     beers = parser.parse()
 
