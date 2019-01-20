@@ -94,13 +94,18 @@ registry = HandlerRegistry()
 def nickname_entry(nickname: str, timestamp: arrow.Arrow) -> None:
     # Lookup the user id
     user_id = None
-    for member in get_group().members:
+
+    # Make sure the group is up-to-date
+    group = get_group()
+    group.refresh()
+    for member in group.members:
         if member.nickname == nickname:
             user_id = member.user_id
             break
 
     if not user_id:
         logger.warning(f"Failed to find user_id for {nickname}... Could not log nickname")
+        return
 
     HistoricalNickname.objects.create(
         groupme_id=user_id,
