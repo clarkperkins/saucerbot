@@ -14,6 +14,7 @@ if not ENV:
 # Include settings:
 include(
     'base.py',
+    'email.py',
     'logging.py',
 
     # Select the right env:
