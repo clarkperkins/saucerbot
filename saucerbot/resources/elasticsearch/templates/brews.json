@@ -3,41 +3,39 @@
         "brews-*"
     ],
     "mappings": {
-        "brew": {
-            "properties": {
-                "name": {
-                    "type": "text"
-                },
-                "store_id": {
-                    "type": "keyword"
-                },
-                "brewer": {
-                    "type": "text"
-                },
-                "city": {
-                    "type": "text"
-                },
-                "country": {
-                    "type": "text"
-                },
-                "container": {
-                    "type": "keyword"
-                },
-                "style": {
-                    "type": "text"
-                },
-                "description": {
-                    "type": "text"
-                },
-                "stars": {
-                    "type": "long"
-                },
-                "reviews": {
-                    "type": "long"
-                },
-                "abv": {
-                    "type": "float"
-                }
+        "properties": {
+            "name": {
+                "type": "text"
+            },
+            "store_id": {
+                "type": "keyword"
+            },
+            "brewer": {
+                "type": "text"
+            },
+            "city": {
+                "type": "text"
+            },
+            "country": {
+                "type": "text"
+            },
+            "container": {
+                "type": "keyword"
+            },
+            "style": {
+                "type": "text"
+            },
+            "description": {
+                "type": "text"
+            },
+            "stars": {
+                "type": "long"
+            },
+            "reviews": {
+                "type": "long"
+            },
+            "abv": {
+                "type": "float"
             }
         }
     }
