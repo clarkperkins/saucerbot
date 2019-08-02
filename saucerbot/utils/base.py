@@ -74,7 +74,6 @@ class BrewsLoaderUtil:
         action = {
             'index': {
                 '_index': self.index_name,
-                '_type': 'brew',
                 '_id': brew.brew_id,
             }
         }
