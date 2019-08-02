@@ -183,7 +183,7 @@ class BrewsSearchUtil:
             }
         })
 
-        total_hits = response['hits']['total']
+        total_hits = response['hits']['total']['value']
 
         if total_hits < 1:
             return f"No beers found matching '{search_term}'"
