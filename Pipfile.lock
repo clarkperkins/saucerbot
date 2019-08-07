@@ -214,19 +214,19 @@
         },
         "scout-apm": {
             "hashes": [
-                "sha256:0d216c6fd377cb93579abeddf37c878b3507e480f405caed15e66f4d85d6d7be",
-                "sha256:2e94c837ee1978e17d0aed9615da9f68f10986606a44b3aebb25823dbfa95124",
-                "sha256:4535872cf5fe25494c342629e75b9c3b78d8e36449c9f6cf2f210810d4ea6e51",
-                "sha256:4ac27d831f33ecf5dd4ad9c63d811f93a25a7ef66bdac61b85ce66ac78bccac4",
-                "sha256:5df01da32369108aa07ccbd783fc994e64798ca29f063d84854eca3da19ff59e",
-                "sha256:8004781e3ad840a19a4a3070dd0da00b10e70b55523658dd0d9c4f7c963de1c4",
-                "sha256:884c6b2f22e4e7bb5825965112c915dca26b72e125256c8b96b1b596de96214e",
-                "sha256:d4357d7bbf1818b93281e37befefe52cb24a425a97ed180f1c263b228e10cb39",
-                "sha256:db80f2921d4652f5332d7b801d37efafbe51ffd2ffd2327efcd43933b30e8837",
-                "sha256:f56fcdb5bae723d1712c93b333f4fea4ff1000b55db0a7feb545253b35a2c613"
+                "sha256:362d1018d14075b4ce1b6e713e86e3c477f9917714e4156a81f7a92a74c9a7f6",
+                "sha256:50c8ab18adc0ba8084348d5f8d0191b68987774b1ab47c10e759df168c14fca4",
+                "sha256:760516d8ce206d4ca563bc40dfa9c9ca5357a32904dc06017245fc7fb12b6cd0",
+                "sha256:7ebbbb542ea42e929b283ca1c1e308f0b370e0e543cc83b553f38322b9cb56cd",
+                "sha256:9e57fa555cc20b403e79289480301293462d2a5105e88870bbe69edc36a16cf7",
+                "sha256:a46d296af42009886c307a05afb89fb12e76927de246734bf5efcf76b298ddcc",
+                "sha256:bd834b44b2e6bde89764748f25afdb5be1126ebcbf7216e4dd66fa43d4407166",
+                "sha256:c90202677cfd63a42f32c0c5873e0e8f2c362088793d627ba76191128fe64e25",
+                "sha256:d9f0ed3b6684f3a1061931483df2fadc216ff7f792d4e6582924a207e0deb148",
+                "sha256:e52d5645d64b3c73bccb14ffcb0711ea0a08d265ef70a304224744f9e49efecd"
             ],
             "index": "pypi",
-            "version": "==2.2.1"
+            "version": "==2.3.0"
         },
         "six": {
             "hashes": [
