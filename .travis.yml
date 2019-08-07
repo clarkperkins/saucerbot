@@ -5,16 +5,34 @@ dist: bionic
 cache: pip
 
 env:
-  - DJANGO_ENV=test
+  global:
+    - DJANGO_ENV=test
 
 before_install:
+  - "sudo echo '{\"features\": {\"buildkit\": true}, \"debug\": true, \"mtu\": 1460}' > /etc/docker/daemon.json"
+  - sudo systemctl restart docker
+  - pip install pip --upgrade
   - pip install pipenv --upgrade
 
 install:
-  - pipenv install --dev
+  - pipenv install --deploy --dev
+  - pipenv lock -r | tail -n +2 > requirements.txt
+  - docker build --tag clarkperkins/saucerbot --progress plain --build-arg INSTALL_TYPE=fast .
+
+before_script:
+  - docker-compose up -d
 
 script:
+  # Code linting
   - pipenv run pycodestyle saucerbot
   - pipenv run pylint saucerbot
+
+  # Type checking
   - pipenv run mypy saucerbot
+
+  # Unit tests
   - pipenv run pytest
+
+  # Integration tests
+  - docker-compose run web python manage.py migrate
+  - docker-compose run web python manage.py loadbrews

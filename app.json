@@ -2,6 +2,7 @@
   "name": "saucerbot",
   "description": "Bot for the saucer groupme",
   "repository": "https://github.com/clarkperkins/saucerbot.git",
+  "stack": "container",
   "scripts": {
     "postdeploy": "python manage.py pr create",
     "pr-predestroy": "python manage.py pr destroy"
