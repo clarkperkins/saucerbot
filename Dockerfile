@@ -9,10 +9,8 @@ RUN apk add --no-cache curl 'postgresql-libs=~11.4'
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
 
-RUN adduser -D saucerbot
-
-RUN mkdir /app
-RUN chown saucerbot:saucerbot /app
+# Passing the -h /app will set that as the home dir & chown it
+RUN addgroup -S saucerbot && adduser -D -S -g saucerbot -G saucerbot -h /app saucerbot
 
 WORKDIR /app
 # END base image
@@ -24,7 +22,7 @@ WORKDIR /app
 FROM base AS fast
 
 # Using requirements.txt instead of pipenv so we can override the index url more easily.
-COPY requirements.txt .
+COPY --chown=saucerbot:saucerbot requirements.txt manage.py /app/
 
 RUN pip install -r requirements.txt --index-url https://pypi.fury.io/clarkperkins --extra-index-url https://pypi.org/simple
 # END fast install
@@ -35,7 +33,7 @@ RUN pip install -r requirements.txt --index-url https://pypi.fury.io/clarkperkin
 # Expect fresh install with no caches to take ~65s.
 FROM base AS full
 
-COPY Pipfile Pipfile.lock /app/
+COPY --chown=saucerbot:saucerbot Pipfile Pipfile.lock manage.py /app/
 
 # Install all the deps & uninstall build-time reqs all in one step to reduce image size
 RUN apk add --no-cache --virtual .build-deps gcc g++ linux-headers postgresql-dev && \
@@ -49,7 +47,6 @@ RUN apk add --no-cache --virtual .build-deps gcc g++ linux-headers postgresql-de
 # Copy all the code & generate the static files. Must start from either the fast or full install.
 FROM $INSTALL_TYPE
 
-COPY --chown=saucerbot:saucerbot manage.py .
 COPY --chown=saucerbot:saucerbot saucerbot saucerbot
 
 USER saucerbot
@@ -57,6 +54,4 @@ USER saucerbot
 # Build static files
 RUN DJANGO_ENV=build python manage.py collectstatic --noinput
 
-EXPOSE $PORT
-
-CMD ["gunicorn", "-b", "0.0.0.0:$PORT", "saucerbot.wsgi"]
+CMD ["gunicorn", "saucerbot.wsgi"]

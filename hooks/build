@@ -1,5 +1,0 @@
-#!/bin/bash
-
-docker version
-
-docker build --build-arg INSTALL_TYPE=full -f $DOCKERFILE_PATH -t $IMAGE_NAME .

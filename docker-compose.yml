@@ -4,6 +4,7 @@ services:
     image: elasticsearch:7.2.0
     environment:
       discovery.type: single-node
+      cluster.name: saucerbot
     ports:
       - "9200:9200"
   db:
@@ -20,6 +21,8 @@ services:
       BONSAI_URL: http://elasticsearch:9200
       DATABASE_URL: postgres://postgres:@db:5432/postgres
       WEB_CONCURRENCY: 2
+    env_file:
+      - web.env
     depends_on:
       - elasticsearch
       - db
