@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f94a38e7736236c22be6b5d76cb921e36d24473d6c18210e9af1caa42d457113"
+            "sha256": "97f16a8866d6ac30d2d24dbc0da402fa33f82b02907f564c2a1149262237f258"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -79,6 +79,25 @@
             "index": "pypi",
             "version": "==3.10.2"
         },
+        "elastic-apm": {
+            "hashes": [
+                "sha256:224513fe0526a4b479a764b3a82fb7c9ad6aa360bdb4802ff44052dd3a275759",
+                "sha256:2b1c215158251d8621229a57439bc7db9dad6271c8ea6eb16f0289d8ad7643df",
+                "sha256:532aeccc1b6564d026e09ab4ace8d5334d0faaecb6b449ba2b887dc432b2b681",
+                "sha256:5d82ed9b5f4a2c33c13204fcf000866826fe05f9efe6d510f492b5f0ad571984",
+                "sha256:96d49d2d4dbea192ed926a8b5a1f8f1021ee2fa4f960b4dbaaaed6c600fe5bda",
+                "sha256:9e6e3055e53dddb6caa8ba8f657eb05c3d482e947152577bc2e64231c92b6947",
+                "sha256:a0bea0b1cee95da2003defbd045cf4779017285378396753b4e40611e993297e",
+                "sha256:a2cdadc9c42f599e25746da1cc6749b01824c1864e14e6d4aedaaba695d49804",
+                "sha256:c2120e6f3676052aaeafa13b1e48210883832696f904fabbd3f14b8911603331",
+                "sha256:ccb14bb6c74f1adccfa7cf924256dcdde7e3cc19caec2c0ff8003830bf16ee39",
+                "sha256:d947bb60d3925d098f15e19a45ff5e3274b351596e6bfbc6cd692a06c682ee25",
+                "sha256:e35e014edf13418d5e970a7ff6218333877928599200986c7cb6e5cd69c3c839",
+                "sha256:f730b2715dc09acb1ab9e3c1df086c1aa6ddd619fe1de8321a900c8d240956fd"
+            ],
+            "index": "pypi",
+            "version": "==5.1.0"
+        },
         "elasticsearch": {
             "hashes": [
                 "sha256:5f40149e10a59a10f769b826dcdb8594c148aac77e5212d1cde5542f8653d8ba",
@@ -108,20 +127,6 @@
             ],
             "index": "pypi",
             "version": "==0.4.0"
-        },
-        "psutil": {
-            "hashes": [
-                "sha256:028a1ec3c6197eadd11e7b46e8cc2f0720dc18ac6d7aabdb8e8c0d6c9704f000",
-                "sha256:503e4b20fa9d3342bcf58191bbc20a4a5ef79ca7df8972e6197cc14c5513e73d",
-                "sha256:863a85c1c0a5103a12c05a35e59d336e1d665747e531256e061213e2e90f63f3",
-                "sha256:954f782608bfef9ae9f78e660e065bd8ffcfaea780f9f2c8a133bb7cb9e826d7",
-                "sha256:b6e08f965a305cd84c2d07409bc16fbef4417d67b70c53b299116c5b895e3f45",
-                "sha256:bc96d437dfbb8865fc8828cf363450001cb04056bbdcdd6fc152c436c8a74c61",
-                "sha256:cf49178021075d47c61c03c0229ac0c60d5e2830f8cab19e2d88e579b18cdb76",
-                "sha256:d5350cb66690915d60f8b233180f1e49938756fb2d501c93c44f8fb5b970cc63",
-                "sha256:eba238cf1989dfff7d483c029acb0ac4fcbfc15de295d682901f0e2497e6781a"
-            ],
-            "version": "==5.6.3"
         },
         "psycopg2-binary": {
             "hashes": [
@@ -178,22 +183,6 @@
             ],
             "index": "pypi",
             "version": "==2.22.0"
-        },
-        "scout-apm": {
-            "hashes": [
-                "sha256:00f322e97c820c3d38d4399354458617c0fae3e8eb62e9769d070f20e27a316d",
-                "sha256:1625839d8b03892528a8b09b7c6d2c7eef2c2708f6bf8e97ff502e4bff32095b",
-                "sha256:37e7f36f7a4adf72573f72f5d160a7d64e77996591e58e7c4b53579e11e988d8",
-                "sha256:565c866be62b7cadd7a605993b870c871f9000dfe8e8808473ba2d63f87237be",
-                "sha256:671b50664144a8d916c75f5a7ccd76f655f4ce023fe0fe302783b3e111b0ce44",
-                "sha256:69f6f1b0ebbf97987373ab299d2a57b98e712b0a0de5213600d50e23ace0cc01",
-                "sha256:8479f9b09176bc0485c1806c122f7c242796679599bf11b2a68f1b42bea4a09f",
-                "sha256:9c18b5b75d47f18b14df15720006355a74db0d29d1f94287c4d743597e804b8a",
-                "sha256:a952f0fd5c85000729e06179ded81a941f624f79bebb71574b7b239ec36a8753",
-                "sha256:f55cbba88c503515e823aa2d70b2470f17dd3e95d94cc9bd22a3e9158020952a"
-            ],
-            "index": "pypi",
-            "version": "==2.4.0"
         },
         "six": {
             "hashes": [

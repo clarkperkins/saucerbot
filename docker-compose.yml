@@ -10,6 +10,25 @@ services:
       - "9200:9200"
     volumes:
       - esdata:/usr/share/elasticsearch/data
+  kibana:
+    image: elastic/kibana:7.2.0
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    volumes:
+      - kibanadata:/usr/share/kibana/data
+  apm:
+    image: clarkperkins/elastic-apm-server
+    depends_on:
+      - elasticsearch
+      - kibana
+    environment:
+      PORT: 8200
+      BONSAI_URL: http://elasticsearch:9200
+      APM_SERVER_SECRET_TOKEN: 123abc
+    ports:
+      - "8200:8200"
   db:
     image: postgres:11.5-alpine
     ports:
@@ -22,16 +41,22 @@ services:
       - "8000:8000"
     environment:
       PORT: 8000
+      HEROKU_APP_NAME: saucerbot-local
       DJANGO_ENV: "${DJANGO_ENV}"
       BONSAI_URL: http://elasticsearch:9200
       DATABASE_URL: postgres://postgres:@db:5432/postgres
       WEB_CONCURRENCY: 2
+      ELASTIC_APM_SERVER_URL: http://apm:8200
+      ELASTIC_APM_SECRET_TOKEN: 123abc
+    command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - web.env
     depends_on:
       - elasticsearch
       - db
+      - apm
 
 volumes:
   esdata:
   dbdata:
+  kibanadata:

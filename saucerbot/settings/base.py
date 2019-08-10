@@ -40,7 +40,6 @@ ALLOWED_HOSTS = [f'{HEROKU_APP_NAME}.herokuapp.com', 'saucerbot.clarkperkins.com
 # Application definition
 
 INSTALLED_APPS = [
-    'scout_apm.django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,9 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'saucerbot.groupme',
+    'elasticapm.contrib.django',
 ]
 
 MIDDLEWARE = [
+    'elasticapm.contrib.django.middleware.TracingMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -131,5 +132,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-# Scout config
-SCOUT_NAME = HEROKU_APP_NAME
+# elastic config
+ELASTIC_APM = {
+    'SERVICE_NAME': HEROKU_APP_NAME,
+    'DJANGO_TRANSACTION_NAME_FROM_ROUTE': True,
+}

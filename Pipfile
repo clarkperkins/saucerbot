@@ -11,11 +11,11 @@ django = "~=2.2.0"
 django-split-settings = "*"
 djangorestframework = "~=3.10.0"
 elasticsearch = "~=7.0"
+elastic-apm = "~=5.0"
 gunicorn = "*"
 lowerpines = "*"
 "psycopg2-binary" = "*"
 requests = "*"
-scout-apm = "*"
 whitenoise = "*"
 
 [dev-packages]

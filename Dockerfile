@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --chown=saucerbot:saucerbot Pipfile Pipfile.lock manage.py /app/
 
 # Install all the deps & uninstall build-time reqs all in one step to reduce image size
-RUN apk add --no-cache --virtual .build-deps gcc g++ linux-headers postgresql-dev && \
+RUN apk add --no-cache --virtual .build-deps gcc g++ postgresql-dev && \
     pip install pipenv && \
     pipenv install --deploy --system && \
     pip uninstall -y pipenv virtualenv virtualenv-clone && \
@@ -27,12 +27,6 @@ COPY --chown=saucerbot:saucerbot saucerbot saucerbot
 USER saucerbot
 
 RUN python -m compileall saucerbot
-
-# Get the scout core agent working properly
-ENV SCOUT_CORE_AGENT_TRIPLE x86_64-unknown-linux-musl
-ENV SCOUT_CORE_AGENT_DIR /app/scout_apm_core
-RUN SCOUT_MONITOR=true python -c 'from scout_apm.core import install; install()' && \
-    rm -f $SCOUT_CORE_AGENT_DIR/scout_apm_core-*-$SCOUT_CORE_AGENT_TRIPLE/scout_apm_core-*-$SCOUT_CORE_AGENT_TRIPLE.tgz
 
 # Build static files
 RUN DJANGO_ENV=build HEROKU_APP_NAME=build python manage.py collectstatic --noinput
