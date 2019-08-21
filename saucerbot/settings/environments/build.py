@@ -6,6 +6,6 @@ from saucerbot.settings.base import MIDDLEWARE
 SECRET_KEY = 'BUILD_FAKE_SECRET_KEY'
 
 # Configure whitenoise
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+WHITENOISE_KEEP_ONLY_HASHED_FILES = True

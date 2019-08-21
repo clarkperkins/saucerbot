@@ -1,16 +1,21 @@
 version: '3.7'
 services:
   elasticsearch:
-    image: elasticsearch:7.2.0
+    image: elastic/elasticsearch:7.2.0
     environment:
       discovery.type: single-node
       cluster.name: saucerbot
+      node.name: saucerbot
     ports:
       - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
   db:
-    image: postgres:11.4
+    image: postgres:11.5-alpine
     ports:
       - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
   web:
     image: clarkperkins/saucerbot
     ports:
@@ -26,3 +31,7 @@ services:
     depends_on:
       - elasticsearch
       - db
+
+volumes:
+  esdata:
+  dbdata:

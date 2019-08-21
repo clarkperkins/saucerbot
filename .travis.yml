@@ -4,21 +4,21 @@ dist: bionic
 
 cache: pip
 
+services:
+  - docker
+
 env:
   global:
     - DJANGO_ENV=test
 
 before_install:
-  - "sudo echo '{\"features\": {\"buildkit\": true}, \"debug\": true, \"mtu\": 1460}' > /etc/docker/daemon.json"
-  - sudo systemctl restart docker
   - touch web.env
   - pip install pip --upgrade
   - pip install pipenv --upgrade
 
 install:
   - pipenv install --deploy --dev
-  - pipenv lock -r | tail -n +2 > requirements.txt
-  - docker build --tag clarkperkins/saucerbot --progress plain --build-arg INSTALL_TYPE=fast .
+  - docker build --tag clarkperkins/saucerbot .
 
 before_script:
   - docker-compose up -d
