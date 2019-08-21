@@ -26,6 +26,8 @@ COPY --chown=saucerbot:saucerbot saucerbot saucerbot
 
 USER saucerbot
 
+RUN python -m compileall saucerbot
+
 # Get the scout core agent working properly
 ENV SCOUT_CORE_AGENT_TRIPLE x86_64-unknown-linux-musl
 ENV SCOUT_CORE_AGENT_DIR /app/scout_apm_core

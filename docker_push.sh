@@ -8,14 +8,14 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
     echo "PR detected - deploying to $TAG_NAME"
     docker tag clarkperkins/saucerbot $TAG_NAME
     docker push $TAG_NAME
-    heroku container:release -a $APP_NAME
+    heroku container:release -a $APP_NAME web
 elif [ "$TRAVIS_BRANCH" == "master" ]; then
     APP_NAME="saucerbot-staging"
     TAG_NAME="registry.heroku.com/$APP_NAME/web"
     echo "master branch detected - deploying to $TAG_NAME"
     docker tag clarkperkins/saucerbot $TAG_NAME
     docker push $TAG_NAME
-    heroku container:release -a $APP_NAME
+    heroku container:release -a $APP_NAME web
 
     echo "Pushing to docker hub"
     docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
