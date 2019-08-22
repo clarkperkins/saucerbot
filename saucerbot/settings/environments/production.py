@@ -2,7 +2,7 @@
 
 import os
 
-from saucerbot.settings.base import HEROKU_APP_NAME, MIDDLEWARE
+from saucerbot.settings.base import HEROKU_APP_NAME
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
@@ -14,10 +14,3 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 if HEROKU_APP_NAME:
     SECURE_SSL_REDIRECT = True
     SECURE_SSL_HOST = f'{HEROKU_APP_NAME}.herokuapp.com'
-
-# Configure whitenoise
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-WHITENOISE_KEEP_ONLY_HASHED_FILES = True
