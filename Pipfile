@@ -16,7 +16,7 @@ lowerpines = "*"
 "psycopg2-binary" = "*"
 requests = "*"
 scout-apm = "*"
-whitenoise = {version = "*", extras = ["brotli"]}
+whitenoise = "*"
 
 [dev-packages]
 mypy = "*"
