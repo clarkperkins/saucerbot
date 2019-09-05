@@ -1,5 +1,9 @@
 FROM python:3.7-alpine
 
+LABEL org.opencontainers.image.title="saucerbot"
+LABEL org.opencontainers.image.description="GroupMe bot for the saucer groupme"
+LABEL org.opencontainers.image.source="https://github.com/clarkperkins/saucerbot"
+
 # These don't get removed, so install them first separately
 RUN apk add --no-cache curl postgresql-libs
 
@@ -36,5 +40,14 @@ RUN SCOUT_MONITOR=true python -c 'from scout_apm.core import install; install()'
 
 # Build static files
 RUN DJANGO_ENV=build HEROKU_APP_NAME=build python manage.py collectstatic --noinput
+
+# Put these args here so that changing them doesn't invalidate the build cache
+ARG BUILD_DATE=""
+ARG GIT_COMMIT=""
+
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.revision="$GIT_COMMIT"
+
+ENV GIT_COMMIT=$GIT_COMMIT
 
 CMD ["gunicorn", "saucerbot.wsgi"]

@@ -30,4 +30,4 @@ def test_like_if(bot):
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
         m.get('https://www.bridgestonearena.com/events')
 
-        execute_from_command_line(['manage.py', 'remind', 'like-if'])
+        execute_from_command_line(['manage.py', 'remind', 'saucerbot', 'like-if'])

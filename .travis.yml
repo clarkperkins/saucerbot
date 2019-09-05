@@ -25,7 +25,7 @@ before_install:
 
 install:
   - pipenv install --deploy --dev
-  - docker build --tag clarkperkins/saucerbot .
+  - ./docker_build.sh
 
 before_script:
   - docker-compose up -d

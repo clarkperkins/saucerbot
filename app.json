@@ -3,10 +3,6 @@
   "description": "Bot for the saucer groupme",
   "repository": "https://github.com/clarkperkins/saucerbot.git",
   "stack": "container",
-  "scripts": {
-    "postdeploy": "python manage.py pr create",
-    "pr-predestroy": "python manage.py pr destroy"
-  },
   "env": {
     "DJANGO_SECRET_KEY": {
       "generator": "secret"
@@ -14,10 +10,7 @@
     "HEROKU_APP_NAME": {
       "required": true
     },
-    "GROUPME_API_KEY": {
-      "required": true
-    },
-    "GROUPME_GROUP_ID": {
+    "GROUPME_CLIENT_ID": {
       "required": true
     }
   },

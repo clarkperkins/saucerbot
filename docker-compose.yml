@@ -22,15 +22,17 @@ services:
       - "8000:8000"
     environment:
       PORT: 8000
-      DJANGO_ENV: "${DJANGO_ENV}"
       BONSAI_URL: http://elasticsearch:9200
       DATABASE_URL: postgres://postgres:@db:5432/postgres
       WEB_CONCURRENCY: 2
+    command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - web.env
     depends_on:
       - elasticsearch
       - db
+    volumes:
+      - .:/app
 
 volumes:
   esdata:

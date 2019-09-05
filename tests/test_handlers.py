@@ -3,8 +3,11 @@
 import json
 import logging
 
+import pytest
 import requests_mock
 from lowerpines.endpoints.message import Message
+
+from saucerbot.groupme.models import Bot, UserInfo
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +50,7 @@ def ensure_post_metadata(data, ret):
 
         assert stripped_expected == stripped_actual
         return ret
+
     return callback
 
 
@@ -58,7 +62,7 @@ def fail_on_post():
 
 
 def test_mars(bot):
-    from saucerbot.groupme import handlers
+    from saucerbot.groupme.handlers import general
 
     expected = {
         'bot_id': bot.bot_id,
@@ -71,62 +75,85 @@ def test_mars(bot):
     }
 
     with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post_metadata(expected, ' '))
+        m.post(GROUPME_API_URL + '/bots/post', status_code=201,
+               text=ensure_post_metadata(expected, ' '))
 
         raw_message = get_sample_message(bot, "", [{'type': "image"}])
 
-        ret = handlers.mars(Message.from_json(bot.gmi, raw_message), 1)
+        ret = general.mars(bot, Message.from_json(bot.gmi, raw_message), 1)
 
         assert ret
 
 
 def test_mars_no_message(bot):
-    from saucerbot.groupme import handlers
+    from saucerbot.groupme.handlers import general
 
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
 
         raw_message = get_sample_message(bot, "", [])
 
-        ret = handlers.mars(Message.from_json(bot.gmi, raw_message), 1)
+        ret = general.mars(bot, Message.from_json(bot.gmi, raw_message), 1)
 
         assert not ret
 
 
+@pytest.mark.django_db
 def test_zo(bot, client):
+    user_info = UserInfo.objects.create(access_token='123456', user_id='123456')
+    bot_model = Bot.objects.create(user_info=user_info, bot_id='123456',
+                                   name='saucerbot', slug='saucerbot')
+
     expected = {
         'bot_id': bot.bot_id,
         'text': "Zo is dead.  Long live saucerbot.",
         'attachments': [],
     }
 
+    # Try once before the handler is registered
+    with requests_mock.Mocker() as m:
+        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
+
+        sample_message = get_sample_message(bot, 'zo')
+
+        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                          data=json.dumps(sample_message))
+
+        assert ret.status_code == 200
+        assert ret.json() == {'message_sent': False}
+
+    # Then register & continue
+    bot_model.handlers.create(handler_name='zo')
+
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
 
         sample_message = get_sample_message(bot, 'zo')
 
-        ret = client.post('/groupme/callbacks/saucerbot/', content_type='application/json',
+        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
                           data=json.dumps(sample_message))
 
         assert ret.status_code == 200
+        assert ret.json() == {'message_sent': True}
 
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
 
         sample_message = get_sample_message(bot, 'hey there bot hey')
 
-        ret = client.post('/groupme/callbacks/saucerbot/', content_type='application/json',
+        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
                           data=json.dumps(sample_message))
 
         assert ret.status_code == 200
+        assert ret.json() == {'message_sent': True}
 
     with requests_mock.Mocker() as m:
         m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
 
         sample_message = get_sample_message(bot, 'bot')
 
-        ret = client.post('/groupme/callbacks/saucerbot/', content_type='application/json',
+        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
                           data=json.dumps(sample_message))
 
         assert ret.status_code == 200
-
+        assert ret.json() == {'message_sent': False}

@@ -108,10 +108,15 @@ def setup_bot(monkeypatch, tmpdir):
         m.get(GROUPME_API_URL + '/groups?page=1&per_page=100', json=GROUP)
 
         # Just import the app and return it
-        from saucerbot.groupme.utils import get_bot, get_group
+        # from saucerbot.groupme.utils import get_bot, get_group
+        from saucerbot.groupme.models import get_gmi
 
-        # Cache the group first
-        get_group()
+        gmi = get_gmi('123456')
+
+        bot = gmi.bots.get(bot_id='123456')
+
+        # Cache the group
+        bot.group
 
         # Then return the bot
-        return get_bot()
+        return bot
