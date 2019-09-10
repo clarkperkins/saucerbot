@@ -68,9 +68,13 @@ class BotActionsViewSet(GenericViewSet):
 
         # Load it as a groupme message
         try:
-            return Message.from_json(bot.owner.gmi, self.request.data)
+            message = Message.from_json(bot.owner.gmi, self.request.data)
         except Exception:
             raise ParseError('Invalid GroupMe message')
+
+        message.created_at = int(message.created_at)
+        message.system = message.system in ['True', 'true']
+        return message
 
     @action(methods=['post'], detail=True)
     def callback(self, request: Request, *args, **kwargs) -> Response:

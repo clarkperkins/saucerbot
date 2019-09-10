@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 def test_like_if(bot):
     execute_from_command_line(['manage.py', 'remind', 'saucerbot', '--force', 'like-if'])
 
-    assert bot.bot.group.messages.count == 1
-    assert bot.bot.group.messages.all()[0].text == LIKE_IF_POST
+    assert bot.group.messages.count == 1
+    assert bot.group.messages.all()[0].text == LIKE_IF_POST
 
 
 def test_whos_coming_missing_users(bot):
@@ -25,6 +25,6 @@ def test_whos_coming_missing_users(bot):
 
     execute_from_command_line(['manage.py', 'remind', 'saucerbot', '--force', 'whos-coming'])
 
-    assert bot.bot.group.messages.count == 2
-    assert bot.bot.group.messages.all()[0].text == LIKE_IF_POST
-    assert bot.bot.group.messages.all()[1].text == "Looks like 3 people are coming tonight."
+    assert bot.group.messages.count == 2
+    assert bot.group.messages.all()[0].text == LIKE_IF_POST
+    assert bot.group.messages.all()[1].text == "Looks like 3 people are coming tonight."

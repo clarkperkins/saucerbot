@@ -40,10 +40,10 @@ def ensure_post(data, ret):
     return callback
 
 
-def test_bot_create_invalid(bot):
+def test_bot_create_invalid(bot, gmi):
     from lowerpines.group import Group
 
-    group = Group(bot.bot.gmi, name='serializer test group')
+    group = Group(gmi, name='serializer test group')
     group.save()
 
     fake_request = Request(HttpRequest())
@@ -105,10 +105,10 @@ def test_invalid_group(bot):
     assert 'doesn\'t exist' in serializer.errors['group'][0]
 
 
-def test_bot_create_empty(bot):
+def test_bot_create_empty(bot, gmi):
     from lowerpines.group import Group
 
-    group = Group(bot.bot.gmi, name='serializer test group')
+    group = Group(gmi, name='serializer test group')
     group.save()
 
     fake_request = Request(HttpRequest())
@@ -125,7 +125,7 @@ def test_bot_create_empty(bot):
     assert serializer.is_valid()
 
     new_bot = serializer.save(owner=bot.owner)
-    gmi_bot = bot.bot.gmi.bots.get(name='test')
+    gmi_bot = gmi.bots.get(name='test')
 
     assert new_bot.name == 'test'
     assert new_bot.slug == 'floop'
@@ -136,10 +136,10 @@ def test_bot_create_empty(bot):
     assert gmi_bot.name == 'test'
 
 
-def test_bot_create(bot):
+def test_bot_create(bot, gmi):
     from lowerpines.group import Group
 
-    group = Group(bot.bot.gmi, name='serializer test group')
+    group = Group(gmi, name='serializer test group')
     group.save()
 
     fake_request = Request(HttpRequest())
@@ -180,7 +180,7 @@ def test_bot_create(bot):
     assert serializer.is_valid()
 
     new_bot = serializer.save(owner=bot.owner)
-    gmi_bot = bot.bot.gmi.bots.get(name='test')
+    gmi_bot = gmi.bots.get(name='test')
 
     assert new_bot.name == 'test'
     assert new_bot.slug == 'floop'
@@ -191,10 +191,10 @@ def test_bot_create(bot):
     assert gmi_bot.name == 'test'
 
 
-def test_bot_update(bot):
+def test_bot_update(bot, gmi):
     from lowerpines.group import Group
 
-    group = Group(bot.bot.gmi, name='serializer test group')
+    group = Group(gmi, name='serializer test group')
     group.save()
 
     fake_request = Request(HttpRequest())
@@ -211,7 +211,7 @@ def test_bot_update(bot):
     assert serializer.is_valid()
 
     new_bot = serializer.save(owner=bot.owner)
-    gmi_bot = bot.bot.gmi.bots.get(name='test')
+    gmi_bot = gmi.bots.get(name='test')
 
     new_bot_handlers = set(h.handler_name for h in new_bot.handlers.all())
 
@@ -250,13 +250,13 @@ def test_bot_update(bot):
     # assert gmi_bot.name == 'new_test'
 
 
-def test_bot_failed_update(bot):
+def test_bot_failed_update(bot, gmi):
     from lowerpines.group import Group
 
-    group = Group(bot.bot.gmi, name='serializer test group')
+    group = Group(gmi, name='serializer test group')
     group.save()
 
-    group2 = Group(bot.bot.gmi, name='serializer test group2')
+    group2 = Group(gmi, name='serializer test group2')
     group2.save()
 
     fake_request = Request(HttpRequest())
@@ -273,7 +273,7 @@ def test_bot_failed_update(bot):
     assert serializer.is_valid()
 
     new_bot = serializer.save(owner=bot.owner)
-    gmi_bot = bot.bot.gmi.bots.get(name='test')
+    gmi_bot = gmi.bots.get(name='test')
 
     new_bot_handlers = set(h.handler_name for h in new_bot.handlers.all())
 
