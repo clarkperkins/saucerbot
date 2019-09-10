@@ -11,6 +11,13 @@ env:
   global:
     - DJANGO_ENV=test
 
+addons:
+  sonarcloud:
+    organization: clarkperkins
+    token:
+      secure: "JDXtwrVsMa2QSPqPffb62qEeBf22qSY7NYyLaqJS1sKbv6GxmM6tg666cv623x0JDwv8dtX902jImDTHI07njU4GMjgVMGu+jivyC4wU4kanNpiv7bZuN54msrIHZkW5fdULamdKyRQZW0XCyRcBQZK4WaMjIXiG9BLME5pwCQak8Zarcv9A4GLxZsdX/6pAKFqTULH77PtvQRyfutdRAGKtSNelZI/ag7k6t66/ajeYgq5Bw8VxO4YZsYSDco3skYkAz+74jlTGT7kAxI8kmMHPvo0mssWpLjQV7TbTHz+BfPD77Rv2QrM/J3nkM3dWA0p20is4viE5+MHZkAkhRPI7gSFNgdQ0vwN2Pj0v4mZc8oQgxO3MoMedPa7S/N+0MgSYyF50HJbxQHv62+9UxtU6k5N06LYnjqqzWTE4eL+UXNRGc0488GdcaZwIS8vcGXBrl4afz/d8xxGQD6hPUrWNHxkdEdXgLzSYA2I4NVvyzJczGXRwhnQlANWQCMpfiuWNSNYJoYF92Vf51O21+IJypO4mD8v03REGyTyxjGyU/cVyw0k/s8cCnuiqvNs+c+rZzxC8ion/9Q7Iumj8IXKAJvqgk4+tXLcpWuyat5fiSGhWuVd8OCQO6r8IjNfSrUc03BMPVAZyycAIYQ3Y6uxDSeYHL6jInRcGbUCEHks="
+
+
 before_install:
   - touch web.env
   - pip install pip --upgrade
@@ -22,17 +29,21 @@ install:
 
 before_script:
   - docker-compose up -d
+  - mkdir reports
 
 script:
   # Code linting
   - pipenv run pycodestyle saucerbot
-  - pipenv run pylint saucerbot
+  - 'pipenv run pylint saucerbot --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
 
   # Type checking
   - pipenv run mypy saucerbot
 
   # Unit tests
-  - pipenv run pytest
+  - pipenv run pytest --cov=saucerbot --cov-report=xml
+
+  # Sonar
+  - sonar-scanner
 
   # Integration tests
   - docker-compose run web python manage.py migrate
