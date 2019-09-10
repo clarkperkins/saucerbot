@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class PathRouter(DefaultRouter):
-
     routes = [
         # List route.
         Route(
@@ -55,7 +54,7 @@ class PathRouter(DefaultRouter):
     ]
 
     @staticmethod
-    def get_lookup_path(viewset, lookup_prefix=''):
+    def get_lookup_path(viewset, lookup_prefix: str = '') -> str:
         """
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.

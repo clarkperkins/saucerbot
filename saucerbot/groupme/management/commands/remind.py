@@ -81,11 +81,13 @@ class Command(BaseCommand):
                 bot.post_message(f"Looks like {phrase} coming tonight.{ending}")
 
                 if num_likes > 0:
-                    likes_message = 'Save seats for'
+                    message_parts = ['Save seats for']
                     for user_id in message.favorited_by:
-                        likes_message += ' ' + RefAttach(user_id, f'@{user_id_map[user_id]}')
+                        if user_id in user_id_map:
+                            message_parts.append(RefAttach(user_id, f'@{user_id_map[user_id]}'))
 
-                    bot.post_message(likes_message)
+                    if len(message_parts) > 1:
+                        bot.post_message(' '.join(message_parts))
 
                 logger.info('Successfully sent reminder message.')
 

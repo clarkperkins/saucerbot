@@ -2,16 +2,9 @@
 
 import json
 import logging
-
-import pytest
-import requests_mock
-from lowerpines.endpoints.message import Message
-
-from saucerbot.groupme.models import Bot, UserInfo
+import uuid
 
 logger = logging.getLogger(__name__)
-
-GROUPME_API_URL = 'https://api.groupme.com/v3'
 
 
 def get_sample_message(bot, text, attachments=None):
@@ -24,136 +17,88 @@ def get_sample_message(bot, text, attachments=None):
         'name': "Foo Bar",
         'sender_id': "abcdef",
         'sender_type': "user",
-        'source_guid': "2d01305a-da39-47f6-b293-9b6ef8708c54",
+        'source_guid': str(uuid.uuid4()),
         'system': False,
         'text': text,
         'user_id': "abcdef"
     }
 
 
-def ensure_post(data, ret):
-    def callback(request, context):
-        assert request.json() == data
-
-        return ret
-
-    return callback
-
-
-def ensure_post_metadata(data, ret):
-    def callback(request, context):
-        stripped_expected = dict(data)
-        stripped_actual = dict(request.json())
-        del stripped_actual['text']
-        for att in stripped_actual['attachments']:
-            del att['loci']
-
-        assert stripped_expected == stripped_actual
-        return ret
-
-    return callback
-
-
-def fail_on_post():
-    def callback(request, context):
-        raise AssertionError('Request shouldn\'t have been sent!!!!')
-
-    return callback
-
-
 def test_mars(bot):
+    from lowerpines.message import Message
     from saucerbot.groupme.handlers import general
 
-    expected = {
-        'bot_id': bot.bot_id,
-        'attachments': [
-            {
-                'type': 'mentions',
-                'user_ids': ['abcdef'],
-            }
-        ]
-    }
+    raw_message = get_sample_message(bot.bot, "", [{'type': "image"}])
 
-    with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201,
-               text=ensure_post_metadata(expected, ' '))
+    ret = general.mars(bot.bot, Message.from_json(bot.bot.gmi, raw_message), 1)
 
-        raw_message = get_sample_message(bot, "", [{'type': "image"}])
+    assert ret
+    assert bot.group.messages.count == 1
 
-        ret = general.mars(bot, Message.from_json(bot.gmi, raw_message), 1)
+    posted = bot.group.messages.all()[0]
 
-        assert ret
+    assert posted.text is not None
+    assert len(posted.text) > 0
+    assert len(posted.attachments) == 1
+    assert posted.attachments[0]['type'] == 'mentions'
+    assert posted.attachments[0]['user_ids'] == ['abcdef']
 
 
 def test_mars_no_message(bot):
+    from lowerpines.message import Message
     from saucerbot.groupme.handlers import general
 
-    with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
+    raw_message = get_sample_message(bot.bot, "", [])
 
-        raw_message = get_sample_message(bot, "", [])
+    ret = general.mars(bot.bot, Message.from_json(bot.bot.gmi, raw_message), 1)
 
-        ret = general.mars(bot, Message.from_json(bot.gmi, raw_message), 1)
-
-        assert not ret
+    assert not ret
+    assert bot.group.messages.count == 0
 
 
-@pytest.mark.django_db
 def test_zo(bot, client):
-    user_info = UserInfo.objects.create(access_token='123456', user_id='123456')
-    bot_model = Bot.objects.create(user_info=user_info, bot_id='123456',
-                                   name='saucerbot', slug='saucerbot')
-
-    expected = {
-        'bot_id': bot.bot_id,
-        'text': "Zo is dead.  Long live saucerbot.",
-        'attachments': [],
-    }
+    expected_post = "Zo is dead.  Long live saucerbot."
 
     # Try once before the handler is registered
-    with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
+    sample_message = get_sample_message(bot.bot, 'zo')
 
-        sample_message = get_sample_message(bot, 'zo')
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(sample_message))
 
-        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
-                          data=json.dumps(sample_message))
-
-        assert ret.status_code == 200
-        assert ret.json() == {'message_sent': False}
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': False}
 
     # Then register & continue
-    bot_model.handlers.create(handler_name='zo')
+    bot.handlers.create(handler_name='zo')
 
-    with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
+    sample_message = get_sample_message(bot.bot, 'zo')
 
-        sample_message = get_sample_message(bot, 'zo')
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(sample_message))
 
-        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
-                          data=json.dumps(sample_message))
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': True}
+    assert bot.group.messages.count == 1
+    assert bot.group.messages.all()[0].text == expected_post
 
-        assert ret.status_code == 200
-        assert ret.json() == {'message_sent': True}
+    sample_message = get_sample_message(bot.bot, 'hey there bot hey')
 
-    with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=ensure_post(expected, ' '))
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(sample_message))
 
-        sample_message = get_sample_message(bot, 'hey there bot hey')
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': True}
+    assert bot.group.messages.count == 2
+    assert bot.group.messages.all()[0].text == expected_post
+    assert bot.group.messages.all()[1].text == expected_post
 
-        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
-                          data=json.dumps(sample_message))
+    sample_message = get_sample_message(bot.bot, 'bot')
 
-        assert ret.status_code == 200
-        assert ret.json() == {'message_sent': True}
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(sample_message))
 
-    with requests_mock.Mocker() as m:
-        m.post(GROUPME_API_URL + '/bots/post', status_code=201, text=fail_on_post())
-
-        sample_message = get_sample_message(bot, 'bot')
-
-        ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
-                          data=json.dumps(sample_message))
-
-        assert ret.status_code == 200
-        assert ret.json() == {'message_sent': False}
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': False}
+    assert bot.group.messages.count == 2
+    assert bot.group.messages.all()[0].text == expected_post
+    assert bot.group.messages.all()[1].text == expected_post

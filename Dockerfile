@@ -51,3 +51,5 @@ LABEL org.opencontainers.image.revision="$GIT_COMMIT"
 ENV GIT_COMMIT=$GIT_COMMIT
 
 CMD ["gunicorn", "saucerbot.wsgi"]
+
+HEALTHCHECK --timeout=5s CMD curl -f http://localhost:$PORT/groupme/login/ || exit 1

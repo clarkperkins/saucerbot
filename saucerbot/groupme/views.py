@@ -14,10 +14,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 
-from saucerbot.groupme.authentication import UserInfoAuthentication, USER_INFO
 from saucerbot.groupme.handlers import registry
-from saucerbot.groupme.models import Bot, UserInfo
-from saucerbot.groupme.permissions import HasUserInfo
+from saucerbot.groupme.models import Bot, new_user, SESSION_KEY
+from saucerbot.groupme.permissions import HasGroupMeUser
 from saucerbot.groupme.serializers import BotSerializer, HandlerSerializer
 from saucerbot.utils import did_the_dores_win
 
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 class LoginRedirectView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
-        if USER_INFO in self.request.session:
+        if SESSION_KEY in self.request.session:
             return reverse('groupme:bot-list')
         else:
             return 'https://oauth.groupme.com/oauth/authorize' \
@@ -38,16 +37,7 @@ class OAuthView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         access_token = self.request.GET['access_token']
-
-        info = UserInfo.objects.from_token(access_token)
-
-        # Make sure we have a session
-        if self.request.session.session_key is None:
-            logger.info("Generating new session")
-            self.request.session.cycle_key()
-
-        self.request.session[USER_INFO] = str(info.id)
-
+        new_user(self.request, access_token)
         return reverse('groupme:bot-list', *args, **kwargs)
 
 
@@ -55,24 +45,21 @@ class BotViewSet(ModelViewSet):
     serializer_class = BotSerializer
     lookup_field = 'slug'
     lookup_value_type = 'str'
-    authentication_classes = [UserInfoAuthentication]
-    permission_classes = [HasUserInfo]
+    permission_classes = [HasGroupMeUser]
 
     def get_queryset(self):
-        return Bot.objects.filter(user_info=self.request.auth)
+        return Bot.objects.filter(owner=self.request.user)
 
     def perform_create(self, serializer: BotSerializer):
-        serializer.save(user_info=self.request.auth)
+        serializer.save(owner=self.request.user)
 
 
 class BotActionsViewSet(GenericViewSet):
+    queryset = Bot.objects.all()
     serializer_class = BotSerializer
     lookup_field = 'slug'
     lookup_value_type = 'str'
     permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        return Bot.objects.all()
 
     def parse_as_message(self, bot: Bot) -> Message:
         if logger.isEnabledFor(logging.INFO):
@@ -81,7 +68,7 @@ class BotActionsViewSet(GenericViewSet):
 
         # Load it as a groupme message
         try:
-            return Message.from_json(bot.user_info.gmi, self.request.data)
+            return Message.from_json(bot.owner.gmi, self.request.data)
         except Exception:
             raise ParseError('Invalid GroupMe message')
 
@@ -114,11 +101,8 @@ class BotActionsViewSet(GenericViewSet):
 
 
 class HandlerViewSet(ReadOnlyModelViewSet):
+    queryset = registry
     serializer_class = HandlerSerializer
     lookup_field = 'name'
     lookup_value_type = 'str'
-    authentication_classes = [UserInfoAuthentication]
-    permission_classes = [HasUserInfo]
-
-    def get_queryset(self):
-        return registry
+    permission_classes = [HasGroupMeUser]

@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'saucerbot.groupme',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +131,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'saucerbot.groupme.authentication.GroupMeUserAuthentication',
+    ],
+}
 
 # Scout config
 SCOUT_NAME = HEROKU_APP_NAME

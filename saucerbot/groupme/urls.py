@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 
 from saucerbot.groupme.routers import PathRouter
@@ -16,6 +17,7 @@ router.register('handlers', HandlerViewSet, basename='handler')
 
 urlpatterns = [
     path('login/', LoginRedirectView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('oauth/', OAuthView.as_view(), name='oauth'),
     path('api/', include(router.urls)),
 ]

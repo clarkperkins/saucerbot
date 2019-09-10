@@ -10,6 +10,9 @@ services:
       - "9200:9200"
     volumes:
       - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test: curl -f http://localhost:9200 || exit 1
+      timeout: 5s
   db:
     image: postgres:11.5-alpine
     ports:
@@ -24,7 +27,6 @@ services:
       PORT: 8000
       BONSAI_URL: http://elasticsearch:9200
       DATABASE_URL: postgres://postgres:@db:5432/postgres
-      WEB_CONCURRENCY: 2
     command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - web.env

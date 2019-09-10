@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from typing import Any, Callable, List, NamedTuple, Optional, Pattern, Sequence, Union
+from typing import Callable, List, NamedTuple, Optional, Pattern, Sequence, Union
 
 
 class Handler(NamedTuple):
