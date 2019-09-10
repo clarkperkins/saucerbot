@@ -66,7 +66,7 @@ class BrewsLoaderUtil:
     def __init__(self):
         self.es = Elasticsearch(settings.ELASTICSEARCH_URL)
 
-        timestamp = arrow.now('US/Central').format('YYYYMMDD-HHmmss')
+        timestamp = arrow.now('US/Central').format('YYYYMMDD-HHmmss-SSS')
 
         self.index_name = f'{BREWS_ALIAS_NAME}-{timestamp}'
 
@@ -162,12 +162,11 @@ class BrewsLoaderUtil:
 
             # Try deleting any indices that didn't already get deleted
             for old_index in old_indices:
-                if old_index != self.index_name:
-                    logger.info(f"Deleting {old_index}...")
-                    try:
-                        self.es.indices.delete(old_index)
-                    except RequestError:
-                        logger.info(f"Error deleting {old_index}.  Leaving it in place.")
+                logger.info(f"Deleting {old_index}...")
+                try:
+                    self.es.indices.delete(old_index)
+                except RequestError:
+                    logger.info(f"Error deleting {old_index}.  Leaving it in place.")
 
 
 class BrewsSearchUtil:

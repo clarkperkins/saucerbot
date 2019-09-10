@@ -4,6 +4,9 @@ dist: bionic
 
 cache: pip
 
+git:
+  depth: false
+
 services:
   - docker
 
@@ -11,6 +14,7 @@ env:
   global:
     - DJANGO_ENV=test
     - DATABASE_URL='postgres://postgres:@localhost:5432/postgres'
+    - BONSAI_URL='http://localhost:9200
 
 addons:
   sonarcloud:
@@ -45,10 +49,6 @@ script:
 
   # Sonar
   - sonar-scanner
-
-  # Integration tests
-  - docker-compose run web python manage.py migrate
-  - docker-compose run web python manage.py loadbrews
 
 after_success:
   - ./docker_push.sh
