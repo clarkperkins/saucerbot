@@ -69,7 +69,7 @@ def test_zo(bot, client):
     assert ret.json() == {'message_sent': False}
 
     # Then register & continue
-    bot.handlers.create(handler_name='zo')
+    bot.handlers.create(handler_name='zo_is_dead')
 
     sample_message = get_sample_message(bot.bot, 'zo')
 

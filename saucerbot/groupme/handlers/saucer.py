@@ -107,7 +107,7 @@ def like_if(bot: Bot) -> None:
 
 
 @registry.handler([r' bot ', r'zo'])
-def zo(bot: Bot) -> None:
+def zo_is_dead(bot: Bot) -> None:
     bot.post("Zo is dead.  Long live saucerbot.")
 
 

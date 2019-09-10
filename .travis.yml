@@ -39,7 +39,7 @@ before_script:
 script:
   # Code linting
   - pipenv run pycodestyle saucerbot
-  - 'pipenv run pylint saucerbot --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
+  - 'pipenv run pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
 
   # Type checking
   - pipenv run mypy saucerbot

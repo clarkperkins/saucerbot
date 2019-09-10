@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import inspect
 import re
 from typing import Callable, List, NamedTuple, Optional, Pattern, Sequence, Union
+
+from lowerpines.bot import Bot
+from lowerpines.message import Message
 
 
 class Handler(NamedTuple):
@@ -19,6 +23,36 @@ class Handler(NamedTuple):
         if self.description:
             ret += f' - {self.description}'
         return ret
+
+    def handle_regexes(self, bot: Bot, message: Message, regexes: List[Pattern]) -> bool:
+        for regex in regexes:
+            match = regex.search(message.text)
+            if match:
+                # We matched!  Now call our handler and break out of the loop
+
+                # We want to see what arguments our function takes, though.
+                sig = inspect.signature(self.func)
+
+                kwargs = {}
+                if 'message' in sig.parameters:
+                    kwargs['message'] = message
+                if 'match' in sig.parameters:
+                    kwargs['match'] = match
+
+                self.func(bot, **kwargs)
+                return True
+
+        # Nothing matched
+        return False
+
+    def run(self, bot: Bot, message: Message) -> bool:
+        if self.regexes:
+            # This is a regex handler, special case
+            return self.handle_regexes(bot, message, self.regexes)
+        else:
+            # Just a plain handler.
+            # If it returns something truthy, it matched, so it means we should stop
+            return self.func(bot, message)
 
 
 class HandlerRegistry(Sequence[Handler]):

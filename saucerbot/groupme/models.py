@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import inspect
 import logging
 from functools import lru_cache
 from typing import Optional, Union
@@ -177,29 +176,11 @@ class Bot(models.Model):
 
             logger.debug(f"Trying message handler {handler.name} ...")
 
-            if handler.regexes:
-                # This is a regex handler, special case
-                for regex in handler.regexes:
-                    match = regex.search(message.text)
-                    if match:
-                        # We matched!  Now call our handler and break out of the loop
+            matched = handler.run(self.bot, message)
 
-                        # We want to see what arguments our function takes, though.
-                        sig = inspect.signature(handler.func)
-
-                        kwargs = {}
-                        if 'message' in sig.parameters:
-                            kwargs['message'] = message
-                        if 'match' in sig.parameters:
-                            kwargs['match'] = match
-
-                        handler.func(self.bot, **kwargs)
-                        return True
-            else:
-                # Just a plain handler.
-                # If it returns something truthy, it matched, so it means we should stop
-                if handler.func(self.bot, message):
-                    return True
+            # just stop here if we matched
+            if matched:
+                return True
 
         return False
 
