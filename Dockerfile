@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --chown=saucerbot:saucerbot Pipfile Pipfile.lock manage.py /app/
 
 # Install all the deps & uninstall build-time reqs all in one step to reduce image size
-RUN apk add --no-cache --virtual .build-deps gcc g++ linux-headers postgresql-dev && \
+RUN apk add --no-cache --virtual .build-deps git gcc g++ linux-headers postgresql-dev && \
     pip install pipenv && \
     pipenv install --deploy --system && \
     pip uninstall -y pipenv virtualenv virtualenv-clone && \

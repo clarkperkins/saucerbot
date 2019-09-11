@@ -25,15 +25,14 @@ addons:
 
 before_install:
   - touch web.env
-  - pip install pip --upgrade
   - pip install pipenv --upgrade
 
 install:
-  - pipenv install --deploy --dev
   - ./docker_build.sh
+  - docker-compose up -d
+  - pipenv install --deploy --dev
 
 before_script:
-  - docker-compose up -d
   - mkdir reports
 
 script:
