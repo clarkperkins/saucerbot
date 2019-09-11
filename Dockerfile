@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.description="GroupMe bot for the saucer groupme"
 LABEL org.opencontainers.image.source="https://github.com/clarkperkins/saucerbot"
 
 # These don't get removed, so install them first separately
-RUN apk add --no-cache curl postgresql-libs
+RUN apk add --no-cache curl postgresql-client postgresql-libs
 
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
