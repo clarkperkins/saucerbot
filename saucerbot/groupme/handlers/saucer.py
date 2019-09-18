@@ -2,9 +2,11 @@
 
 import logging
 import random
+from typing import List, Union
 
-from lowerpines.bot import Bot
-from lowerpines.message import ComplexMessage, Message, RefAttach
+from lowerpines.endpoints.bot import Bot
+from lowerpines.endpoints.message import Message
+from lowerpines.message import ComplexMessage, RefAttach
 
 from saucerbot.groupme.handlers import registry
 from saucerbot.groupme.models import SaucerUser
@@ -19,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 SHAINA_USER_ID = '6830949'
 
-SAUCERBOT_MESSAGE_LIST = [
+SAUCERBOT_MESSAGE_LIST: List[Union[ComplexMessage, str]] = [
     "Shut up, ",
     "Go away, ",
     "Go find your own name, ",
@@ -30,27 +32,27 @@ SAUCERBOT_MESSAGE_LIST = [
 
 
 @registry.handler()
-def user_named_saucerbot(bot: Bot, message: Message) -> bool:
+def user_named_saucerbot(bot: Bot, message: Message, force_random: bool = False) -> bool:
     if message.name != 'saucerbot':
         return False
 
     # Send something dumb
     user_attach = RefAttach(message.user_id, f'@{message.name}')
 
-    message = random.choice(SAUCERBOT_MESSAGE_LIST)
+    msg = random.choice(SAUCERBOT_MESSAGE_LIST)
 
-    if message == 'random':
+    if force_random or msg == 'random':
         insult = get_insult()
         prefix = "Stop being a"
         if insult[0].lower() in ['a', 'e', 'i', 'o', 'u']:
             prefix = prefix + 'n'
 
-        message = prefix + ' ' + insult + ', '
+        msg = prefix + ' ' + insult + ', '
 
-    if isinstance(message, str):
-        message = message + user_attach
+    if isinstance(msg, str):
+        msg = msg + user_attach
 
-    bot.post(message)
+    bot.post(msg)
 
     return True
 
@@ -63,6 +65,7 @@ def save_saucer_id(bot: Bot, message: Message, match) -> None:
 
     if not tasted_beers:
         bot.post(f"Hmmm, it looks like {saucer_id} isn't a valid Saucer ID.")
+        return
 
     # Otherwise it's valid.  Just update or create
     _, created = SaucerUser.objects.update_or_create(groupme_id=message.user_id,
@@ -71,9 +74,8 @@ def save_saucer_id(bot: Bot, message: Message, match) -> None:
     user_attach = RefAttach(message.user_id, f'@{message.name}')
 
     action = 'saved' if created else 'updated'
-    message = "Thanks, " + user_attach + f"!  I {action} your Saucer ID."
 
-    bot.post(message)
+    bot.post("Thanks, " + user_attach + f"!  I {action} your Saucer ID.")
 
 
 @registry.handler(r'^info (?P<search_text>.+)$')
@@ -119,10 +121,11 @@ def troll(bot: Bot) -> None:
             shaina = member
             break
 
+    pre_message: Union[RefAttach, str]
+
     if shaina:
         pre_message = RefAttach(SHAINA_USER_ID, f'@{shaina.nickname}')
     else:
         pre_message = "Shaina"
 
-    message = pre_message + " is the troll"
-    bot.post(message)
+    bot.post(pre_message + " is the troll")

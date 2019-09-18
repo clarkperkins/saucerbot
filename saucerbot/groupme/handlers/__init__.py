@@ -2,10 +2,10 @@
 
 import inspect
 import re
-from typing import Callable, List, NamedTuple, Optional, Pattern, Sequence, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Pattern, Sequence, Union
 
-from lowerpines.bot import Bot
-from lowerpines.message import Message
+from lowerpines.endpoints.bot import Bot
+from lowerpines.endpoints.message import Message
 
 
 class Handler(NamedTuple):
@@ -33,7 +33,7 @@ class Handler(NamedTuple):
                 # We want to see what arguments our function takes, though.
                 sig = inspect.signature(self.func)
 
-                kwargs = {}
+                kwargs: Dict[str, Any] = {}
                 if 'message' in sig.parameters:
                     kwargs['message'] = message
                 if 'match' in sig.parameters:

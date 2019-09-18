@@ -12,12 +12,12 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.functional import cached_property
-from lowerpines.bot import Bot as LPBot
+from lowerpines.endpoints.bot import Bot as LPBot
+from lowerpines.endpoints.group import Group as LPGroup
+from lowerpines.endpoints.message import Message
+from lowerpines.endpoints.user import User as LPUser
 from lowerpines.gmi import GMI
-from lowerpines.group import Group as LPGroup
 from lowerpines.message import ComplexMessage
-from lowerpines.message import Message
-from lowerpines.user import User as LPUser
 
 from saucerbot.groupme.handlers import registry
 from saucerbot.utils import get_tasted_brews
@@ -138,27 +138,21 @@ class Bot(models.Model):
 
     objects = BotManager()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._bot: Optional[LPBot] = None
-
     def __str__(self):
         return f'{self.name} (slug={self.slug})'
 
     def __repr__(self):
         return f'Bot({self.bot_id}, {self.name}, {self.slug}, {self.owner_id})'
 
-    @property
+    @cached_property
     def bot(self) -> LPBot:
-        if not self._bot:
-            self._bot = self.owner.gmi.bots.get(bot_id=self.bot_id)  # pylint: disable=no-member
-        return self._bot
+        return self.owner.gmi.bots.get(bot_id=self.bot_id)  # pylint: disable=no-member
 
     @property
     def group(self) -> LPGroup:
         return self.bot.group
 
-    def post_message(self, message: Union[str, ComplexMessage]) -> None:
+    def post_message(self, message: Union[ComplexMessage, str]) -> None:
         self.bot.post(message)
 
     def handle_message(self, message: Message) -> bool:

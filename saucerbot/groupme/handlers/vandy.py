@@ -2,7 +2,7 @@
 
 import logging
 
-from lowerpines.bot import Bot
+from lowerpines.endpoints.bot import Bot
 from lowerpines.message import EmojiAttach
 
 from saucerbot.groupme.handlers import registry

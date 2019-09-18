@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 
 import requests
 from django.conf import settings
-from lowerpines.bot import Bot
+from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ImageAttach, ComplexMessage
 
@@ -77,7 +77,7 @@ def select_terms_from_message(message: str) -> List[str]:
 
 def add_to_groupme_img_service(bot: Bot, image_url: str) -> str:
     img_data = requests.get(image_url).content
-    return ImageConvertRequest(img_data, bot.gmi).result
+    return ImageConvertRequest(bot.gmi, img_data).result
 
 
 def create_message(url: str) -> ComplexMessage:

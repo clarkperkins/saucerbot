@@ -4,11 +4,12 @@ import io
 import os
 import random
 import re
-from typing import Optional, Set
+from typing import Optional, Set, Union
 
 from django.conf import settings
-from lowerpines.bot import Bot
+from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.message import Message
+from lowerpines.message import ComplexMessage
 from lowerpines.message import RefAttach
 
 emojis = [
@@ -56,7 +57,7 @@ def i_barely_know_her(bot: Bot, message: Message) -> bool:
     return False
 
 
-def get_quip(message: Message) -> Optional[str]:
+def get_quip(message: Message) -> Optional[Union[ComplexMessage, str]]:
     matches = []
     for word in re.split(r'[^a-zA-Z]', message.text):
         if word.strip().lower() in matching_words:

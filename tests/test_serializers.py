@@ -41,7 +41,7 @@ def ensure_post(data, ret):
 
 
 def test_bot_create_invalid(bot, gmi):
-    from lowerpines.group import Group
+    from lowerpines.endpoints.group import Group
 
     group = Group(gmi, name='serializer test group')
     group.save()
@@ -65,6 +65,8 @@ def test_bot_create_invalid(bot, gmi):
     assert set(serializer.errors.keys()) == {'name', 'group'}
 
     serializer = BotSerializer(data={'group': group.group_id}, context={'request': fake_request})
+
+    print(Group.get_all(gmi))
 
     assert not serializer.is_valid()
     assert set(serializer.errors.keys()) == {'name', 'slug'}
@@ -106,7 +108,7 @@ def test_invalid_group(bot):
 
 
 def test_bot_create_empty(bot, gmi):
-    from lowerpines.group import Group
+    from lowerpines.endpoints.group import Group
 
     group = Group(gmi, name='serializer test group')
     group.save()
@@ -137,7 +139,7 @@ def test_bot_create_empty(bot, gmi):
 
 
 def test_bot_create(bot, gmi):
-    from lowerpines.group import Group
+    from lowerpines.endpoints.group import Group
 
     group = Group(gmi, name='serializer test group')
     group.save()
@@ -192,7 +194,7 @@ def test_bot_create(bot, gmi):
 
 
 def test_bot_update(bot, gmi):
-    from lowerpines.group import Group
+    from lowerpines.endpoints.group import Group
 
     group = Group(gmi, name='serializer test group')
     group.save()
@@ -251,7 +253,7 @@ def test_bot_update(bot, gmi):
 
 
 def test_bot_failed_update(bot, gmi):
-    from lowerpines.group import Group
+    from lowerpines.endpoints.group import Group
 
     group = Group(gmi, name='serializer test group')
     group.save()

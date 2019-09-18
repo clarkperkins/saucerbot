@@ -8,12 +8,10 @@ import pytest
 
 @pytest.fixture(name='gmi')
 def gmi(monkeypatch):
-    from lowerpines.bot import Bot
-    from lowerpines.endpoints.group import GroupMessagesManager
-    from lowerpines.exceptions import InvalidOperationException
-    from lowerpines.group import Group
-    from lowerpines.message import Message, smart_split_complex_message
-    from lowerpines.user import User
+    from lowerpines.endpoints.bot import Bot
+    from lowerpines.endpoints.group import Group, GroupMessagesManager
+    from lowerpines.endpoints.message import Message
+    from lowerpines.endpoints.user import User
 
     global_users = {}
     global_bots = {}
@@ -46,6 +44,9 @@ def gmi(monkeypatch):
 
         def refresh(self):
             pass
+
+        def add_member(self, member):
+            self.members.append(member)
 
         @staticmethod
         def get_all(gmi):
@@ -81,6 +82,7 @@ def gmi(monkeypatch):
 
         def save(self):
             if self.message_id:
+                from lowerpines.exceptions import InvalidOperationException
                 raise InvalidOperationException(
                     "You cannot change a message that has already been sent")
             else:
@@ -92,13 +94,13 @@ def gmi(monkeypatch):
 
         def like(self):
             if self.favorited_by is None:
-                self.favorited_by = set()
-            self.favorited_by.add(self.gmi.user.get().user_id)
+                self.favorited_by = []
+            self.favorited_by.append(self.gmi.user.get().user_id)
 
         def like_as(self, user_id):
             if self.favorited_by is None:
-                self.favorited_by = set()
-            self.favorited_by.add(user_id)
+                self.favorited_by = []
+            self.favorited_by.append(user_id)
 
         @classmethod
         def from_json(cls, gmi, json_dict, *args):
@@ -117,6 +119,7 @@ def gmi(monkeypatch):
                 del global_bots[self.bot_id]
 
         def post(self, text):
+            from lowerpines.message import smart_split_complex_message
             text, attachments = smart_split_complex_message(text)
             message = TestMessage(self.gmi, group_id=self.group_id, text=text,
                                   attachments=attachments)
@@ -127,39 +130,17 @@ def gmi(monkeypatch):
         def get_all(gmi):
             return global_bots.values()
 
-    monkeypatch.setattr('lowerpines.user.User', TestUser)
     monkeypatch.setattr('lowerpines.endpoints.user.User', TestUser)
-    monkeypatch.setattr('lowerpines.group.Group', TestGroup)
     monkeypatch.setattr('lowerpines.endpoints.group.Group', TestGroup)
-    monkeypatch.setattr('lowerpines.message.Message', TestMessage)
     monkeypatch.setattr('lowerpines.endpoints.message.Message', TestMessage)
-    monkeypatch.setattr('lowerpines.bot.Bot', TestBot)
     monkeypatch.setattr('lowerpines.endpoints.bot.Bot', TestBot)
+    monkeypatch.setattr('lowerpines.user.User', TestUser)
+    monkeypatch.setattr('lowerpines.group.Group', TestGroup)
+    monkeypatch.setattr('lowerpines.bot.Bot', TestBot)
 
-    class TestGMI:
-        def __init__(self):
-            self.groups = None
-            self.bots = None
-            self.chats = None
-            self.user = None
+    from lowerpines.gmi import GMI
 
-            self.refresh()
-
-        def refresh(self):
-            from lowerpines.group import GroupManager
-            from lowerpines.bot import BotManager
-            from lowerpines.chat import ChatManager
-            from lowerpines.user import UserManager
-
-            self.groups = GroupManager(self)
-            self.bots = BotManager(self)
-            self.chats = ChatManager(self)
-            self.user = UserManager(self)
-
-        def convert_image_url(self, url):
-            return url
-
-    return TestGMI()
+    return GMI('faketoken')
 
 
 @pytest.fixture(name='bot')

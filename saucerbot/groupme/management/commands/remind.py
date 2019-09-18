@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import List, Union
 
 import arrow
 from django.core.management.base import BaseCommand, CommandParser
@@ -10,7 +11,6 @@ from saucerbot.groupme.models import Bot
 from saucerbot.utils.bridgestone import create_message, get_todays_events
 
 logger = logging.getLogger(__name__)
-
 
 LIKE_IF_POST = "Saucer at 7PM. Like if."
 
@@ -81,13 +81,13 @@ class Command(BaseCommand):
                 bot.post_message(f"Looks like {phrase} coming tonight.{ending}")
 
                 if num_likes > 0:
-                    message_parts = ['Save seats for']
+                    message_parts: List[Union[str, RefAttach]] = ['Save seats for']
                     for user_id in message.favorited_by:
                         if user_id in user_id_map:
                             message_parts.append(RefAttach(user_id, f'@{user_id_map[user_id]}'))
 
                     if len(message_parts) > 1:
-                        bot.post_message(' '.join(message_parts))
+                        bot.post_message(' '.join(message_parts))  # type: ignore
 
                 logger.info('Successfully sent reminder message.')
 

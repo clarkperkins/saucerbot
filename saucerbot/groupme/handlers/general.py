@@ -7,8 +7,9 @@ import re
 
 import arrow
 import requests
-from lowerpines.bot import Bot
-from lowerpines.message import ComplexMessage, EmojiAttach, Message, RefAttach
+from lowerpines.endpoints.bot import Bot
+from lowerpines.endpoints.message import Message
+from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
 
 from saucerbot.groupme.handlers import registry
 from saucerbot.groupme.models import HistoricalNickname
@@ -72,11 +73,11 @@ def system_messages(bot: Bot, message: Message) -> bool:
     timestamp = arrow.get(message.created_at)
 
     if remove_match:
-        bot.post(ComplexMessage(EmojiAttach(4, 36)))
+        bot.post(ComplexMessage([EmojiAttach(4, 36)]))
         return True
 
     if add_match:
-        bot.post(ComplexMessage(EmojiAttach(2, 44)))
+        bot.post(ComplexMessage([EmojiAttach(2, 44)]))
 
         # Log the new member
         new_member = add_match.group('addee')
@@ -85,7 +86,7 @@ def system_messages(bot: Bot, message: Message) -> bool:
         return True
 
     if change_name_match:
-        bot.post(ComplexMessage(EmojiAttach(1, 81)))
+        bot.post(ComplexMessage([EmojiAttach(1, 81)]))
 
         # Log the name change
         new_name = change_name_match.group('new_name')
@@ -125,8 +126,7 @@ def mars(bot: Bot, message: Message, chances: float = PICTURE_RESPONSE_CHANCE) -
         if attachment['type'] == 'image' and random.random() < chances:
             user_attach = RefAttach(message.user_id, f'@{message.name}')
             response = random.choice(PICTURE_RESPONSES)
-            message = response[:-1] + ", " + user_attach + response[-1]
-            bot.post(message)
+            bot.post(response[:-1] + ", " + user_attach + response[-1])
             return True
 
     return False

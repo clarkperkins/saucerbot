@@ -200,7 +200,7 @@ class BrewsSearchUtil:
 brew_searcher = BrewsSearchUtil()
 
 
-def get_tasted_brews(saucer_id) -> List[Dict[str, Any]]:
+def get_tasted_brews(saucer_id: str) -> List[Dict[str, Any]]:
     r = requests.get(TASTED_URL.format(saucer_id))
     return r.json()
 

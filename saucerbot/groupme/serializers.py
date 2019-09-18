@@ -3,8 +3,8 @@
 import logging
 from typing import Any, Dict, Union
 
+from lowerpines.endpoints.group import Group
 from lowerpines.exceptions import NoneFoundException
-from lowerpines.group import Group
 from rest_framework import serializers
 
 from saucerbot.groupme.handlers import registry, Handler as RHandler
