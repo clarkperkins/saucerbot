@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "483546f179bc14b41d0f00357a2d5a4009b46ee188efbe5b37db8ae2b39afd07"
+            "sha256": "2b5521ce2f32807dd6d09dceb82ee427dd83d7bda0af1a57219b3f76a22295ef"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -103,8 +103,12 @@
             "version": "==2.8"
         },
         "lowerpines": {
-            "git": "https://github.com/Bigfootjon/lowerpines.git",
-            "ref": "3e37e84f8ca75147b1b8f5f77c438662a288d003"
+            "hashes": [
+                "sha256:56bc490e2d8d7bb49d6e2722ac273ccbc412810947b01be3c8bf14021ba124a1",
+                "sha256:71f9893683452cdcb37d15156341a65308a8322ff3cb89c2ecaeee29b45d840e"
+            ],
+            "index": "pypi",
+            "version": "==0.6.0"
         },
         "psutil": {
             "hashes": [
