@@ -206,7 +206,7 @@ def get_tasted_brews(saucer_id: str) -> List[Dict[str, Any]]:
 
 
 def get_insult() -> str:
-    r = requests.get('http://www.robietherobot.com/insult-generator.htm')
+    r = requests.get('https://www.robietherobot.com/insult-generator.htm')
     soup = BeautifulSoup(r.text, 'html.parser')
     return soup.select('center > table > tr > td > h1')[0].text.strip()
 
