@@ -104,7 +104,7 @@
         },
         "lowerpines": {
             "git": "https://github.com/Bigfootjon/lowerpines.git",
-            "ref": "9920edcb81b7c476c181d00cb4c5cfa1ec2c0dd8"
+            "ref": "3e37e84f8ca75147b1b8f5f77c438662a288d003"
         },
         "psutil": {
             "hashes": [
@@ -178,19 +178,19 @@
         },
         "scout-apm": {
             "hashes": [
-                "sha256:0e75530fc0ffa9d6d1de74bb6086d7abc83bb6bf0fc575f11af77f2637ae6983",
-                "sha256:217cf28a8e59009281ec81290f7afaab413e944a74b11b9f7bfb4a3ab944ea06",
-                "sha256:250d82b13c8a7acd95476cd332fd49ae31814457c892b1685f09836a49998b45",
-                "sha256:5b25b06742e61fab4429394c5d75aa4e98b4c5d5e56b074b6b53739fc058c1a5",
-                "sha256:69e3840fd2b416c7138bbef727eeeb70c1221590631fae2616e572b7a74676f1",
-                "sha256:9aca27cfc20104144b657bb405a3ec25462eca013cfff431cf362a58330815d3",
-                "sha256:a02a8662e491a5442183f0a58ab437a42b3822f12add34ca810e7b564f5059a2",
-                "sha256:b031ca9fec7d593459bd1a9b0172277bd5b7ce46fe5f64d8ea99b163a9bb3d80",
-                "sha256:c562d808f24e7653f9022085466b5b6837ca6ad552e2f2325d36e6ce75ec4291",
-                "sha256:f8f147175b54b98b840f21842ea1a803d532b8ac2ed5fc6af07b22bb4b61cf25"
+                "sha256:0311712e3bc805bb1af3a1a018f3b62101a85d2ecdd9ae23f58985579805dd7e",
+                "sha256:0f2c66fab20ab85ec2b87d66cbae6151ce656b891525d7894d0fb2ec685be3a6",
+                "sha256:10a76d00580e0c8fd7e4a8af41ec45f375950ecf48f1f35126eb7d25590bc78c",
+                "sha256:176f30fbfca6ad1a7b3b018eb9c5237cfff018d3d59949319774c60c7520ba9b",
+                "sha256:1b23c9a9d4afc10e8060d02bb51b8e0c23351e63c581af248df0b06b269dc2d8",
+                "sha256:3254b83c86b77bab3fc9dbdd10e74ef92c0b37c8442f834cf58a6daff6ec1c73",
+                "sha256:62cadf1ae35cb827ff924d0600fbd6786e0f5035e15a6bbed964b79227459062",
+                "sha256:7e69017bf3ab300657146630f41cb0bddbc01986923e4e1f7bf3b725a9859dcb",
+                "sha256:8e374916ac484ada86ebeb06e2dda7858865095c8575d3360023ec779190b42c",
+                "sha256:b2884114e9391ed1dfd229bca18953ecb952d9b2301031e6f010168fe8a54b6e"
             ],
             "index": "pypi",
-            "version": "==2.4.1"
+            "version": "==2.5.0"
         },
         "six": {
             "hashes": [
@@ -215,10 +215,10 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:b246607a25ac80bedac05c6f282e3cdaf3afb65420fd024ac94435cabe6e18d1",
-                "sha256:dbe59173209418ae49d485b87d1681aefa36252ee85884c31346debd19463232"
+                "sha256:2f3eadfea5d92bc7899e75b5968410b749a054b492d5a6379c1344a1481bc2cb",
+                "sha256:9c6c593cb28f52075016307fc26b0a0f8e82bc7d1ff19aaaa959b91710a56c47"
             ],
-            "version": "==1.25.3"
+            "version": "==1.25.5"
         },
         "whitenoise": {
             "hashes": [
@@ -366,10 +366,10 @@
         },
         "packaging": {
             "hashes": [
-                "sha256:a7ac867b97fdc07ee80a8058fe4435ccd274ecc3b0ed61d852d7d53055528cf9",
-                "sha256:c491ca87294da7cc01902edbe30a5bc6c4c28172b5138ab4e4aa1b9d7bfaeafe"
+                "sha256:28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47",
+                "sha256:d9551545c6d761f3def1677baf08ab2a3ca17c56879e70fecba2fc4dde4ed108"
             ],
-            "version": "==19.1"
+            "version": "==19.2"
         },
         "pluggy": {
             "hashes": [
@@ -424,11 +424,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:95d13143cc14174ca1a01ec68e84d76ba5d9d493ac02716fd9706c949a505210",
-                "sha256:b78fe2881323bd44fd9bd76e5317173d4316577e7b1cddebae9136a4495ec865"
+                "sha256:813b99704b22c7d377bbd756ebe56c35252bb710937b46f207100e843440b3c2",
+                "sha256:cc6620b96bc667a0c8d4fa592a8c9c94178a1bd6cc799dbb057dfd9286d31a31"
             ],
             "index": "pypi",
-            "version": "==5.1.2"
+            "version": "==5.1.3"
         },
         "pytest-cov": {
             "hashes": [

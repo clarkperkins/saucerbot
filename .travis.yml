@@ -14,7 +14,7 @@ env:
   global:
     - DJANGO_ENV=test
     - DATABASE_URL='postgres://postgres:@localhost:5432/postgres'
-    - BONSAI_URL='http://localhost:9200
+    - BONSAI_URL='http://localhost:9200'
 
 addons:
   sonarcloud:

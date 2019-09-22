@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 
 from saucerbot.groupme.handlers import registry
-from saucerbot.groupme.models import Bot, new_user, SESSION_KEY
+from saucerbot.groupme.models import Bot, InvalidGroupMeUser, new_user, SESSION_KEY
 from saucerbot.groupme.permissions import HasGroupMeUser
 from saucerbot.groupme.serializers import BotSerializer, HandlerSerializer
 from saucerbot.utils import did_the_dores_win
@@ -34,11 +34,16 @@ class LoginRedirectView(RedirectView):
 
 
 class OAuthView(RedirectView):
+    pattern_name = 'groupme:bot-list'
 
-    def get_redirect_url(self, *args, **kwargs):
-        access_token = self.request.GET['access_token']
-        new_user(self.request, access_token)
-        return reverse('groupme:bot-list', *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        access_token = self.request.GET.get('access_token')
+
+        if access_token:
+            new_user(self.request, access_token)
+            return super().get(request, *args, **kwargs)
+        else:
+            raise InvalidGroupMeUser('Missing access token')
 
 
 class BotViewSet(ModelViewSet):

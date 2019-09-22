@@ -1,0 +1,75 @@
+
+install/python: @skip:key=Pipfile.lock
+	pipenv install --dev --deploy
+
+install: install/python
+
+build/docker:
+	docker build --pull --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') --tag clarkperkins/saucerbot .
+
+build: build/docker
+
+reports:
+	mkdir -p reports
+
+check/pycodestyle: install/python
+	pycodestyle saucerbot
+
+check/pylint: install/python reports
+	pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt
+
+check/mypy: install/python
+	mypy saucerbot
+
+check: check/pycodestyle check/pylint check/mypy
+
+test/pytest/xml: install/python reports
+	export DJANGO_ENV=test
+	pytest --cov=saucerbot --cov-report=xml
+
+test/pytest/html: reports
+	export DJANGO_ENV=test
+	pytest --cov=saucerbot --cov-report=html
+
+test: test/pytest/xml
+
+cov: test/pytest/html
+	open reports/html/index.html
+
+ci: install build check test
+
+deploy/docker:
+	docker login -u "$HEROKU_USERNAME" -p "$HEROKU_API_KEY" registry.heroku.com
+
+	if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+		APP_NAME="saucerbot-staging-pr-$TRAVIS_PULL_REQUEST"
+		TAG_NAME="registry.heroku.com/$APP_NAME/web"
+		echo "PR detected - deploying to $TAG_NAME"
+		docker tag clarkperkins/saucerbot $TAG_NAME
+		docker push $TAG_NAME
+		heroku container:release -a $APP_NAME web
+	elif [ "$TRAVIS_BRANCH" == "master" ]; then
+		APP_NAME="saucerbot-staging"
+		TAG_NAME="registry.heroku.com/$APP_NAME/web"
+		echo "master branch detected - deploying to $TAG_NAME"
+		docker tag clarkperkins/saucerbot $TAG_NAME
+		docker push $TAG_NAME
+		heroku container:release -a $APP_NAME web
+
+		echo "Pushing to docker hub"
+		docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+		docker push clarkperkins/saucerbot
+	else
+		echo "Not deploying image"
+	fi
+
+deploy: deploy/docker
+
+promote/heroku:
+	docker pull registry.heroku.com/saucerbot-staging/web
+	docker tag registry.heroku.com/saucerbot-staging/web registry.heroku.com/saucerbot/web
+	docker push registry.heroku.com/saucerbot/web
+
+	heroku container:release -a saucerbot web
+
+promote: promote/heroku

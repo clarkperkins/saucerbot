@@ -6,6 +6,7 @@ from typing import Optional, Union
 
 from django.conf import settings
 from django.contrib.auth import models as auth_models
+from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.db.models.manager import EmptyManager
 from django.db.models.signals import pre_delete
@@ -16,6 +17,7 @@ from lowerpines.endpoints.bot import Bot as LPBot
 from lowerpines.endpoints.group import Group as LPGroup
 from lowerpines.endpoints.message import Message
 from lowerpines.endpoints.user import User as LPUser
+from lowerpines.exceptions import NoneFoundException, UnauthorizedException
 from lowerpines.gmi import GMI
 from lowerpines.message import ComplexMessage
 
@@ -38,6 +40,10 @@ class User(models.Model):
 
     # User is always active
     is_active = True
+
+    # Never staff or superuser
+    is_staff = False
+    is_superuser = False
 
     objects = models.Manager()
     _groups = EmptyManager(auth_models.Group)
@@ -62,20 +68,12 @@ class User(models.Model):
         return get_gmi(self.access_token)
 
     @property
-    def is_staff(self):
-        return False
-
-    @property
-    def is_superuser(self):
-        return False
-
-    @property
     def groups(self):
-        return self._groups
+        return User._groups
 
     @property
     def user_permissions(self):
-        return self._user_permissions
+        return User._user_permissions
 
     @property
     def is_anonymous(self):
@@ -86,14 +84,17 @@ class User(models.Model):
         return True
 
 
+class InvalidGroupMeUser(SuspiciousOperation):
+    pass
+
+
 def get_user(request) -> Optional[User]:
     try:
         user_id = User._meta.pk.to_python(request.session[SESSION_KEY])
-        try:
-            return User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            pass
+        return User.objects.get(pk=user_id)
     except KeyError:
+        pass
+    except User.DoesNotExist:
         pass
     return None
 
@@ -103,8 +104,12 @@ def new_user(request, access_token: str):
         user = User.objects.get(access_token=access_token)
     except User.DoesNotExist:
         gmi = get_gmi(access_token)
-        user_id = gmi.user.get().user_id
-        user = User.objects.create(access_token=access_token, user_id=user_id)
+        try:
+            user_id = gmi.user.get().user_id
+            user = User.objects.create(access_token=access_token, user_id=user_id)
+        except UnauthorizedException:
+            raise InvalidGroupMeUser('Invalid access token')
+
     request.session[SESSION_KEY] = str(user.pk)
 
 
@@ -145,12 +150,18 @@ class Bot(models.Model):
         return f'Bot({self.bot_id}, {self.name}, {self.slug}, {self.owner_id})'
 
     @cached_property
-    def bot(self) -> LPBot:
-        return self.owner.gmi.bots.get(bot_id=self.bot_id)  # pylint: disable=no-member
+    def bot(self) -> Optional[LPBot]:
+        try:
+            return self.owner.gmi.bots.get(bot_id=self.bot_id)  # pylint: disable=no-member
+        except NoneFoundException:
+            return None
 
-    @property
-    def group(self) -> LPGroup:
-        return self.bot.group
+    @cached_property
+    def group(self) -> Optional[LPGroup]:
+        try:
+            return self.owner.gmi.groups.get(group_id=self.group_id)  # pylint: disable=no-member
+        except NoneFoundException:
+            return None
 
     def post_message(self, message: Union[ComplexMessage, str]) -> None:
         self.bot.post(message)
