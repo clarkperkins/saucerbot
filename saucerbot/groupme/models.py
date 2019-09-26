@@ -110,7 +110,12 @@ def new_user(request, access_token: str):
             user_id = gmi.user.get().user_id
         except UnauthorizedException:
             raise InvalidGroupMeUser('Invalid access token')
-        user = User.objects.create(access_token=access_token, user_id=user_id)
+
+        # Either create the user, or update the given user with a new access token
+        defaults = {
+            'access_token': access_token
+        }
+        user, created = User.objects.update_or_create(user_id=user_id, defaults=defaults)
 
     request.session[SESSION_KEY] = str(user.pk)
 
@@ -136,7 +141,7 @@ class BotManager(models.Manager):
             slug = slugify(name)
             kwargs['slug'] = slug
 
-        if owner and name and slug and group:
+        if 'bot_id' not in kwargs and owner and name and slug and group:
             callback_url = _callback_url(slug)
             bot = owner.gmi.bots.create(group, name, callback_url, avatar_url)
             kwargs['bot_id'] = bot.bot_id
