@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
+import pytest
 from django.http import HttpRequest
 from rest_framework.request import Request
 
 from saucerbot.groupme.handlers import registry
 from saucerbot.groupme.serializers import BotSerializer
-
-logger = logging.getLogger(__name__)
 
 
 @registry.handler()
@@ -52,12 +49,12 @@ def test_bot_create_invalid(bot, gmi):
     serializer = BotSerializer(data={}, context={'request': fake_request})
 
     assert not serializer.is_valid()
-    assert set(serializer.errors.keys()) == {'name', 'slug', 'group'}
+    assert set(serializer.errors.keys()) == {'name', 'group'}
 
     serializer = BotSerializer(data={'name': 'test'}, context={'request': fake_request})
 
     assert not serializer.is_valid()
-    assert set(serializer.errors.keys()) == {'slug', 'group'}
+    assert set(serializer.errors.keys()) == {'group'}
 
     serializer = BotSerializer(data={'slug': 'floop'}, context={'request': fake_request})
 
@@ -69,19 +66,13 @@ def test_bot_create_invalid(bot, gmi):
     print(Group.get_all(gmi))
 
     assert not serializer.is_valid()
-    assert set(serializer.errors.keys()) == {'name', 'slug'}
+    assert set(serializer.errors.keys()) == {'name'}
 
     serializer = BotSerializer(data={'name': 'test', 'slug': 'floop'},
                                context={'request': fake_request})
 
     assert not serializer.is_valid()
     assert set(serializer.errors.keys()) == {'group'}
-
-    serializer = BotSerializer(data={'name': 'test', 'group': group.group_id},
-                               context={'request': fake_request})
-
-    assert not serializer.is_valid()
-    assert set(serializer.errors.keys()) == {'slug'}
 
     serializer = BotSerializer(data={'slug': 'floop', 'group': group.group_id},
                                context={'request': fake_request})
@@ -192,9 +183,30 @@ def test_bot_create(bot, gmi):
     assert gmi_bot.callback_url == 'https://localhost/groupme/api/bots/floop/callback/'
     assert gmi_bot.name == 'test'
 
+    data = {
+        'name': 'Test Bot 43',
+        'group': group.group_id,
+        'handlers': ['handler_test1']
+    }
+
+    serializer = BotSerializer(data=data, context={'request': fake_request})
+    assert serializer.is_valid()
+
+    new_bot = serializer.save(owner=bot.owner)
+    gmi_bot = gmi.bots.get(name='Test Bot 43')
+
+    assert new_bot.name == 'Test Bot 43'
+    assert new_bot.slug == 'test-bot-43'
+    assert new_bot.bot_id == gmi_bot.bot_id
+    assert new_bot.group_id == group.group_id
+    assert new_bot.handlers.count() == 1
+    assert gmi_bot.callback_url == 'https://localhost/groupme/api/bots/test-bot-43/callback/'
+    assert gmi_bot.name == 'Test Bot 43'
+
 
 def test_bot_update(bot, gmi):
     from lowerpines.endpoints.group import Group
+    from lowerpines.exceptions import NoneFoundException
 
     group = Group(gmi, name='serializer test group')
     group.save()
@@ -247,9 +259,14 @@ def test_bot_update(bot, gmi):
     assert updated_bot.handlers.count() == 3
     assert updated_bot_handlers == {'handler_test1', 'handler_test3', 'handler_test4'}
 
-    # uncomment when we fix this
-    # assert gmi_bot.callback_url == 'https://localhost/groupme/api/bots/new_floop/callback/'
-    # assert gmi_bot.name == 'new_test'
+    # The gmi bot got fixed too
+    gmi_bot = gmi.bots.get(name='new_test')
+    assert gmi_bot.callback_url == 'https://localhost/groupme/api/bots/new_floop/callback/'
+    assert gmi_bot.name == 'new_test'
+
+    # The old bot is gone
+    with pytest.raises(NoneFoundException):
+        gmi.bots.get(name='test')
 
 
 def test_bot_failed_update(bot, gmi):

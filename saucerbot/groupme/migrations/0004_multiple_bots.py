@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('bot_id', models.CharField(max_length=32)),
                 ('group_id', models.CharField(max_length=32)),
                 ('name', models.CharField(max_length=64)),
-                ('slug', models.CharField(max_length=64, unique=True)),
+                ('slug', models.SlugField(max_length=64, unique=True)),
             ],
         ),
         migrations.CreateModel(

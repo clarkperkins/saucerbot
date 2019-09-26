@@ -49,7 +49,7 @@ class OAuthView(RedirectView):
 class BotViewSet(ModelViewSet):
     serializer_class = BotSerializer
     lookup_field = 'slug'
-    lookup_value_type = 'str'
+    lookup_value_type = 'slug'
     permission_classes = [HasGroupMeUser]
 
     def get_queryset(self):
@@ -58,12 +58,18 @@ class BotViewSet(ModelViewSet):
     def perform_create(self, serializer: BotSerializer):
         serializer.save(owner=self.request.user)
 
+    def perform_destroy(self, instance: Bot):
+        # Delete the bot from groupme first, then delete ours in the database
+        if instance.bot:
+            instance.bot.delete()
+        instance.delete()
+
 
 class BotActionsViewSet(GenericViewSet):
     queryset = Bot.objects.all()
     serializer_class = BotSerializer
     lookup_field = 'slug'
-    lookup_value_type = 'str'
+    lookup_value_type = 'slug'
     permission_classes = [AllowAny]
 
     def parse_as_message(self, bot: Bot) -> Message:

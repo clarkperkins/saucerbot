@@ -9,10 +9,9 @@ from django.contrib.auth import models as auth_models
 from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.db.models.manager import EmptyManager
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.text import slugify
 from lowerpines.endpoints.bot import Bot as LPBot
 from lowerpines.endpoints.group import Group as LPGroup
 from lowerpines.endpoints.message import Message
@@ -103,14 +102,24 @@ def new_user(request, access_token: str):
     try:
         user = User.objects.get(access_token=access_token)
     except User.DoesNotExist:
+        user = None
+
+    if user is None:
         gmi = get_gmi(access_token)
         try:
             user_id = gmi.user.get().user_id
-            user = User.objects.create(access_token=access_token, user_id=user_id)
         except UnauthorizedException:
             raise InvalidGroupMeUser('Invalid access token')
+        user = User.objects.create(access_token=access_token, user_id=user_id)
 
     request.session[SESSION_KEY] = str(user.pk)
+
+
+def _callback_url(slug: str) -> str:
+    return 'https://{}{}'.format(
+        settings.SERVER_DOMAIN,
+        reverse('groupme:bot-callback', kwargs={'slug': slug}),
+    )
 
 
 class BotManager(models.Manager):
@@ -122,11 +131,13 @@ class BotManager(models.Manager):
         group = kwargs.pop('group', None)
         avatar_url = kwargs.pop('avatar_url', None)
 
+        # Auto populate a slug if not given
+        if not slug:
+            slug = slugify(name)
+            kwargs['slug'] = slug
+
         if owner and name and slug and group:
-            callback_url = 'https://{}{}'.format(
-                settings.SERVER_DOMAIN,
-                reverse('groupme:bot-callback', kwargs={'slug': slug}),
-            )
+            callback_url = _callback_url(slug)
             bot = owner.gmi.bots.create(group, name, callback_url, avatar_url)
             kwargs['bot_id'] = bot.bot_id
             kwargs['group_id'] = group.group_id
@@ -139,7 +150,7 @@ class Bot(models.Model):
     bot_id: str = models.CharField(max_length=32)
     group_id: str = models.CharField(max_length=32)
     name: str = models.CharField(max_length=64)
-    slug: str = models.CharField(max_length=64, unique=True)
+    slug: str = models.SlugField(max_length=64, unique=True)
 
     objects = BotManager()
 
@@ -189,10 +200,11 @@ class Bot(models.Model):
 
         return False
 
-
-@receiver(pre_delete, sender=Bot)
-def delete_bot(sender, instance: Bot, **kwargs):  # pylint: disable=unused-argument
-    instance.bot.delete()
+    def update_bot(self, avatar_url: Optional[str]) -> None:
+        self.bot.name = self.name
+        self.bot.callback_url = _callback_url(self.slug)
+        self.bot.avatar_url = avatar_url
+        self.bot.save()
 
 
 class Handler(models.Model):

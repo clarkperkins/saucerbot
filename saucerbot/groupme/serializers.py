@@ -79,6 +79,7 @@ class BotSerializer(serializers.HyperlinkedModelSerializer):
         model = Bot
         fields = ['url', 'name', 'slug', 'group', 'avatar_url', 'handlers']
         extra_kwargs = {
+            'slug': {'required': False},
             'url': {'lookup_field': 'slug', 'view_name': 'groupme:bot-detail'},
         }
 
@@ -109,6 +110,8 @@ class BotSerializer(serializers.HyperlinkedModelSerializer):
         handlers = validated_data.pop('handlers', None)
 
         bot = super().update(instance, validated_data)
+
+        bot.update_bot(validated_data.get('avatar_url'))
 
         if handlers:
             new_handler_set = set(h.name for h in handlers)
