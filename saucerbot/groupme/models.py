@@ -115,7 +115,7 @@ def new_user(request, access_token: str):
         defaults = {
             'access_token': access_token
         }
-        user, created = User.objects.update_or_create(user_id=user_id, defaults=defaults)
+        user, _ = User.objects.update_or_create(user_id=user_id, defaults=defaults)
 
     request.session[SESSION_KEY] = str(user.pk)
 
