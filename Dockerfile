@@ -1,7 +1,11 @@
 FROM python:3.7-alpine
 
+LABEL org.opencontainers.image.title="saucerbot"
+LABEL org.opencontainers.image.description="GroupMe bot for the saucer groupme"
+LABEL org.opencontainers.image.source="https://github.com/clarkperkins/saucerbot"
+
 # These don't get removed, so install them first separately
-RUN apk add --no-cache curl postgresql-libs
+RUN apk add --no-cache curl postgresql-client postgresql-libs
 
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
@@ -14,7 +18,7 @@ WORKDIR /app
 COPY --chown=saucerbot:saucerbot Pipfile Pipfile.lock manage.py /app/
 
 # Install all the deps & uninstall build-time reqs all in one step to reduce image size
-RUN apk add --no-cache --virtual .build-deps gcc g++ linux-headers postgresql-dev && \
+RUN apk add --no-cache --virtual .build-deps git gcc g++ linux-headers postgresql-dev && \
     pip install pipenv && \
     pipenv install --deploy --system && \
     pip uninstall -y pipenv virtualenv virtualenv-clone && \
@@ -37,4 +41,15 @@ RUN SCOUT_MONITOR=true python -c 'from scout_apm.core import install; install()'
 # Build static files
 RUN DJANGO_ENV=build HEROKU_APP_NAME=build python manage.py collectstatic --noinput
 
+# Put these args here so that changing them doesn't invalidate the build cache
+ARG BUILD_DATE=""
+ARG GIT_COMMIT=""
+
+LABEL org.opencontainers.image.created="$BUILD_DATE"
+LABEL org.opencontainers.image.revision="$GIT_COMMIT"
+
+ENV GIT_COMMIT=$GIT_COMMIT
+
 CMD ["gunicorn", "saucerbot.wsgi"]
+
+HEALTHCHECK --timeout=5s CMD curl -f http://localhost:$PORT/groupme/login/ || exit 1

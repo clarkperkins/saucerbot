@@ -6,6 +6,8 @@ SECRET_KEY = 'abcdef123456'
 
 DEBUG = True
 
+SERVER_DOMAIN = 'localhost'
+
 ALLOWED_HOSTS = ['*']
 
 # Don't require SSL for dev

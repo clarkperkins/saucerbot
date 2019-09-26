@@ -3,21 +3,24 @@
 from collections import defaultdict
 from typing import DefaultDict, Dict
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 
-from saucerbot.groupme.utils import get_group
+from saucerbot.groupme.models import Bot
 
 
 class Command(BaseCommand):
     help = "Message statistics"
 
+    def add_arguments(self, parser: CommandParser):
+        parser.add_argument('bot', help='The bot to get stats for')
+
     def handle(self, *args, **options) -> None:
-        group = get_group()
+        bot = Bot.objects.get(slug=options['bot'])
 
         messages_by_user: DefaultDict[str, int] = defaultdict(int)
         user_id_to_user: Dict[str, str] = {}
 
-        for m in group.messages.all():
+        for m in bot.bot.group.messages.all():
             user_id_to_user.setdefault(m.user_id, m.name)
             messages_by_user[m.user_id] += 1
 

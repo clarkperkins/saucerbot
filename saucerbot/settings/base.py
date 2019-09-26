@@ -19,8 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 # Pull a few things from the heroku environment
 HEROKU_APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME', '')
-GROUPME_API_KEY: Optional[str] = os.environ.get('GROUPME_API_KEY')
-GROUPME_BOT_ID: Optional[str] = os.environ.get('GROUPME_BOT_ID')
+GROUPME_CLIENT_ID: Optional[str] = os.environ.get('GROUPME_CLIENT_ID', '')
 FLICKR_API_KEY: Optional[str] = os.environ.get('FLICKR_API_KEY')
 ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
 
@@ -28,8 +27,10 @@ ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+SERVER_DOMAIN = f'{HEROKU_APP_NAME}.herokuapp.com'
+
 # Allow only the herokuapp domain and clarkperkins
-ALLOWED_HOSTS = [f'{HEROKU_APP_NAME}.herokuapp.com', 'saucerbot.clarkperkins.com']
+ALLOWED_HOSTS = [SERVER_DOMAIN, 'saucerbot.clarkperkins.com']
 
 
 # Application definition
@@ -42,8 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'saucerbot.groupme',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'saucerbot.groupme.authentication.GroupMeUserAuthentication',
+    ],
+}
 
 # Scout config
 SCOUT_NAME = HEROKU_APP_NAME

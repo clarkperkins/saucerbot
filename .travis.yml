@@ -4,12 +4,17 @@ dist: bionic
 
 cache: pip
 
+git:
+  depth: false
+
 services:
   - docker
 
 env:
   global:
     - DJANGO_ENV=test
+    - DATABASE_URL='postgres://postgres:@localhost:5432/postgres'
+    - BONSAI_URL='http://localhost:9200'
 
 addons:
   sonarcloud:
@@ -20,21 +25,20 @@ addons:
 
 before_install:
   - touch web.env
-  - pip install pip --upgrade
   - pip install pipenv --upgrade
 
 install:
+  - ./docker_build.sh
+  - docker-compose up -d
   - pipenv install --deploy --dev
-  - docker build --tag clarkperkins/saucerbot .
 
 before_script:
-  - docker-compose up -d
   - mkdir reports
 
 script:
   # Code linting
   - pipenv run pycodestyle saucerbot
-  - 'pipenv run pylint saucerbot --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
+  - 'pipenv run pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
 
   # Type checking
   - pipenv run mypy saucerbot
@@ -44,10 +48,6 @@ script:
 
   # Sonar
   - sonar-scanner
-
-  # Integration tests
-  - docker-compose run web python manage.py migrate
-  - docker-compose run web python manage.py loadbrews
 
 after_success:
   - ./docker_push.sh

@@ -3,8 +3,7 @@
 import arrow
 from django.core.management.base import BaseCommand
 
-from saucerbot.groupme.models import HistoricalNickname
-from saucerbot.groupme.utils import get_group
+from saucerbot.groupme.models import Bot, HistoricalNickname
 
 
 class Command(BaseCommand):
@@ -15,11 +14,12 @@ class Command(BaseCommand):
 
         nickname_list = []
 
-        for member in get_group().members:
-            nickname_list.append(HistoricalNickname(
-                groupme_id=member.user_id,
-                timestamp=timestamp.datetime,
-                nickname=member.nickname,
-            ))
+        for bot in Bot.objects.all():
+            for member in bot.group.members:
+                nickname_list.append(HistoricalNickname(
+                    groupme_id=member.user_id,
+                    timestamp=timestamp.datetime,
+                    nickname=member.nickname,
+                ))
 
         HistoricalNickname.objects.bulk_create(nickname_list)

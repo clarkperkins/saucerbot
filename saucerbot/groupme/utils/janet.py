@@ -10,10 +10,9 @@ from typing import Dict, List, Optional
 
 import requests
 from django.conf import settings
+from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ImageAttach, ComplexMessage
-
-from saucerbot.groupme.utils import get_gmi
 
 flickr_url = 'https://api.flickr.com/services/rest/'
 logger: logging.Logger = logging.getLogger(__name__)
@@ -76,9 +75,9 @@ def select_terms_from_message(message: str) -> List[str]:
         return random.sample(words, 3)
 
 
-def add_to_groupme_img_service(image_url: str) -> str:
+def add_to_groupme_img_service(bot: Bot, image_url: str) -> str:
     img_data = requests.get(image_url).content
-    return ImageConvertRequest(img_data, get_gmi()).result
+    return ImageConvertRequest(bot.gmi, img_data).result
 
 
 def create_message(url: str) -> ComplexMessage:

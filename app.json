@@ -4,8 +4,7 @@
   "repository": "https://github.com/clarkperkins/saucerbot.git",
   "stack": "container",
   "scripts": {
-    "postdeploy": "python manage.py pr create",
-    "pr-predestroy": "python manage.py pr destroy"
+    "postdeploy": "python manage.py migrate"
   },
   "env": {
     "DJANGO_SECRET_KEY": {
@@ -14,10 +13,7 @@
     "HEROKU_APP_NAME": {
       "required": true
     },
-    "GROUPME_API_KEY": {
-      "required": true
-    },
-    "GROUPME_GROUP_ID": {
+    "GROUPME_CLIENT_ID": {
       "required": true
     }
   },

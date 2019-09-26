@@ -1,12 +1,23 @@
 # -*- coding: utf-8 -*-
 
-from django.urls import path
+from django.contrib.auth.views import LogoutView
+from django.urls import path, include
 
-from saucerbot.groupme.views import GroupMeCallbacks, DoresWinCallback
+from saucerbot.groupme.routers import PathRouter
+from saucerbot.groupme.views import (
+    LoginRedirectView, OAuthView, BotViewSet, BotActionsViewSet, HandlerViewSet
+)
 
 app_name = 'groupme'
 
+router = PathRouter()
+router.register('bots', BotViewSet, basename='bot')
+router.register('bots', BotActionsViewSet, basename='bot')
+router.register('handlers', HandlerViewSet, basename='handler')
+
 urlpatterns = [
-    path('callbacks/<str:name>/', GroupMeCallbacks.as_view(), name='callbacks'),
-    path('dores-win/', DoresWinCallback.as_view(), name='dores-win'),
+    path('login/', LoginRedirectView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('oauth/', OAuthView.as_view(), name='oauth'),
+    path('api/', include(router.urls)),
 ]

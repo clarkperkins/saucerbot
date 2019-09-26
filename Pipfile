@@ -26,7 +26,6 @@ pylint-django = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-django = "*"
-requests-mock = "*"
 
 [requires]
 python_version = "3.7"

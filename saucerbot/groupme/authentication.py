@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+
+import logging
+from typing import Any, Optional, Tuple
+
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.request import Request
+
+from saucerbot.groupme.models import get_user
+
+logger = logging.getLogger(__name__)
+
+
+class GroupMeUserAuthentication(SessionAuthentication):
+
+    def authenticate(self, request: Request) -> Optional[Tuple[Optional[Any], Optional[Any]]]:
+        user = get_user(request)
+
+        if not user:
+            return None
+
+        self.enforce_csrf(request)
+
+        # CSRF passed with session token
+        return user, None
