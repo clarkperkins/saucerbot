@@ -28,7 +28,7 @@ def es_assertions(es):
 
 def test_loadbrews():
     loader = BrewsLoaderUtil()
-    loader.load_nashville_brews()
+    loader.load_all_brews()
 
     es = Elasticsearch(settings.ELASTICSEARCH_URL)
 
@@ -36,7 +36,7 @@ def test_loadbrews():
 
     # load again and make sure we don't have double
     loader = BrewsLoaderUtil()
-    loader.load_nashville_brews()
+    loader.load_all_brews()
 
     new_index = es_assertions(es)
 
@@ -51,7 +51,7 @@ def test_cleanup_old():
     es.indices.create(f'{BREWS_ALIAS_NAME}-{timestamp}')
 
     loader = BrewsLoaderUtil()
-    loader.load_nashville_brews()
+    loader.load_all_brews()
 
     es_assertions(es)
 
@@ -72,8 +72,17 @@ def test_searchbrews():
 
     # something that will never match
     fake_brews = brew_searcher.brew_info('asdfihasodfihasd')
-    assert fake_brews.startswith('No beers found matching')
+    assert fake_brews == "No beers in Nashville found matching 'asdfihasodfihasd'"
 
-    # bud light is always gonna be there
-    bud_brews = brew_searcher.brew_info('bud light')
-    assert "found for 'bud light'\nBest match is" in bud_brews
+    fake_brews = brew_searcher.brew_info('raleigh asdfihasodfihasd')
+    assert fake_brews == "No beers in raleigh found matching 'asdfihasodfihasd'"
+
+    fake_brews = brew_searcher.brew_info('Raleigh asdfihasodfihasd')
+    assert fake_brews == "No beers in Raleigh found matching 'asdfihasodfihasd'"
+
+    fake_brews = brew_searcher.brew_info('fort worth asdfihasodfihasd')
+    assert fake_brews == "No beers in fort worth found matching 'asdfihasodfihasd'"
+
+    # nashville brewing is probably always gonna be there?
+    nash_brews = brew_searcher.brew_info('nashville')
+    assert "found in Nashville for 'nashville'\nBest match is" in nash_brews

@@ -45,6 +45,10 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
+        'elasticsearch': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
         'django': {
             'handlers': ['console', 'mail_admins'],
             'level': 'INFO',

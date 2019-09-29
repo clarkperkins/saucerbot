@@ -21,13 +21,33 @@ from elasticsearch.helpers import bulk
 from saucerbot.utils.parsers import NewArrivalsParser
 
 # This url is specific to nashville
-BREWS_ALIAS_NAME = 'brews-nashville'
-BREWS_URL = 'https://www.beerknurd.com/api/brew/list/13886'
+BREWS_ALIAS_NAME = 'brews'
+BREWS_URL = 'https://www.beerknurd.com/api/brew/list/{}'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{}'
 
 logger = logging.getLogger(__name__)
 
 ABV_RE = re.compile(r'(?P<abv>[0-9]+(\.[0-9]+)?)%')
+
+SAUCER_LOCATIONS = {
+    'addison': '13887',
+    'austin': '13889',
+    'charlotte': '13888',
+    'columbia': '13878',
+    'cordova': '13883',
+    'cypress-waters': '18686214',
+    'dfw-airport': '18262641',
+    'fort-worth': '13891',
+    'houston': '13880',
+    'kansas-city': '13892',
+    'little-rock': '13885',
+    'memphis': '13881',
+    'nashville': '13886',
+    'raleigh': '13877',
+    'san-antonio': '13882',
+    'sugar-land': '13879',
+    'the-lake': '13884',
+}
 
 
 @dataclass
@@ -99,24 +119,31 @@ class BrewsLoaderUtil:
 
             self.es.indices.put_template(name, template_json)
 
-    def load_nashville_brews(self) -> None:
+    def load_all_brews(self) -> None:
         self.update_templates()
         self.es.indices.create(self.index_name)
 
         # Download & load the brews
-        brews = self.get_nashville_brews()
+        brews = self.get_all_brews()
         logger.info(f"Loading brews into {self.index_name}")
-        bulk(self.es, brews, expand_action_callback=self.expand_brew)
+        bulk(self.es, brews, chunk_size=1000, expand_action_callback=self.expand_brew)
 
         # Clean things up
         self.update_alias()
         self.cleanup_old_indices()
 
-    @staticmethod
-    def get_nashville_brews() -> Iterable[Brew]:
-        brews: List[Dict[str, Any]] = requests.get(BREWS_URL).json()
+    def get_all_brews(self) -> Iterable[Brew]:
+        with requests.Session() as session:
+            for location, store_id in SAUCER_LOCATIONS.items():
+                yield from self.get_brews(session, location, store_id)
 
-        logger.info(f"Retrieved {len(brews)} nashville brews from beerknurd.com")
+    @staticmethod
+    def get_brews(session: requests.Session, location: str, store_id: str) -> List[Brew]:
+        logger.info(f"loading brews from {location}")
+        url = BREWS_URL.format(store_id)
+        brews: List[Dict[str, Any]] = session.get(url).json()
+
+        logger.info(f"Retrieved {len(brews)} {location} brews from beerknurd.com")
 
         for brew in brews:
             # Clean the html
@@ -174,24 +201,54 @@ class BrewsSearchUtil:
         self.es = Elasticsearch(settings.ELASTICSEARCH_URL)
 
     def brew_info(self, search_term: str) -> str:
+        tokens = search_term.split()
+
+        orig_location = 'Nashville'
+        location_lower = None
+
+        if len(tokens) > 1:
+            potential_location = tokens[0].lower()
+            if potential_location in SAUCER_LOCATIONS:
+                location_lower = potential_location
+                orig_location = tokens[0]
+                search_term = ' '.join(tokens[1:])
+
+        if location_lower is None and len(tokens) > 2:
+            potential_location = f"{tokens[0]}-{tokens[1]}".lower()
+            if potential_location in SAUCER_LOCATIONS:
+                location_lower = potential_location
+                orig_location = ' '.join(tokens[:2])
+                search_term = ' '.join(tokens[2:])
+
+        location_lower = location_lower or 'nashville'
+
         response = self.es.search(BREWS_ALIAS_NAME, body={
             'query': {
-                'match': {
-                    'name': search_term
-                }
+                'bool': {
+                    'must': {
+                        'match': {
+                            'name': search_term
+                        }
+                    },
+                    'filter': {
+                        'term': {
+                            'store_id': SAUCER_LOCATIONS[location_lower]
+                        }
+                    },
+                },
             }
         })
 
         total_hits = response['hits']['total']['value']
 
         if total_hits < 1:
-            return f"No beers found matching '{search_term}'"
+            return f"No beers in {orig_location} found matching '{search_term}'"
 
         best_match = response['hits']['hits'][0]['_source']
 
         message = f"{total_hits} match{'' if total_hits == 1 else 'es'} " \
-            f"found for '{search_term}'\n" \
-            f"Best match is {best_match['name']}:\n"
+                  f"found in {orig_location} for '{search_term}'\n" \
+                  f"Best match is {best_match['name']}:\n"
 
         return message + best_match['description']
 

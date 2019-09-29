@@ -10,4 +10,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options) -> None:
         loader = BrewsLoaderUtil()
-        loader.load_nashville_brews()
+        loader.load_all_brews()
