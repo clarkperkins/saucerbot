@@ -20,7 +20,6 @@ from elasticsearch.helpers import bulk
 
 from saucerbot.utils.parsers import NewArrivalsParser
 
-# This url is specific to nashville
 BREWS_ALIAS_NAME = 'brews'
 BREWS_URL = 'https://www.beerknurd.com/api/brew/list/{}'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{}'
@@ -94,11 +93,9 @@ class BrewsLoaderUtil:
         action = {
             'index': {
                 '_index': self.index_name,
-                '_id': brew.brew_id,
             }
         }
         raw_brew: Dict[str, Any] = asdict(brew)
-        raw_brew.pop('brew_id')
         return action, raw_brew
 
     def update_templates(self) -> None:
@@ -221,19 +218,16 @@ class BrewsSearchUtil:
                 search_term = ' '.join(tokens[2:])
 
         location_lower = location_lower or 'nashville'
+        store_id = SAUCER_LOCATIONS[location_lower]
 
         response = self.es.search(BREWS_ALIAS_NAME, body={
             'query': {
                 'bool': {
-                    'must': {
-                        'match': {
-                            'name': search_term
-                        }
-                    },
+                    'must': [
+                        {'match': {'name': search_term}}
+                    ],
                     'filter': {
-                        'term': {
-                            'store_id': SAUCER_LOCATIONS[location_lower]
-                        }
+                        'term': {'store_id': store_id}
                     },
                 },
             }

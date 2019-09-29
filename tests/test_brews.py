@@ -83,6 +83,6 @@ def test_searchbrews():
     fake_brews = brew_searcher.brew_info('fort worth asdfihasodfihasd')
     assert fake_brews == "No beers in fort worth found matching 'asdfihasodfihasd'"
 
-    # nashville brewing is probably always gonna be there?
-    nash_brews = brew_searcher.brew_info('nashville')
-    assert "found in Nashville for 'nashville'\nBest match is" in nash_brews
+    # bud light is always gonna be there
+    nash_brews = brew_searcher.brew_info('bud light')
+    assert "found in Nashville for 'bud light'\nBest match is" in nash_brews
