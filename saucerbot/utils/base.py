@@ -138,7 +138,7 @@ class BrewsLoaderUtil:
                 yield from self.get_brews(session, location, store_id)
 
     @staticmethod
-    def get_brews(session: requests.Session, location: str, store_id: str) -> List[Brew]:
+    def get_brews(session: requests.Session, location: str, store_id: str) -> Iterable[Brew]:
         logger.info(f"loading brews from {location}")
         url = BREWS_URL.format(store_id)
         brews: List[Dict[str, Any]] = session.get(url).json()
