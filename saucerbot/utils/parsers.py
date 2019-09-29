@@ -67,9 +67,8 @@ class Parser:
         column = columns[0]
 
         # Check to make sure it's the correct type
-        if field in self.types:
-            if self.types[field] != column.name:
-                raise RowMismatchError()
+        if field in self.types and self.types[field] != column.name:
+            raise RowMismatchError()
 
         self.types[field] = column.name
 
