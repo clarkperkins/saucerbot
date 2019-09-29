@@ -108,7 +108,7 @@ class BrewsLoaderUtil:
             name, _, ext = template.rpartition('.')
 
             if ext != 'json':
-                logger.warning(f"Located a non-json template file: {template}. Ignoring.")
+                logger.warning("Located a non-json template file: %s. Ignoring.", template)
                 continue
 
             with io.open(os.path.join(templates_dir, template), 'rt') as f:
@@ -122,7 +122,7 @@ class BrewsLoaderUtil:
 
         # Download & load the brews
         brews = self.get_all_brews()
-        logger.info(f"Loading brews into {self.index_name}")
+        logger.info("Loading brews into %s", self.index_name)
         bulk(self.es, brews, chunk_size=1000, expand_action_callback=self.expand_brew)
 
         # Clean things up
@@ -136,11 +136,11 @@ class BrewsLoaderUtil:
 
     @staticmethod
     def get_brews(session: requests.Session, location: str, store_id: str) -> Iterable[Brew]:
-        logger.info(f"loading brews from {location}")
+        logger.info("loading brews from %s", location)
         url = BREWS_URL.format(store_id)
         brews: List[Dict[str, Any]] = session.get(url).json()
 
-        logger.info(f"Retrieved {len(brews)} {location} brews from beerknurd.com")
+        logger.info("Retrieved %i %s brews from beerknurd.com", len(brews), location)
 
         for brew in brews:
             # Clean the html
@@ -156,12 +156,12 @@ class BrewsLoaderUtil:
         if self.es.indices.exists_alias(name=BREWS_ALIAS_NAME):
             old_indices = self.es.indices.get_alias(name=BREWS_ALIAS_NAME)
             for index in old_indices:
-                logger.info(f"Marking {index} for deletion")
+                logger.info("Marking %s for deletion", index)
                 alias_actions.append({
                     'remove_index': {'index': index},
                 })
 
-        logger.info(f"Adding {self.index_name} to the {BREWS_ALIAS_NAME} alias")
+        logger.info("Adding %s to the %s alias", self.index_name, BREWS_ALIAS_NAME)
         # Add the new index
         alias_actions.append({
             'add': {'index': self.index_name, 'alias': BREWS_ALIAS_NAME},
@@ -186,11 +186,11 @@ class BrewsLoaderUtil:
 
             # Try deleting any indices that didn't already get deleted
             for old_index in old_indices:
-                logger.info(f"Deleting {old_index}...")
+                logger.info("Deleting %s...", old_index)
                 try:
                     self.es.indices.delete(old_index)
                 except RequestError:
-                    logger.info(f"Error deleting {old_index}.  Leaving it in place.")
+                    logger.info("Error deleting %s.  Leaving it in place.", old_index)
 
 
 class BrewsSearchUtil:
