@@ -1,4 +1,7 @@
 
+clean:
+	rm -rf .coverage .mypy_cache .pytest_cache reports staticfiles
+
 install/python: @skip:key=Pipfile.lock
 	pipenv install --dev --deploy
 

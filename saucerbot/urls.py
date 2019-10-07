@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('groupme/', include('saucerbot.groupme.urls', namespace='groupme')),
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(pattern_name='groupme:bot-list')),
 ]
