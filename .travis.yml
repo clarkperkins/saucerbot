@@ -25,10 +25,11 @@ addons:
 
 before_install:
   - touch web.env
+  - pip install bake-cli
   - pip install pipenv --upgrade
 
 install:
-  - ./docker_build.sh
+  - bake build
   - docker-compose up -d
   - pipenv install --deploy --dev
 
@@ -50,4 +51,4 @@ script:
   - sonar-scanner
 
 after_success:
-  - ./docker_push.sh
+  - bake deploy
