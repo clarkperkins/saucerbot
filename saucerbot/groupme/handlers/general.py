@@ -111,8 +111,14 @@ def whoami(bot: Bot, message: Message) -> None:
 
     for nickname in nicknames:
         timestamp = arrow.get(nickname.timestamp)
-        response += f'{nickname.nickname} {timestamp.humanize(now)}\n'
+        next_line = f'{nickname.nickname} {timestamp.humanize(now)}\n'
+        if len(response) + len(next_line) > 1000:
+            bot.post(response)
+            response = next_line
+        else:
+            response += next_line
 
+    # make sure to post the rest at the end
     if response:
         bot.post(response)
 

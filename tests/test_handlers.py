@@ -3,7 +3,7 @@
 import json
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -328,3 +328,71 @@ def test_troll_present(bot, gmi, client):
 
     assert posted_message.text == "@Shaina is the troll"
     assert len(posted_message.attachments) == 1
+
+
+def test_whoami(bot, gmi):
+    from lowerpines.endpoints.message import Message
+    from saucerbot.groupme.handlers import general
+    from saucerbot.groupme.models import HistoricalNickname
+
+    fake_user_id = '123456'
+
+    HistoricalNickname.objects.create(group_id=bot.group_id, groupme_id=fake_user_id,
+                                      nickname='abc123', timestamp=datetime.now() - timedelta(1))
+    HistoricalNickname.objects.create(group_id=bot.group_id, groupme_id=fake_user_id,
+                                      nickname='def456', timestamp=datetime.now() - timedelta(2))
+
+    message = Message(gmi)
+    message.user_id = fake_user_id
+
+    general.whoami(bot.bot, message)
+
+    assert bot.group.messages.count == 1
+    assert bot.group.messages.all()[0].text == 'abc123 a day ago\ndef456 2 days ago\n'
+
+
+def test_whoami_long(bot, gmi):
+    from lowerpines.endpoints.message import Message
+    from saucerbot.groupme.handlers import general
+    from saucerbot.groupme.models import HistoricalNickname
+
+    long_nickname = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+    fake_user_id = '123456'
+
+    for i in range(1, 21):
+        HistoricalNickname.objects.create(group_id=bot.group_id, groupme_id=fake_user_id,
+                                          nickname=f'{long_nickname} {i}',
+                                          timestamp=datetime.now() - timedelta(i))
+
+    message = Message(gmi)
+    message.user_id = fake_user_id
+
+    general.whoami(bot.bot, message)
+
+    assert bot.group.messages.count == 2
+
+    first_message = bot.group.messages.all()[0]
+
+    assert len(first_message.text) <= 1000
+
+    first_expected_start = f'{long_nickname} 1 a day ago\n' \
+                           f'{long_nickname} 2 2 days ago\n'
+
+    first_expected_end = f'{long_nickname} 14 2 weeks ago\n' \
+                         f'{long_nickname} 15 2 weeks ago\n'
+
+    assert first_message.text.startswith(first_expected_start)
+    assert first_message.text.endswith(first_expected_end)
+
+    second_message = bot.group.messages.all()[1]
+
+    assert len(second_message.text) <= 1000
+
+    second_expected_start = f'{long_nickname} 16 2 weeks ago\n' \
+                            f'{long_nickname} 17 2 weeks ago\n'
+
+    second_expected_end = f'{long_nickname} 19 2 weeks ago\n' \
+                          f'{long_nickname} 20 2 weeks ago\n'
+
+    assert second_message.text.startswith(second_expected_start)
+    assert second_message.text.endswith(second_expected_end)
