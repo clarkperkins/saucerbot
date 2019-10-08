@@ -15,7 +15,7 @@ from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ImageAttach, ComplexMessage
 
 flickr_url = 'https://api.flickr.com/services/rest/'
-logger: logging.Logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 janet_messages = [
     "I think THIS is what you're looking for!",
     "Ride or die!",
@@ -42,8 +42,8 @@ def search_flickr(terms: List[str]) -> Optional[List]:
     }
     resp = requests.get(flickr_url, params=args)
     if resp.status_code >= 300 or resp.status_code < 200:
-        logger.info(f"Failed to search flickr: status code {resp.status_code}")
-        logger.debug(f"Response: {resp.text}")
+        logger.info("Failed to search flickr: status code %i", resp.status_code)
+        logger.debug("Response: %s", resp.text)
         return None
     text = unwrap_flickr_response(resp.text)
     return json.loads(text)['photos']['photo']

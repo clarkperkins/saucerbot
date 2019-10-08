@@ -195,7 +195,7 @@ class Bot(models.Model):
             if handler.name not in handler_names:
                 continue
 
-            logger.debug(f"Trying message handler {handler.name} ...")
+            logger.debug("Trying message handler %s ...", handler.name)
 
             matched = handler.run(self.bot, message)
 

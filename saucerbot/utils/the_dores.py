@@ -48,17 +48,17 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[Dict]:
     else:
         season_type = 2  # code for regular season
         week = __get_week(desired_date)
-        logger.debug(f"It's week {week}")
+        logger.debug("It's week %i", week)
     url = ESPN_FOOTBALL_URL.format(year=desired_date.year, week=week, season=season_type)
-    logger.debug(f"Requesting URL '{url}'")
+    logger.debug("Requesting URL '%s'", url)
     response = requests.get(url)
     if 200 <= response.status_code < 300:
         scores = response.json()
         game = __get_the_dores_game(scores)
         return game
     else:
-        logger.warning(f'Received non-success response code: '
-                       f'{response.status_code} -- {response.text}')
+        logger.warning("Received non-success response code: %i -- %s",
+                       response.status_code, response.text)
         return None
 
 
