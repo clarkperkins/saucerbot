@@ -46,7 +46,7 @@ def nickname_entry(bot: Bot, nickname: str, timestamp: arrow.Arrow) -> None:
             break
 
     if not user_id:
-        logger.warning(f"Failed to find user_id for {nickname}... Could not log nickname")
+        logger.warning("Failed to find user_id for %s... Could not log nickname", nickname)
         return
 
     HistoricalNickname.objects.create(

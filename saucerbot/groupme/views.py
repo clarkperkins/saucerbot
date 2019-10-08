@@ -75,7 +75,7 @@ class BotActionsViewSet(GenericViewSet):
     def parse_as_message(self, bot: Bot) -> Message:
         if logger.isEnabledFor(logging.INFO):
             raw_json = json.dumps(self.request.data)
-            logger.info(f'Received raw message: {raw_json}')
+            logger.info("Received raw message: %s", raw_json)
 
         # Load it as a groupme message
         try:
