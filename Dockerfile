@@ -1,4 +1,4 @@
-FROM python:3.7-alpine
+FROM python:3.8-alpine
 
 LABEL org.opencontainers.image.title="saucerbot"
 LABEL org.opencontainers.image.description="GroupMe bot for the saucer groupme"
