@@ -127,12 +127,30 @@ class BridgestoneEventsParser(Parser):
     url = 'https://www.bridgestonearena.com/events'
     base = 'div#list > div > div.info.clearfix'
     fields = [
-        ('name', 'h3 > a'),
+        ('link', 'h3 > a'),
         ('date', 'div.date'),
     ]
 
     def post_process(self, row):
-        row['name'] = row['name']['text'].strip()
-        row['date'] = row['date'].strip()
+        result = {
+            'details': row['link']['href'],
+            'name': row['link']['text'].strip(),
+            'date': row['date'].strip()
+        }
+        return result
 
+
+class BridgestoneEventTimeParser(Parser):
+    base = "div#content > div > div#column_1 > div > div.right_side_wrapper " + \
+           "> div > div.details > ul.eventDetailList"
+    fields = [
+        ("time", "li.sidebar_event_starts > span")
+    ]
+
+    def __init__(self, event: Dict[str, Any], *args: Any):
+        self.url = event['details']
+        super().__init__(*args)
+
+    def post_process(self, row):
+        row['time'] = row["time"].strip()
         return row
