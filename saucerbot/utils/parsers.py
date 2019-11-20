@@ -14,22 +14,31 @@ class MissingBaseError(Exception):
     pass
 
 
+class HtmlContentProvider:
+
+    def __init__(self, url: str, *args: Any) -> None:
+        self.url = url.format(*args)
+        self.soup = None
+
+    def get_content(self) -> BeautifulSoup:
+        if not self.soup:
+            r = requests.get(self.url)
+            r.raise_for_status()
+            self.soup = BeautifulSoup(r.text, 'html.parser')
+        return self.soup
+
+
 class Parser:
     base = ''
     fields: List[Tuple[str, str]] = []
-    url = ''
 
-    def __init__(self, *args: Any) -> None:
+    def __init__(self, provider: HtmlContentProvider) -> None:
         super(Parser, self).__init__()
-        self.args = args
-        if not self.url:
-            raise ValueError('Value for url required.')
+        if not provider:
+            raise ValueError('Value for provider required.')
 
-        r = requests.get(self.url.format(*args))
-        r.raise_for_status()
-
+        self.provider = provider
         self.types: Dict[str, Any] = {}
-        self.soup = BeautifulSoup(r.text, 'html.parser')
 
     def parse(self) -> Iterable[Dict[str, Any]]:
         """
@@ -87,7 +96,7 @@ class Parser:
             raise MissingBaseError()
 
         # Scrape the fields out of the html
-        for row in self.soup.select(self.base):
+        for row in self.provider.get_content().select(self.base):
             next_row: Dict[str, Any] = {}
             for field, selector in self.fields:
                 next_field = self._process_row(row, field, selector)
@@ -122,9 +131,12 @@ class NewArrivalsParser(Parser):
 
         return row
 
+    @staticmethod
+    def create_new_arrivals_provider(*args: Any) -> HtmlContentProvider:
+        return HtmlContentProvider(NewArrivalsParser.url.format(*args))
+
 
 class BridgestoneEventsParser(Parser):
-    url = 'https://www.bridgestonearena.com/events'
     base = 'div#list > div > div.info.clearfix'
     fields = [
         ('link', 'h3 > a'),
@@ -147,10 +159,10 @@ class BridgestoneEventTimeParser(Parser):
         ("time", "li.sidebar_event_starts > span")
     ]
 
-    def __init__(self, event: Dict[str, Any], *args: Any):
-        self.url = event['details']
-        super().__init__(*args)
-
     def post_process(self, row):
         row['time'] = row["time"].strip()
         return row
+
+    @staticmethod
+    def create_event_time_provider(event: Dict[str, Any]) -> HtmlContentProvider:
+        return HtmlContentProvider(event['details'])

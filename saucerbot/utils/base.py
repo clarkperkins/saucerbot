@@ -264,10 +264,10 @@ def get_insult() -> str:
 
 def get_new_arrivals(location: str) -> str:
     try:
-        parser = NewArrivalsParser(location.lower().replace(' ', '-'))
+        location_string = location.lower().replace(' ', '-')
+        html_provider = NewArrivalsParser.create_new_arrivals_provider(location_string)
+        parser = NewArrivalsParser(html_provider)
+        beers = parser.parse()
+        return '\n'.join(x['name'] for x in beers)
     except requests.HTTPError:
         return f"Uh oh, looks like there's no saucer in {location}!"
-
-    beers = parser.parse()
-
-    return '\n'.join(x['name'] for x in beers)
