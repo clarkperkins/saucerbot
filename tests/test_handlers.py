@@ -3,7 +3,9 @@
 import json
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import timedelta
+
+import arrow
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +14,7 @@ def get_sample_message(bot, text, attachments=None, system=False, name='Foo Bar'
     return {
         'attachments': attachments or [],
         'avatar_url': "https://example.com/avatar.jpeg",
-        'created_at': int(datetime.now().timestamp()),
+        'created_at': int(arrow.utcnow().datetime.timestamp()),
         'group_id': bot.group.group_id,
         'id': "1234567890",
         'name': name,
@@ -338,9 +340,11 @@ def test_whoami(bot, gmi):
     fake_user_id = '123456'
 
     HistoricalNickname.objects.create(group_id=bot.group_id, groupme_id=fake_user_id,
-                                      nickname='abc123', timestamp=datetime.now() - timedelta(1))
+                                      nickname='abc123',
+                                      timestamp=arrow.utcnow().datetime - timedelta(1))
     HistoricalNickname.objects.create(group_id=bot.group_id, groupme_id=fake_user_id,
-                                      nickname='def456', timestamp=datetime.now() - timedelta(2))
+                                      nickname='def456',
+                                      timestamp=arrow.utcnow().datetime - timedelta(2))
 
     message = Message(gmi)
     message.user_id = fake_user_id
@@ -362,7 +366,7 @@ def test_whoami_long(bot, gmi):
     for i in range(1, 21):
         HistoricalNickname.objects.create(group_id=bot.group_id, groupme_id=fake_user_id,
                                           nickname=f'{long_nickname} {i}',
-                                          timestamp=datetime.now() - timedelta(i))
+                                          timestamp=arrow.utcnow().datetime - timedelta(i))
 
     message = Message(gmi)
     message.user_id = fake_user_id
