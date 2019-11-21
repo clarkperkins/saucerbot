@@ -2,11 +2,6 @@
 clean:
 	rm -rf .coverage .mypy_cache .pytest_cache reports staticfiles
 
-install/python: @skip:key=Pipfile.lock
-	pipenv install --dev --deploy
-
-install: install/python
-
 build/docker:
 	docker build --pull --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') --tag clarkperkins/saucerbot .
 
@@ -15,18 +10,18 @@ build: build/docker
 reports:
 	mkdir -p reports
 
-check/pycodestyle: install/python
+check/pycodestyle:
 	pycodestyle saucerbot
 
-check/pylint: install/python reports
+check/pylint: reports
 	pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt
 
-check/mypy: install/python
+check/mypy:
 	mypy saucerbot
 
 check: check/pycodestyle check/pylint check/mypy
 
-test/pytest/xml: install/python reports
+test/pytest/xml: reports
 	export DJANGO_ENV=test
 	pytest --cov=saucerbot --cov-report=xml
 
@@ -39,7 +34,7 @@ test: test/pytest/xml
 cov: test/pytest/html
 	open reports/html/index.html
 
-ci: install build check test
+ci: build check test
 
 promote/heroku:
 	docker pull registry.heroku.com/saucerbot-staging/web

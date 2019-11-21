@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import List, Union
+from typing import List, Optional, Union
 
 import arrow
 from django.core.management.base import BaseCommand, CommandParser
-from lowerpines.message import RefAttach
+from lowerpines.endpoints.message import Message
+from lowerpines.message import ComplexMessage, RefAttach
 
 from saucerbot.groupme.models import Bot
 from saucerbot.utils.bridgestone import create_message, get_todays_events
@@ -17,6 +18,10 @@ LIKE_IF_POST = "Saucer at 7PM. Like if."
 
 class Command(BaseCommand):
     help = "Commands for sending reminders"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot: Bot = Optional[None]
 
     def add_arguments(self, parser: CommandParser):
         parser.add_argument('bot', help="The name of the bot to post as")
@@ -36,60 +41,67 @@ class Command(BaseCommand):
             self.stdout.write("No reminders sent, it's not Monday!")
             return
 
-        bot = Bot.objects.get(slug=options['bot'])
+        self.bot = Bot.objects.get(slug=options['bot'])
 
         if options['subcommand'] == 'like-if':
-            self.like_if(bot)
+            self.like_if()
         elif options['subcommand'] == 'whos-coming':
-            self.whos_coming(bot)
+            self.whos_coming()
 
-    @staticmethod
-    def like_if(bot: Bot) -> None:
+    def like_if(self) -> None:
         """
         Remind everyone to come to saucer.
         """
-        bot.post_message(LIKE_IF_POST)
+        self.bot.post_message(LIKE_IF_POST)
         logger.info('Successfully sent reminder message.')
 
         todays_events = get_todays_events()
         if todays_events:
-            bot.post_message(create_message(todays_events[0]))
+            self.bot.post_message(create_message(todays_events[0]))
 
-    @staticmethod
-    def whos_coming(bot: Bot) -> None:
+    def whos_coming(self) -> None:
         """
         Let everyone know who's coming
         """
-        user_id_map = {m.user_id: m.nickname for m in bot.bot.group.members}
-
         # Since the bot post response is empty, search through the old posts to
         # find the most recent one matching the text
-        for message in bot.bot.group.messages.recent():
-            if message.text == LIKE_IF_POST and message.name == 'saucerbot':
+        for message in self.bot.bot.group.messages.recent():
+            if message.text == LIKE_IF_POST and message.name == self.bot.name:
                 num_likes = len(message.favorited_by)
 
-                if num_likes == 0:
-                    phrase = 'nobody is'
-                    ending = ' \ud83d\ude2d'
-                elif num_likes == 1:
-                    phrase = 'only 1 person is'
-                    ending = ' \ud83d\ude22'
-                else:
-                    phrase = f'{num_likes} people are'
-                    ending = ''
-
-                bot.post_message(f"Looks like {phrase} coming tonight.{ending}")
+                self.whos_coming_message(num_likes)
 
                 if num_likes > 0:
-                    message_parts: List[Union[str, RefAttach]] = ['Save seats for']
-                    for user_id in message.favorited_by:
-                        if user_id in user_id_map:
-                            message_parts.append(RefAttach(user_id, f'@{user_id_map[user_id]}'))
-
-                    if len(message_parts) > 1:
-                        bot.post_message(' '.join(message_parts))  # type: ignore
+                    self.save_seats_message(message)
 
                 logger.info('Successfully sent reminder message.')
 
                 # We sent a message already, don't send another
                 break
+
+    def whos_coming_message(self, num_likes: int):
+        if num_likes == 0:
+            phrase = 'nobody is'
+            ending = ' \ud83d\ude2d'
+        elif num_likes == 1:
+            phrase = 'only 1 person is'
+            ending = ' \ud83d\ude22'
+        else:
+            phrase = f'{num_likes} people are'
+            ending = ''
+
+        self.bot.post_message(f"Looks like {phrase} coming tonight.{ending}")
+
+    def save_seats_message(self, message: Message):
+        user_id_map = {m.user_id: m.nickname for m in self.bot.bot.group.members}
+
+        attachments: List[RefAttach] = []
+        for user_id in message.favorited_by:
+            if user_id in user_id_map:
+                attachments.append(RefAttach(user_id, f'@{user_id_map[user_id]}'))
+
+        if len(attachments) > 1:
+            mes: Union[str, ComplexMessage] = "Save seats for:"
+            for att in attachments:
+                mes = mes + '\n  ' + att
+            self.bot.post_message(mes)
