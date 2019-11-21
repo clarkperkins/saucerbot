@@ -7,6 +7,9 @@ LABEL org.opencontainers.image.source="https://github.com/clarkperkins/saucerbot
 # These don't get removed, so install them first separately
 RUN apk add --no-cache curl postgresql-client postgresql-libs
 
+# Only adding these due to a bug in gunicorn: https://github.com/benoitc/gunicorn/issues/2160
+RUN apk add --no-cache binutils musl-dev
+
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
 
