@@ -7,11 +7,12 @@ LABEL org.opencontainers.image.source="https://github.com/clarkperkins/saucerbot
 # These don't get removed, so install them first separately
 RUN apk add --no-cache curl postgresql-client postgresql-libs
 
-# Only adding these due to a bug in gunicorn: https://github.com/benoitc/gunicorn/issues/2160
-RUN apk add --no-cache binutils musl-dev
-
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
+
+# required for the scout agent to work
+ENV SCOUT_CORE_AGENT_TRIPLE x86_64-unknown-linux-musl
+ENV SCOUT_CORE_AGENT_DIR /app/scout_apm_core
 
 # Passing the -h /app will set that as the home dir & chown it
 RUN addgroup -S saucerbot && adduser -D -S -g saucerbot -G saucerbot -h /app saucerbot
@@ -27,19 +28,16 @@ RUN apk add --no-cache --virtual .build-deps git gcc g++ linux-headers postgresq
     pip uninstall -y pipenv virtualenv virtualenv-clone && \
     apk --purge del .build-deps
 
+USER saucerbot
+
+# pre-install the scout agent
+RUN SCOUT_MONITOR=true python -c 'from scout_apm.core import install; install()' && \
+    rm -f $SCOUT_CORE_AGENT_DIR/scout_apm_core-*-$SCOUT_CORE_AGENT_TRIPLE/scout_apm_core-*-$SCOUT_CORE_AGENT_TRIPLE.tgz
 
 # Copy all the code & generate the static files
 COPY --chown=saucerbot:saucerbot saucerbot saucerbot
 
-USER saucerbot
-
 RUN python -m compileall saucerbot
-
-# Get the scout core agent working properly
-ENV SCOUT_CORE_AGENT_TRIPLE x86_64-unknown-linux-musl
-ENV SCOUT_CORE_AGENT_DIR /app/scout_apm_core
-RUN SCOUT_MONITOR=true python -c 'from scout_apm.core import install; install()' && \
-    rm -f $SCOUT_CORE_AGENT_DIR/scout_apm_core-*-$SCOUT_CORE_AGENT_TRIPLE/scout_apm_core-*-$SCOUT_CORE_AGENT_TRIPLE.tgz
 
 # Build static files
 RUN DJANGO_ENV=build HEROKU_APP_NAME=build python manage.py collectstatic --noinput
