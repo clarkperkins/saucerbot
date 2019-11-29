@@ -44,6 +44,9 @@ script:
   # Type checking
   - pipenv run mypy saucerbot
 
+  # Build the static files so that the the tests don't produce warnings
+  - pipenv run python manage.py collectstatic --noinput
+
   # Unit tests
   - pipenv run pytest --cov=saucerbot --cov-report=xml
 
