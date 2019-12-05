@@ -400,3 +400,25 @@ def test_whoami_long(bot, gmi):
 
     assert second_message.text.startswith(second_expected_start)
     assert second_message.text.endswith(second_expected_end)
+
+
+def test_plate_party(bot, gmi, client):
+    bot.handlers.create(handler_name='plate_party')
+
+    from lowerpines.endpoints.member import Member
+    from saucerbot.groupme.handlers.saucer import CLARK_USER_ID
+    clark_member = Member(gmi, bot.group.group_id, 'Clark The Shark', CLARK_USER_ID)
+    bot.group.add_member(clark_member)
+
+    message = get_sample_message(bot, "CLARK! When's your plate party???", name='Everyone')
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(message))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': True}
+    assert bot.group.messages.count == 1
+
+    posted_message = bot.group.messages.all()[0]
+    
+    assert '@Clark The Shark' in posted_message.text
+    assert len(posted_message.attachments) == 1
