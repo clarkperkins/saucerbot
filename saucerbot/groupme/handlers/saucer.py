@@ -19,6 +19,7 @@ from saucerbot.utils import (
 
 logger = logging.getLogger(__name__)
 
+CLARK_USER_ID = '6499167'
 SHAINA_USER_ID = '6830949'
 
 SAUCERBOT_MESSAGE_LIST: List[Union[ComplexMessage, str]] = [
@@ -115,17 +116,42 @@ def zo_is_dead(bot: Bot) -> None:
 
 @registry.handler([r'pong', r'beer pong'])
 def troll(bot: Bot) -> None:
-    shaina = None
-    for member in bot.group.members:
-        if member.user_id == SHAINA_USER_ID:
-            shaina = member
-            break
-
+    shaina = get_member(bot, SHAINA_USER_ID)
     pre_message: Union[RefAttach, str]
 
     if shaina:
-        pre_message = RefAttach(SHAINA_USER_ID, f'@{shaina.nickname}')
+        pre_message = shaina
     else:
         pre_message = "Shaina"
 
     bot.post(pre_message + " is the troll")
+
+
+def get_member(bot: Bot, member_id: str) -> Union[RefAttach, None]:
+    for member in bot.group.members:
+        if member.user_id == member_id:
+            return RefAttach(member_id, f'@{member.nickname}')
+    return None
+
+
+plate_party_messages: List[str] = [
+    "Yeah |, when is it???",
+    "Still waiting on that date |",
+    "*nudge* |",
+    "Don't hold your breath, | ain't gonna schedule it soon",
+    "|"
+]
+
+
+@registry.handler(r'plate party')
+def plate_party(bot: Bot):
+    """
+    This is to troll clark lolz but some future work could be fun on this
+    """
+    clark = get_member(bot, CLARK_USER_ID)
+
+    if not clark:
+        logger.error("Somehow clark escaped the group!!!!")
+    else:
+        quip = random.choice(plate_party_messages).split('|')
+        bot.post(quip[0] + clark + quip[1])
