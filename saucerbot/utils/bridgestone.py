@@ -93,6 +93,6 @@ def get_event_time_helper(provider: HtmlContentProvider, event_name: str) -> Opt
             logger.info('No times found for event %s', event_name)
             return None
         return arrow.get(times[0]['time'], __bridgestone_time_pattern).format('h:mm')
-    except (RequestException, ParserError):
-        logger.info('Failed to get event info for %s', event_name)
+    except (RequestException, ParserError) as e:
+        logger.info('Failed to get event info for %s', event_name, exc_info=e)
         return None

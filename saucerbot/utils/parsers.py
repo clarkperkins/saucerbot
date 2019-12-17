@@ -153,14 +153,14 @@ class BridgestoneEventsParser(Parser):
 
 
 class BridgestoneEventTimeParser(Parser):
-    base = "div#content > div > div#column_1 > div > div.right_side_wrapper " + \
-           "> div > div.details > ul.eventDetailList"
+    base = "div#content > div > div#column_1 > div.leftColumn > div.event_showings " \
+           "> ul.list.clearfix > li.listItem"
     fields = [
-        ("time", "li.sidebar_event_starts > span")
+        ("time", "div.flex-wrap > div.border-wrap > div.date > div.cal > span.time-stamp")
     ]
 
     def post_process(self, row):
-        row['time'] = row["time"].strip()
+        row['time'] = row['time'].strip()
         return row
 
     @staticmethod
