@@ -220,7 +220,7 @@ class BrewsSearchUtil:
         location_lower = location_lower or 'nashville'
         store_id = SAUCER_LOCATIONS[location_lower]
 
-        response = self.es.search(BREWS_ALIAS_NAME, body={
+        response = self.es.search(index=BREWS_ALIAS_NAME, body={
             'query': {
                 'bool': {
                     'must': [

@@ -10,9 +10,6 @@
     "DJANGO_SECRET_KEY": {
       "generator": "secret"
     },
-    "HEROKU_APP_NAME": {
-      "required": true
-    },
     "GROUPME_CLIENT_ID": {
       "required": true
     }
@@ -26,10 +23,5 @@
   "addons": [
     "bonsai",
     "heroku-postgresql"
-  ],
-  "buildpacks": [
-    {
-      "url": "heroku/python"
-    }
   ]
 }
