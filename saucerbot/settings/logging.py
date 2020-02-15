@@ -52,6 +52,14 @@ LOGGING = {
         'django': {
             'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
-        }
+        },
+        'scout_apm.instruments.elasticsearch': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
     }
 }
