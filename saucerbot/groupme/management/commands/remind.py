@@ -100,7 +100,7 @@ class Command(BaseCommand):
             if user_id in user_id_map:
                 attachments.append(RefAttach(user_id, f'@{user_id_map[user_id]}'))
 
-        if len(attachments) > 1:
+        if attachments:
             mes: Union[str, ComplexMessage] = "Save seats for:"
             for att in attachments:
                 mes = mes + '\n  ' + att

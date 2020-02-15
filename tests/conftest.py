@@ -123,6 +123,7 @@ def gmi(monkeypatch):
             text, attachments = smart_split_complex_message(text)
             message = TestMessage(self.gmi, group_id=self.group_id, text=text,
                                   attachments=attachments)
+            message.favorited_by = []
             message.name = self.name
             message.save()
 

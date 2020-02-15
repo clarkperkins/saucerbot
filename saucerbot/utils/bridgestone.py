@@ -12,7 +12,7 @@ from saucerbot.utils.parsers import BridgestoneEventTimeParser, HtmlContentProvi
 
 logger = logging.getLogger(__name__)
 
-__bridgestone_date_pattern = 'MMM D'
+__bridgestone_date_pattern = r'MMMM[\s*]D[\s*]YYYY'
 __bridgestone_time_pattern = r'h:mm[\s*]A'
 __message_formats = [
     "Better get there early: {event} at Bridgestone{time} tonight!",
