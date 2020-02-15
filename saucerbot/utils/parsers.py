@@ -49,26 +49,28 @@ class Parser:
         for row in self._do_initial_parse():
             yield self.post_process(row)
 
-    def _process_row(self, row, field, selector, attribute=None) -> Any:
+    def _handle_missing_field(self, field: str, selector: str) -> Any:
+        next_type = self.types.get(field)
+        if not next_type:
+            # try to guess it
+            next_type = selector.split(' > ')[-1].split(':')[0]
+
+        if next_type:
+            if next_type == 'a':
+                return {
+                    'text': '',
+                    'href': ''
+                }
+            else:
+                return ''
+
+        return None
+
+    def _process_row(self, row, field: str, selector: str, attribute=None) -> Any:
         columns = row.select(selector)
 
         if not columns:
-            # Handle missing field
-            next_type = self.types.get(field)
-            if not next_type:
-                # try to guess it
-                next_type = selector.split(' > ')[-1].split(':')[0]
-
-            if next_type:
-                if next_type == 'a':
-                    return {
-                        'text': '',
-                        'href': ''
-                    }
-                else:
-                    return ''
-
-            return None
+            return self._handle_missing_field(field, selector)
         elif len(columns) > 1:
             raise RowMismatchError()
 
