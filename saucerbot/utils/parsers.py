@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import Any, Dict, Iterable, Iterator, List, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -30,7 +30,7 @@ class HtmlContentProvider:
 
 class Parser:
     base = ''
-    fields: List[Tuple[str, str]] = []
+    fields: List[Tuple[str, str, Optional[str]]] = []
 
     def __init__(self, provider: HtmlContentProvider) -> None:
         super(Parser, self).__init__()
@@ -49,7 +49,7 @@ class Parser:
         for row in self._do_initial_parse():
             yield self.post_process(row)
 
-    def _process_row(self, row, field, selector) -> Any:
+    def _process_row(self, row, field, selector, attribute=None) -> Any:
         columns = row.select(selector)
 
         if not columns:
@@ -81,7 +81,9 @@ class Parser:
 
         self.types[field] = column.name
 
-        if column.name == 'a':
+        if attribute:
+            return column.attrs.get(attribute)
+        elif column.name == 'a':
             return {
                 'text': column.text,
                 'href': column.attrs.get('href')
@@ -98,8 +100,8 @@ class Parser:
         # Scrape the fields out of the html
         for row in self.provider.get_content().select(self.base):
             next_row: Dict[str, Any] = {}
-            for field, selector in self.fields:
-                next_field = self._process_row(row, field, selector)
+            for field, selector, attribute in self.fields:
+                next_field = self._process_row(row, field, selector, attribute)
                 if next_field:
                     next_row[field] = next_field
 
@@ -121,8 +123,8 @@ class NewArrivalsParser(Parser):
     url = 'https://www.beerknurd.com/locations/{}-flying-saucer'
     base = 'div.view-new-arrivals-block > div > table > tbody > tr'
     fields = [
-        ('name', 'td.views-field-title'),
-        ('date', 'td.views-field-created-1'),
+        ('name', 'td.views-field-title', None),
+        ('date', 'td.views-field-created-1', None),
     ]
 
     def post_process(self, row):
@@ -139,8 +141,8 @@ class NewArrivalsParser(Parser):
 class BridgestoneEventsParser(Parser):
     base = 'div#list > div > div.info.clearfix'
     fields = [
-        ('link', 'h3 > a'),
-        ('date', 'div.date'),
+        ('link', 'h3 > a', None),
+        ('date', 'div.date', 'aria-label'),
     ]
 
     def post_process(self, row):
@@ -156,7 +158,7 @@ class BridgestoneEventTimeParser(Parser):
     base = "div#content > div > div#column_1 > div.leftColumn > div.event_showings " \
            "> ul.list.clearfix > li.listItem"
     fields = [
-        ("time", "div.flex-wrap > div.border-wrap > div.date > div.cal > span.time-stamp")
+        ("time", "div.flex-wrap > div.border-wrap > div.date > div.cal > span.time-stamp", None)
     ]
 
     def post_process(self, row):
