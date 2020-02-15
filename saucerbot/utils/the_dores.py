@@ -13,7 +13,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 ESPN_FOOTBALL_URL = (
-    "http://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
+    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
     "?lang=en&region=us&calendartype=blacklist&limit=300&dates={year}"
     "&seasontype={season}&week={week}&groups=80"
 )
