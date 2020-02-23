@@ -89,10 +89,21 @@ def get_event_time_helper(provider: HtmlContentProvider, event_name: str) -> Opt
     try:
         parser = BridgestoneEventTimeParser(provider)
         times = list(t for t in parser.parse())
-        if not times:
+        raw_time_str: Optional[str] = None
+        if times:
+            raw_time_str = times[0]['time']
+        else:
+            time_span = provider.get_content().select_one(
+                'ul.eventDetailList > li.item.sidebar_event_starts > span')
+            if time_span:
+                raw_time_str = time_span.text
+
+        if raw_time_str:
+            return arrow.get(raw_time_str, __bridgestone_time_pattern).format('h:mm')
+        else:
             logger.info('No times found for event %s', event_name)
             return None
-        return arrow.get(times[0]['time'], __bridgestone_time_pattern).format('h:mm')
+
     except (RequestException, ParserError) as e:
         logger.info('Failed to get event info for %s', event_name, exc_info=e)
         return None
