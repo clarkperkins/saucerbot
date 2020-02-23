@@ -18,7 +18,7 @@ services:
 env:
   global:
     - DJANGO_ENV=test
-    - DATABASE_URL='postgres://postgres:@localhost:5432/postgres'
+    - DATABASE_URL='postgres://postgres:postgres@localhost:5432/postgres'
     - BONSAI_URL='http://localhost:9200'
 
 addons:
@@ -30,12 +30,11 @@ addons:
 
 before_install:
   - touch web.env
+  - docker-compose up -d db elasticsearch
   - pip install bake-cli
   - pip install pipenv --upgrade
 
 install:
-  - bake build
-  - docker-compose up -d
   - pipenv install --deploy --dev
 
 before_script:
@@ -59,4 +58,5 @@ script:
   - sonar-scanner
 
 after_success:
+  - bake build
   - ./docker_push.sh
