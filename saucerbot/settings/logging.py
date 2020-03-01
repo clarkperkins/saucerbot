@@ -42,19 +42,16 @@ LOGGING = {
     },
     'loggers': {
         'saucerbot': {
-            'handlers': ['console'],
             'level': 'INFO',
         },
         'elasticsearch': {
-            'handlers': ['console'],
             'level': 'INFO',
         },
         'django': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['mail_admins'],
             'level': 'INFO',
         },
         'scout_apm.instruments.elasticsearch': {
-            'handlers': ['console'],
             'level': 'ERROR',
         },
         '': {
