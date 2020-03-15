@@ -63,7 +63,10 @@ def nickname_entry(bot: Bot, nickname: str, timestamp: arrow.Arrow) -> None:
 @registry.handler()
 def system_messages(bot: Bot, message: Message) -> bool:
     """
-    Process system messages
+    Process system messages:
+    * Nickname changes
+    * Added users
+    * Removed users
     """
     if not message.system:
         return False
@@ -102,6 +105,9 @@ def system_messages(bot: Bot, message: Message) -> bool:
 
 @registry.handler(r'whoami')
 def whoami(bot: Bot, message: Message) -> None:
+    """
+    Display a user's historical nicknames
+    """
     nicknames = HistoricalNickname.objects.filter(
         group_id=bot.group_id,
         groupme_id=message.user_id
@@ -161,23 +167,32 @@ def catfacts(bot: Bot) -> None:
 @registry.handler(r'lit fam')
 def lit(bot: Bot) -> None:
     """
-    battle with the lit bot
+    Battle with the lit bot
     """
     bot.post("You're not lit, I'm lit")
 
 
 @registry.handler(r'@saucerbot', case_sensitive=True)
 def dont_at_me(bot: Bot) -> None:
-    bot.post("don't @ me \ud83d\ude44")
+    """
+    @saucerbot - Don't @ me 🙄
+    """
+    bot.post("don't @ me 🙄")
 
 
 @registry.handler([r'@saucerbot', r'@ saucerbot'])
 def sneaky(bot: Bot) -> None:
+    """
+    Handle other @saucerbot variants
+    """
     bot.post("you think you're sneaky don't you")
 
 
 @registry.handler(r'@janet')
 def ask_janet(bot: Bot, message: Message) -> None:
+    """
+    Get images matching the text
+    """
     terms = janet.select_terms_from_message(message.text)
     if not terms or random.random() < 0.125:
         terms = ['cactus']  # CACTUS!!!
@@ -192,12 +207,18 @@ def ask_janet(bot: Bot, message: Message) -> None:
 
 @registry.handler()
 def handle_barely_know_her(bot: Bot, message: Message) -> bool:
+    """
+    I barely know her!
+    """
     return i_barely_know_her(bot, message)
 
 
 @registry.handler([r'69', r'sixty-nine', r'sixty nine'])
 def teenage_saucerbot(bot: Bot) -> None:
-    bot.post('Nice \U0001f44c')
+    """
+    69
+    """
+    bot.post('Nice 👌')
 
 
 thai_sent = False
@@ -205,6 +226,9 @@ thai_sent = False
 
 @registry.handler()
 def too_early_for_thai(bot: Bot, message: Message) -> bool:
+    """
+    It's too early for thai
+    """
     global thai_sent
 
     # Grab an arrow time in central time

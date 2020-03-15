@@ -13,11 +13,11 @@ from lowerpines.message import ComplexMessage
 from lowerpines.message import RefAttach
 
 emojis = [
-    '\U0001f44c',  # ok sign
-    '\U0001f64f',  # praying hands
-    '\U0001f64c',  # field goal hands
-    '\U0001f64b\u200d\u2642\ufe0f',  # guy raising hand
-    '\U0001f64b\u200d\u2640\ufe0f',  # woman raising hand
+    '👌',  # ok sign
+    '🙏',  # praying hands
+    '🙌',  # field goal hands
+    '🙋‍♂️',  # guy raising hand
+    '🙋‍♀️',  # woman raising hand
 ]
 
 quips = {

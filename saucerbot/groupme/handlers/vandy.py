@@ -15,26 +15,41 @@ logger = logging.getLogger(__name__)
 
 @registry.handler([r'ohhh+', r'go dores'])
 def go_dores(bot: Bot) -> None:
-    bot.post("ANCHOR DOWN \u2693\ufe0f")
+    """
+    Posts anchor down ⚓️
+    """
+    bot.post("ANCHOR DOWN ⚓️")
 
 
 @registry.handler(r'anchor down')
 def anchor_down(bot: Bot) -> None:
+    """
+    Posts go dores!
+    """
     bot.post("GO DORES")
 
 
 @registry.handler(r'black')
 def black(bot: Bot) -> None:
+    """
+    BLACK GOLD
+    """
     bot.post("GOLD")
 
 
 @registry.handler(r'gold')
 def gold(bot: Bot) -> None:
+    """
+    GOLD BLACK
+    """
     bot.post("BLACK")
 
 
 @registry.handler([r'did the dores win', r'did vandy win'])
 def dores_win(bot: Bot) -> None:
+    """
+    The 'dores never win RIP
+    """
     result = did_the_dores_win(True, True)
     if result is None:
         bot.post("I couldn't find the Vandy game " + EmojiAttach(1, 35))

@@ -82,10 +82,10 @@ class Command(BaseCommand):
     def whos_coming_message(self, num_likes: int):
         if num_likes == 0:
             phrase = 'nobody is'
-            ending = ' \ud83d\ude2d'
+            ending = ' 😭'
         elif num_likes == 1:
             phrase = 'only 1 person is'
-            ending = ' \ud83d\ude22'
+            ending = ' 😢'
         else:
             phrase = f'{num_likes} people are'
             ending = ''
