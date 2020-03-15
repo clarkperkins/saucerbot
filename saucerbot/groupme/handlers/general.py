@@ -7,6 +7,7 @@ import re
 
 import arrow
 import requests
+from dateutil.tz import gettz
 from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.message import Message
 from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
@@ -32,6 +33,8 @@ PICTURE_RESPONSES = [
     "Did you take that yourself?",
     "I think I'm in that picture!"
 ]
+
+CENTRAL_TIME = gettz('US/Central')
 
 
 def nickname_entry(bot: Bot, nickname: str, timestamp: arrow.Arrow) -> None:
@@ -107,7 +110,7 @@ def whoami(bot: Bot, message: Message) -> None:
     response = ''
 
     # We only care about central time!
-    now = arrow.now('US/Central')
+    now = arrow.now(CENTRAL_TIME)
 
     for nickname in nicknames:
         timestamp = arrow.get(nickname.timestamp)
@@ -195,3 +198,23 @@ def handle_barely_know_her(bot: Bot, message: Message) -> bool:
 @registry.handler([r'69', r'sixty-nine', r'sixty nine'])
 def teenage_saucerbot(bot: Bot) -> None:
     bot.post('Nice \U0001f44c')
+
+
+thai_sent = False
+
+
+@registry.handler()
+def too_early_for_thai(bot: Bot, message: Message) -> bool:
+    global thai_sent
+
+    # Grab an arrow time in central time
+    timestamp = arrow.get(message.created_at).to(CENTRAL_TIME)
+
+    hour = timestamp.time().hour
+
+    if 3 <= hour < 8 and not thai_sent:
+        bot.post("It's too early for thai")
+        thai_sent = True
+        return True
+    else:
+        return False

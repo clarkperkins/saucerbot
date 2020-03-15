@@ -10,11 +10,12 @@ import arrow
 logger = logging.getLogger(__name__)
 
 
-def get_sample_message(bot, text, attachments=None, system=False, name='Foo Bar'):
+def get_sample_message(bot, text, attachments=None, system=False, name='Foo Bar', timestamp=None):
+    timestamp = timestamp or arrow.utcnow()
     return {
         'attachments': attachments or [],
         'avatar_url': "https://example.com/avatar.jpeg",
-        'created_at': int(arrow.utcnow().datetime.timestamp()),
+        'created_at': int(timestamp.datetime.timestamp()),
         'group_id': bot.group.group_id,
         'id': "1234567890",
         'name': name,
@@ -422,3 +423,73 @@ def test_plate_party(bot, gmi, client):
     
     assert '@Clark The Shark' in posted_message.text
     assert len(posted_message.attachments) == 1
+
+
+def test_too_early_for_thai_no_send(bot, gmi, client):
+    bot.handlers.create(handler_name='too_early_for_thai')
+
+    message_no_thai = get_sample_message(bot, "testme",
+                                         timestamp=arrow.get('2020-03-14T02:59:59-05:00'))
+
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(message_no_thai))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': False}
+    assert bot.group.messages.count == 0
+
+    message_no_thai = get_sample_message(bot, "testme",
+                                         timestamp=arrow.get('2020-03-14T08:00:00-05:00'))
+
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(message_no_thai))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': False}
+    assert bot.group.messages.count == 0
+
+
+def test_too_early_for_thai_send(bot, gmi, client):
+    from saucerbot.groupme.handlers import general
+
+    bot.handlers.create(handler_name='too_early_for_thai')
+
+    message_thai = get_sample_message(bot, "testme",
+                                      timestamp=arrow.get('2020-03-14T03:00:00-05:00'))
+
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(message_thai))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': True}
+    assert bot.group.messages.count == 1
+
+    posted_message = bot.group.messages.all()[0]
+
+    assert "It's too early for thai" in posted_message.text
+    assert len(posted_message.attachments) == 0
+
+    general.thai_sent = False
+
+    message_thai = get_sample_message(bot, "testme",
+                                      timestamp=arrow.get('2020-03-14T07:59:59-05:00'))
+
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(message_thai))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': True}
+    assert bot.group.messages.count == 2
+
+    posted_message = bot.group.messages.all()[1]
+
+    assert "It's too early for thai" in posted_message.text
+    assert len(posted_message.attachments) == 0
+
+    # Post again, it won't post
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(message_thai))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'message_sent': False}
+    assert bot.group.messages.count == 2
