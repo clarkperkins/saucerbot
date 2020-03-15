@@ -34,6 +34,9 @@ SAUCERBOT_MESSAGE_LIST: List[Union[ComplexMessage, str]] = [
 
 @registry.handler()
 def user_named_saucerbot(bot: Bot, message: Message, force_random: bool = False) -> bool:
+    """
+    Chastise people who make their name saucerbot
+    """
     if message.name != 'saucerbot':
         return False
 
@@ -60,6 +63,9 @@ def user_named_saucerbot(bot: Bot, message: Message, force_random: bool = False)
 
 @registry.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
 def save_saucer_id(bot: Bot, message: Message, match) -> None:
+    """
+    Save a person's saucer ID, so we can lookup tasted beers later
+    """
     saucer_id = match.group('saucer_id')
 
     tasted_beers = get_tasted_brews(saucer_id)
@@ -81,6 +87,9 @@ def save_saucer_id(bot: Bot, message: Message, match) -> None:
 
 @registry.handler(r'^info (?P<search_text>.+)$')
 def search_brews(bot: Bot, match) -> None:
+    """
+    Search for beers from various saucers
+    """
     search_text = match.group('search_text').strip()
     bot.post(brew_searcher.brew_info(search_text))
 
@@ -99,23 +108,32 @@ def new_arrivals(bot: Bot, match) -> None:
 @registry.handler([r'deep dish', r'thin crust'])
 def pizza(bot: Bot) -> None:
     """
-    complain about pizza
+    Complain about pizza
     """
     bot.post("That is a false binary and you know it, asshole")
 
 
 @registry.handler(r'like if')
 def like_if(bot: Bot) -> None:
+    """
+    Nobody else can use like if!
+    """
     bot.post("Hey that's my job")
 
 
 @registry.handler([r' bot ', r'zo'])
 def zo_is_dead(bot: Bot) -> None:
+    """
+    Zo sux
+    """
     bot.post("Zo is dead.  Long live saucerbot.")
 
 
 @registry.handler([r'pong', r'beer pong'])
 def troll(bot: Bot) -> None:
+    """
+    LOL Shaina is the troll
+    """
     shaina = get_member(bot, SHAINA_USER_ID)
     pre_message: Union[RefAttach, str]
 
