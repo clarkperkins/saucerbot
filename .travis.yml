@@ -58,5 +58,4 @@ script:
   - sonar-scanner
 
 after_success:
-  - bake build
   - ./docker_push.sh

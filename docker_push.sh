@@ -2,14 +2,9 @@
 
 docker login -u "$HEROKU_USERNAME" -p "$HEROKU_API_KEY" registry.heroku.com
 
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-    APP_NAME="saucerbot-staging-pr-$TRAVIS_PULL_REQUEST"
-    TAG_NAME="registry.heroku.com/$APP_NAME/web"
-    echo "PR detected - deploying to $TAG_NAME"
-    docker tag clarkperkins/saucerbot $TAG_NAME
-    docker push $TAG_NAME
-    heroku container:release -a $APP_NAME web
-elif [ "$TRAVIS_BRANCH" == "master" ]; then
+if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    bake build
+
     APP_NAME="saucerbot-staging"
     TAG_NAME="registry.heroku.com/$APP_NAME/web"
     echo "master branch detected - deploying to $TAG_NAME"
