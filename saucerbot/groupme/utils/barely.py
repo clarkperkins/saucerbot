@@ -42,7 +42,7 @@ PERCENT_CHANCE = int(os.environ.get("BARELY_KNOW_HER_CHANCE", 35))
 def get_er_words() -> Set[str]:
     er_words_file = os.path.join(settings.BASE_DIR, 'saucerbot', 'resources', 'er_words.txt')
     with io.open(er_words_file, 'rt') as er_words:
-        return set(word.strip() for word in er_words)
+        return set(word.strip() for word in er_words if not word.startswith('#'))
 
 
 matching_words = get_er_words()
