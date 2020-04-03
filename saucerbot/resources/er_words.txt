@@ -947,6 +947,7 @@ brookner
 brookover
 brookshier
 brosser
+# brother
 brougher
 brouwer
 browder
@@ -2158,7 +2159,7 @@ eisler
 eisner
 eissler
 eiszner
-either
+# either
 elastomer
 elater
 elber
@@ -2385,7 +2386,7 @@ fassbender
 fassler
 fastener
 faster
-father
+# father
 fatter
 fatzinger
 fauber
@@ -2523,7 +2524,7 @@ finkler
 finscher
 finsider
 finster
-fire
+# fire
 firecracker
 firefighter
 firepower
@@ -5411,6 +5412,7 @@ mossholder
 mosteller
 moster
 mostoller
+# mother
 motherfucker
 motivator
 motor
@@ -5538,7 +5540,7 @@ neighbour
 neimeyer
 neisler
 neiswender
-neither
+# neither
 neller
 nemer
 nemir
@@ -5572,6 +5574,7 @@ neumiller
 neuner
 neuser
 neuter
+# never
 newbauer
 newberger
 newburger
@@ -5779,6 +5782,7 @@ outperformer
 outrider
 outrigger
 outsider
+# over
 overacker
 overeager
 overexposure
@@ -6459,7 +6463,7 @@ reliever
 reller
 remainder
 remanufacture
-remember
+# remember
 remer
 reminder
 remlinger
@@ -6796,6 +6800,7 @@ sandpaper
 saner
 sanger
 sangster
+sanitizer
 sanker
 sanner
 santander
@@ -6817,6 +6822,7 @@ satre
 satter
 sattler
 sauber
+# saucer
 saucier
 sauder
 sauer
@@ -7330,7 +7336,7 @@ sholar
 shollenberger
 shomaker
 shonkwiler
-shooter
+# shooter
 shopkeeper
 shoplifter
 shopper
@@ -7412,6 +7418,7 @@ sinner
 sinor
 sire
 sisler
+# sister
 sitler
 sitter
 sittler
@@ -8042,7 +8049,7 @@ sunder
 sundermeyer
 sunflower
 sunter
-super
+# super
 supercenter
 supercollider
 supercomputer
@@ -8471,7 +8478,7 @@ tutwiler
 tweezer
 twirler
 twister
-twitter
+# twitter
 tyer
 tyger
 tyler
@@ -8773,7 +8780,7 @@ weaker
 wealthier
 wearer
 wearever
-weather
+# weather
 weaver
 webber
 weber
@@ -8889,6 +8896,7 @@ whatsoever
 wheelabrator
 wheeler
 wheelwriter
+# whether
 whicker
 whimper
 whiner
@@ -8951,7 +8959,7 @@ wilbur
 wilcher
 wildcatter
 wilder
-wildfire
+# wildfire
 wildflower
 wiler
 wilker
