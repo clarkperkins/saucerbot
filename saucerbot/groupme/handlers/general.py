@@ -4,6 +4,8 @@ import logging
 import os
 import random
 import re
+import tempfile
+from pathlib import Path
 
 import arrow
 import requests
@@ -221,24 +223,20 @@ def teenage_saucerbot(bot: Bot) -> None:
     bot.post('Nice 👌')
 
 
-thai_sent = False
-
-
 @registry.handler()
 def too_early_for_thai(bot: Bot, message: Message) -> bool:
     """
     It's too early for thai
     """
-    global thai_sent
-
     # Grab an arrow time in central time
     timestamp = arrow.get(message.created_at).to(CENTRAL_TIME)
 
     hour = timestamp.time().hour
 
-    if 3 <= hour < 8 and not thai_sent:
-        bot.post("It's too early for thai")
-        thai_sent = True
-        return True
-    else:
-        return False
+    with Path(tempfile.gettempdir(), 'thailock') as lockfile:
+        if 3 <= hour < 8 and not lockfile.exists():
+            bot.post("It's too early for thai")
+            lockfile.touch()
+            return True
+        else:
+            return False

@@ -52,7 +52,7 @@ script:
   - pipenv run python manage.py collectstatic --noinput
 
   # Unit tests
-  - pipenv run pytest --cov=saucerbot --cov-report=xml
+  - pipenv run pytest --verbose --cov=saucerbot --cov-report=xml
 
   # Sonar
   - sonar-scanner
