@@ -2,8 +2,11 @@
 
 import json
 import logging
+import os
+import tempfile
 import uuid
 from datetime import timedelta
+from pathlib import Path
 
 import arrow
 
@@ -450,7 +453,9 @@ def test_too_early_for_thai_no_send(bot, gmi, client):
 
 
 def test_too_early_for_thai_send(bot, gmi, client):
-    from saucerbot.groupme.handlers import general
+    lockfile = Path(tempfile.gettempdir(), 'thailock')
+    if lockfile.exists():
+        os.remove(lockfile)
 
     bot.handlers.create(handler_name='too_early_for_thai')
 
@@ -469,7 +474,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
     assert "It's too early for thai" in posted_message.text
     assert len(posted_message.attachments) == 0
 
-    general.thai_sent = False
+    os.remove(lockfile)
 
     message_thai = get_sample_message(bot, "testme",
                                       timestamp=arrow.get('2020-03-14T07:59:59-05:00'))
@@ -493,3 +498,6 @@ def test_too_early_for_thai_send(bot, gmi, client):
     assert ret.status_code == 200
     assert ret.json() == {'message_sent': False}
     assert bot.group.messages.count == 2
+
+    # cleanup at the end
+    os.remove(lockfile)
