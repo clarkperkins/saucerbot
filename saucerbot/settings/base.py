@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
 
 ROOT_URLCONF = 'saucerbot.urls'
@@ -142,3 +143,10 @@ REST_FRAMEWORK = {
 
 # Scout config
 SCOUT_NAME = HEROKU_APP_NAME
+
+# Rollbar config
+ROLLBAR = {
+    'access_token': os.environ.get('ROLLBAR_ACCESS_TOKEN'),
+    'environment': os.environ.get('DJANGO_ENV'),
+    'root': BASE_DIR,
+}

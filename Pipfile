@@ -15,6 +15,7 @@ gunicorn = "*"
 lowerpines = "*"
 "psycopg2-binary" = "*"
 requests = "*"
+rollbar = "*"
 scout-apm = "*"
 whitenoise = "*"
 

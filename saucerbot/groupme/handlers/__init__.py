@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Pattern, Seq
 
 from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.message import Message
+from scout_apm.api import instrument
 
 
 class Handler(NamedTuple):
@@ -26,7 +27,8 @@ class Handler(NamedTuple):
 
     def handle_regexes(self, bot: Bot, message: Message, regexes: List[Pattern]) -> bool:
         for regex in regexes:
-            match = regex.search(message.text)
+            with instrument('Regex', 'Handler', {'name': self.name}):
+                match = regex.search(message.text)
             if match:
                 # We matched!  Now call our handler and break out of the loop
 
@@ -46,13 +48,14 @@ class Handler(NamedTuple):
         return False
 
     def run(self, bot: Bot, message: Message) -> bool:
-        if self.regexes:
-            # This is a regex handler, special case
-            return self.handle_regexes(bot, message, self.regexes)
-        else:
-            # Just a plain handler.
-            # If it returns something truthy, it matched, so it means we should stop
-            return self.func(bot, message)
+        with instrument('Invocation', 'Handler', {'name': self.name}):
+            if self.regexes:
+                # This is a regex handler, special case
+                return self.handle_regexes(bot, message, self.regexes)
+            else:
+                # Just a plain handler.
+                # If it returns something truthy, it matched, so it means we should stop
+                return self.func(bot, message)
 
 
 class HandlerRegistry(Sequence[Handler]):
