@@ -1,5 +1,0 @@
-build:
-  docker:
-    web: Dockerfile
-  config:
-    DOCKER_BUILDKIT: 1

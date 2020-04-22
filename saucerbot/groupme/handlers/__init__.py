@@ -27,7 +27,7 @@ class Handler(NamedTuple):
 
     def handle_regexes(self, bot: Bot, message: Message, regexes: List[Pattern]) -> bool:
         for regex in regexes:
-            with instrument('Regex', 'Handler', {'name': self.name}):
+            with instrument('Matcher', 'Regex', {'regex': regex.pattern}):
                 match = regex.search(message.text)
             if match:
                 # We matched!  Now call our handler and break out of the loop
@@ -41,20 +41,21 @@ class Handler(NamedTuple):
                 if 'match' in sig.parameters:
                     kwargs['match'] = match
 
-                self.func(bot, **kwargs)
+                with instrument('Invocation', 'Handler', {'name': self.name}):
+                    self.func(bot, **kwargs)
                 return True
 
         # Nothing matched
         return False
 
     def run(self, bot: Bot, message: Message) -> bool:
-        with instrument('Invocation', 'Handler', {'name': self.name}):
-            if self.regexes:
-                # This is a regex handler, special case
-                return self.handle_regexes(bot, message, self.regexes)
-            else:
-                # Just a plain handler.
-                # If it returns something truthy, it matched, so it means we should stop
+        if self.regexes:
+            # This is a regex handler, special case
+            return self.handle_regexes(bot, message, self.regexes)
+        else:
+            # Just a plain handler.
+            # If it returns something truthy, it matched, so it means we should stop
+            with instrument('Invocation', 'Handler', {'name': self.name}):
                 return self.func(bot, message)
 
 
