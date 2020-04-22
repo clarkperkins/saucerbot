@@ -19,6 +19,7 @@ from lowerpines.endpoints.user import User as LPUser
 from lowerpines.exceptions import NoneFoundException, UnauthorizedException
 from lowerpines.gmi import GMI
 from lowerpines.message import ComplexMessage
+from scout_apm.api import Context
 
 from saucerbot.groupme.handlers import registry
 from saucerbot.utils import get_tasted_brews
@@ -201,6 +202,7 @@ class Bot(models.Model):
 
             # just stop here if we matched
             if matched:
+                Context.add('handler', handler.name)
                 return True
 
         return False
