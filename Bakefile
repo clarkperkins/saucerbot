@@ -35,12 +35,3 @@ cov: test/pytest/html
 	open reports/html/index.html
 
 ci: build check test
-
-promote/heroku:
-	docker pull registry.heroku.com/saucerbot-staging/web
-	docker tag registry.heroku.com/saucerbot-staging/web registry.heroku.com/saucerbot/web
-	docker push registry.heroku.com/saucerbot/web
-
-	heroku container:release -a saucerbot web
-
-promote: promote/heroku
