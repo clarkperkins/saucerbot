@@ -22,7 +22,7 @@ whitenoise = "*"
 [dev-packages]
 mypy = "*"
 pycodestyle = "*"
-pylint = "<2.5"
+pylint = "*"
 pylint-django = "*"
 pytest = "*"
 pytest-cov = "*"
