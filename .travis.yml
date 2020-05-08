@@ -42,17 +42,17 @@ before_script:
 
 script:
   # Code linting
-  - pipenv run pycodestyle saucerbot
-  - 'pipenv run pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
+  - pycodestyle saucerbot
+  - 'pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
 
   # Type checking
-  - pipenv run mypy saucerbot
+  - mypy saucerbot
 
   # Build the static files so that the the tests don't produce warnings
-  - pipenv run python manage.py collectstatic --noinput
+  - python manage.py collectstatic --noinput
 
   # Unit tests
-  - pipenv run pytest --verbose --cov=saucerbot --cov-report=xml
+  - pytest --verbose --cov=saucerbot --cov-report=xml
 
   # Sonar
   - sonar-scanner
