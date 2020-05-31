@@ -20,6 +20,7 @@ from saucerbot.groupme.utils import i_barely_know_her, janet
 
 logger = logging.getLogger(__name__)
 
+CATFACTS_CHANCE = float(os.environ.get("CATFACTS_CHANCE", 10)) / 100.0
 CATFACTS_URL = 'https://catfact.ninja/fact'
 
 REMOVE_RE = re.compile(r'^(?P<remover>.*) removed (?P<removee>.*) from the group\.$')
@@ -162,8 +163,9 @@ def catfacts(bot: Bot) -> None:
     """
     Sends catfacts!
     """
-    catfact = requests.get(CATFACTS_URL).json()
-    bot.post(catfact['fact'])
+    if random.random() < CATFACTS_CHANCE:
+        catfact = requests.get(CATFACTS_URL).json()
+        bot.post(catfact['fact'])
 
 
 @registry.handler(r'lit fam')
