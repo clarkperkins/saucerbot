@@ -22,12 +22,10 @@ check/mypy:
 check: check/pycodestyle check/pylint check/mypy
 
 test/pytest/xml: reports
-	export DJANGO_ENV=test
-	pytest --cov=saucerbot --cov-report=xml
+	DJANGO_ENV=test pytest --cov=saucerbot --cov-report=xml
 
 test/pytest/html: reports
-	export DJANGO_ENV=test
-	pytest --cov=saucerbot --cov-report=html
+	DJANGO_ENV=test pytest --cov=saucerbot --cov-report=html
 
 test: test/pytest/xml
 
