@@ -31,7 +31,6 @@ addons:
 before_install:
   - touch web.env
   - docker-compose up -d db elasticsearch
-  - pip install bake-cli
   - pip install pipenv --upgrade
 
 install:
