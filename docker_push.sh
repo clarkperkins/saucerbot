@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+if [ "$TRAVIS_BRANCH" == "main" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     make build
 
     echo "Pushing to docker hub"

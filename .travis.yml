@@ -7,10 +7,10 @@ cache: pip
 git:
   depth: false
 
-# only build master
+# only build main
 branches:
   only:
-    - master
+    - main
 
 services:
   - docker
