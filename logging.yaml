@@ -1,0 +1,58 @@
+version: 1
+disable_existing_loggers: false
+
+filters:
+  require_debug_false:
+    (): django.utils.log.RequireDebugFalse
+  require_debug_true:
+    (): django.utils.log.RequireDebugTrue
+
+formatters:
+  simple:
+    (): saucerbot.logging.HighlightingFormatter
+    style: '{'
+    format: '[{asctime}] [{process}] {log_color}[{levelname}]{reset} {name} - {message}'
+    datefmt: '%Y-%m-%d %H:%M:%S.%f%z'
+    reset: false
+
+handlers:
+  noop:
+    class: logging.NullHandler
+
+  console:
+    class: logging.StreamHandler
+    formatter: simple
+
+  mail_admins:
+    level: ERROR
+    filters:
+      - require_debug_false
+    class: django.utils.log.AdminEmailHandler
+
+# Configure the root logger
+root:
+  level: WARNING
+  handlers:
+    - console
+
+loggers:
+  saucerbot:
+    level: INFO
+
+  elasticsearch:
+    level: INFO
+
+  django:
+    level: INFO
+    handlers:
+      - mail_admins
+
+  # We don't care about the django access logs, just turn them off.
+  # Set propagate to true though, since it's set to false by the django default logging config
+  django.server:
+    level: CRITICAL
+    propagate: true
+
+  scout_apm.instruments.elasticsearch:
+    level: ERROR
+

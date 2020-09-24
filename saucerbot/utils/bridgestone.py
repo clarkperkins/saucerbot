@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from typing import Any, Dict, List, Optional
 import logging
 import random
 import re
+from typing import Any, Dict, List, Optional
+
 import arrow
-from requests.exceptions import RequestException
 from arrow.parser import ParserError
-from saucerbot.utils.parsers import BridgestoneEventsParser
+from requests.exceptions import RequestException
+
 from saucerbot.utils.parsers import BridgestoneEventTimeParser, HtmlContentProvider
+from saucerbot.utils.parsers import BridgestoneEventsParser
 
 logger = logging.getLogger(__name__)
 

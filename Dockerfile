@@ -15,7 +15,7 @@ RUN useradd -r -U -m -d /app saucerbot
 
 WORKDIR /app
 
-COPY --chown=saucerbot:saucerbot Pipfile Pipfile.lock manage.py docker/install.sh /app/
+COPY --chown=saucerbot:saucerbot Pipfile Pipfile.lock manage.py logging.yaml gunicorn.conf.py docker/install.sh /app/
 
 # Install all the deps & uninstall build-time reqs all in one step to reduce image size
 RUN sh install.sh
