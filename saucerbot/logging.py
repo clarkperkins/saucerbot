@@ -5,13 +5,12 @@ from logging import LogRecord
 from typing import Optional
 
 from colorlog import ColoredFormatter
-from dateutil import tz
 
 
 class HighlightingFormatter(ColoredFormatter):
 
     def formatTime(self, record: LogRecord, datefmt: Optional[str] = None) -> str:
-        dt = datetime.fromtimestamp(record.created, tz.tzlocal())
+        dt = datetime.fromtimestamp(record.created).astimezone()
         if datefmt:
             s = dt.strftime(datefmt)
         else:

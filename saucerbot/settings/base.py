@@ -1,49 +1,46 @@
 # -*- coding: utf-8 -*-
 """
-Django settings for saucerbot project.
+Django settings for the saucerbot project.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/2.2/topics/settings/
+https://docs.djangoproject.com/en/3.1/topics/settings/
 
 For the full list of settings and their values, see
-https://docs.djangoproject.com/en/2.2/ref/settings/
+https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+from pathlib import Path
 from typing import Optional
 
 import dj_database_url
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Pull a few things from the heroku environment
-HEROKU_APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME', '')
-GROUPME_CLIENT_ID: Optional[str] = os.environ.get('GROUPME_CLIENT_ID', '')
+HEROKU_APP_NAME: Optional[str] = os.environ.get('HEROKU_APP_NAME')
+GROUPME_CLIENT_ID: Optional[str] = os.environ.get('GROUPME_CLIENT_ID')
 FLICKR_API_KEY: Optional[str] = os.environ.get('FLICKR_API_KEY')
 ELASTICSEARCH_URL: Optional[str] = os.environ.get('BONSAI_URL')
+HEROKU_APP_DOMAIN: Optional[str] = f'{HEROKU_APP_NAME}.herokuapp.com' if HEROKU_APP_NAME else None
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-SERVER_DOMAIN = f'{HEROKU_APP_NAME}.herokuapp.com'
-
-# Allow only the herokuapp domain and clarkperkins
-ALLOWED_HOSTS = [SERVER_DOMAIN, 'saucerbot.clarkperkins.com']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'scout_apm.django',
+    'saucerbot.groupme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'saucerbot.groupme',
     'rest_framework',
 ]
 
@@ -81,7 +78,7 @@ WSGI_APPLICATION = 'saucerbot.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600, ssl_require=True),
@@ -89,7 +86,7 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -108,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
+# https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -122,13 +119,17 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 

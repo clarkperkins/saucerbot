@@ -47,6 +47,10 @@ loggers:
     handlers:
       - mail_admins
 
+  # Uncomment to enable sql query logging
+#  django.db.backends:
+#    level: DEBUG
+
   # We don't care about the django access logs, just turn them off.
   # Set propagate to true though, since it's set to false by the django default logging config
   django.server:

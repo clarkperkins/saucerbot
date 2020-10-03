@@ -53,7 +53,9 @@ class BotViewSet(ModelViewSet):
     permission_classes = [HasGroupMeUser]
 
     def get_queryset(self):
-        return Bot.objects.filter(owner=self.request.user)
+        return Bot.objects.filter(owner=self.request.user) \
+            .select_related('owner') \
+            .prefetch_related('handlers')
 
     def perform_create(self, serializer: BotSerializer):
         serializer.save(owner=self.request.user)
@@ -66,7 +68,7 @@ class BotViewSet(ModelViewSet):
 
 
 class BotActionsViewSet(GenericViewSet):
-    queryset = Bot.objects.all()
+    queryset = Bot.objects.select_related('owner')
     serializer_class = BotSerializer
     lookup_field = 'slug'
     lookup_value_type = 'slug'
@@ -85,7 +87,7 @@ class BotActionsViewSet(GenericViewSet):
 
     @action(methods=['post'], detail=True)
     def callback(self, request: Request, *args, **kwargs) -> Response:
-        bot = self.get_object()
+        bot: Bot = self.get_object()
         message = self.parse_as_message(bot)
 
         if not message:

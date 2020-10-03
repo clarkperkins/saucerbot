@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import io
 import json
 import logging
-import os
 import random
 import re
+from pathlib import Path
 from typing import Dict, List, Optional
 
 import requests
@@ -22,6 +21,8 @@ janet_messages = [
     "Here you go!",
     "Found it!"
 ]
+
+STOPWORDS_FILE: Path = settings.BASE_DIR / 'saucerbot' / 'resources' / 'stopwords.txt'
 
 
 def unwrap_flickr_response(text: str) -> str:
@@ -55,11 +56,9 @@ def select_url(photos: List[Dict]) -> str:
 
 
 def get_stop_words() -> List[str]:
-    stopwords_file = os.path.join(settings.BASE_DIR, 'saucerbot', 'resources', 'stopwords.txt')
-    stopwords = io.open(stopwords_file, 'rt')
-    words = [word.strip() for word in stopwords]
-    stopwords.close()
-    return words
+    with STOPWORDS_FILE.open('rt', encoding='utf8') as stopwords:
+        words = [word.strip() for word in stopwords]
+        return words
 
 
 blacklist_words = get_stop_words()

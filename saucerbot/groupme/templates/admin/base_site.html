@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'saucerbot/icons8-sci-fi-32.png' %}"/>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block footer %}
+    <div id="footer">
+        <a target="_blank" href="https://icons8.com/icons/set/sci-fi">Sci-Fi</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+    </div>
+{% endblock footer %}

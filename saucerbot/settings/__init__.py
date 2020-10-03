@@ -9,7 +9,7 @@ from split_settings.tools import include
 ENV = os.environ.get('DJANGO_ENV')
 
 if not ENV:
-    raise ImproperlyConfigured('You must define the environment variable DJANGO_ENV.')
+    raise ImproperlyConfigured("You must define the environment variable DJANGO_ENV.")
 
 # Include settings:
 include(
