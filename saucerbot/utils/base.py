@@ -3,12 +3,11 @@
 # Remove this disable once https://github.com/timothycrosley/isort/pull/719 is merged / released
 # pylint: disable=wrong-import-order
 
-import io
 import json
 import logging
-import os
 import re
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 import arrow
@@ -23,6 +22,8 @@ from saucerbot.utils.parsers import NewArrivalsParser
 BREWS_ALIAS_NAME = 'brews'
 BREWS_URL = 'https://www.beerknurd.com/api/brew/list/{}'
 TASTED_URL = 'https://www.beerknurd.com/api/tasted/list_user/{}'
+
+TEMPLATES_DIR: Path = settings.BASE_DIR / 'saucerbot' / 'resources' / 'elasticsearch' / 'templates'
 
 logger = logging.getLogger(__name__)
 
@@ -101,17 +102,14 @@ class BrewsLoaderUtil:
     def update_templates(self) -> None:
         logger.info("Updating elasticsearch index templates")
 
-        templates_dir = os.path.join(settings.BASE_DIR, 'saucerbot',
-                                     'resources', 'elasticsearch', 'templates')
-
-        for template in os.listdir(templates_dir):
-            name, _, ext = template.rpartition('.')
+        for template in TEMPLATES_DIR.iterdir():
+            name, _, ext = template.name.rpartition('.')
 
             if ext != 'json':
                 logger.warning("Located a non-json template file: %s. Ignoring.", template)
                 continue
 
-            with io.open(os.path.join(templates_dir, template), 'rt') as f:
+            with template.open('rt', encoding='utf8') as f:
                 template_json = json.load(f)
 
             self.es.indices.put_template(name, template_json)

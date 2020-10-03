@@ -11,7 +11,7 @@ register = template.Library()
 @register.simple_tag
 def optional_login(request):
     """
-    Include a login snippet if REST framework's login view is in the URLconf.
+    Include a login snippet if REST framework's login view is in the URL conf.
     """
     try:
         login_url = reverse('groupme:login')
@@ -27,7 +27,7 @@ def optional_login(request):
 @register.simple_tag
 def optional_logout(request, user):
     """
-    Include a logout snippet if REST framework's logout view is in the URLconf.
+    Include a logout snippet if REST framework's logout view is in the URL conf.
     """
     try:
         logout_url = reverse('groupme:logout')

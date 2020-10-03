@@ -35,7 +35,7 @@ def get_gmi(access_token: str) -> GMI:
 
 
 class User(models.Model):
-    access_token: str = models.CharField(max_length=64, unique=True)
+    access_token: str = models.CharField(max_length=64)
     user_id: str = models.CharField(max_length=32, unique=True)
 
     # User is always active
@@ -154,7 +154,7 @@ class BotManager(models.Manager):
 class Bot(models.Model):
     owner: User = models.ForeignKey(User, models.CASCADE, related_name='bots')
     bot_id: str = models.CharField(max_length=32)
-    group_id: str = models.CharField(max_length=32)
+    group_id: str = models.CharField(max_length=32, db_index=True)
     name: str = models.CharField(max_length=64)
     slug: str = models.SlugField(max_length=64, unique=True)
 
@@ -227,7 +227,7 @@ class Handler(models.Model):
 
 class SaucerUser(models.Model):
     groupme_id: str = models.CharField(max_length=32, unique=True)
-    saucer_id: str = models.CharField(max_length=32, unique=True)
+    saucer_id: str = models.CharField(max_length=32)
 
     def __str__(self):
         return f'{self.saucer_id} - {self.groupme_id}'
@@ -244,6 +244,11 @@ class HistoricalNickname(models.Model):
     groupme_id: str = models.CharField(max_length=32)
     timestamp = models.DateTimeField()
     nickname: str = models.CharField(max_length=256)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=('group_id', 'groupme_id')),
+        ]
 
     def __str__(self):
         return f'{self.nickname} - {self.timestamp}'

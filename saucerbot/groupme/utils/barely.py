@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import io
 import os
 import random
 import re
+from pathlib import Path
 from typing import Optional, Set, Union
 
 from django.conf import settings
@@ -40,8 +40,8 @@ PERCENT_CHANCE = int(os.environ.get("BARELY_KNOW_HER_CHANCE", 35))
 
 
 def get_er_words() -> Set[str]:
-    er_words_file = os.path.join(settings.BASE_DIR, 'saucerbot', 'resources', 'er_words.txt')
-    with io.open(er_words_file, 'rt') as er_words:
+    er_words_file: Path = settings.BASE_DIR / 'saucerbot' / 'resources' / 'er_words.txt'
+    with er_words_file.open('rt', encoding='utf8') as er_words:
         return set(word.strip() for word in er_words if not word.startswith('#'))
 
 

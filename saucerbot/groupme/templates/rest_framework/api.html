@@ -1,11 +1,18 @@
 {% extends "rest_framework/base.html" %}
 
+{% load static %}
 {% load saucerbot %}
+
+{% block meta %}
+    {{ block.super }}
+    <link rel="shortcut icon" type="image/png" href="{% static 'saucerbot/icons8-sci-fi-32.png' %}"/>
+{% endblock %}
 
 {% block title %}{% if name %}{{ name }} – {% endif %}saucerbot API{% endblock %}
 
 {% block branding %}
     <a class='navbar-brand' rel="nofollow" href="{% url 'groupme:api-root' %}">
+        <img alt="Brand" style="display: inline; height: 30px; margin-top: -5px; margin-right: 5px" src="{% static 'saucerbot/icons8-sci-fi-80.png' %}">
         saucerbot API
     </a>
 {% endblock %}
@@ -16,4 +23,16 @@
     {% else %}
         {% optional_login request %}
     {% endif %}
-{% endblock %}
+{% endblock userlinks %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <a target="_blank" rel="noopener noreferrer" href="https://icons8.com/icons/set/sci-fi">Sci-Fi</a>
+            icon by
+            <a target="_blank" rel="noopener noreferrer" href="https://icons8.com">Icons8</a>
+        </div>
+    </div>
+{% endblock content %}

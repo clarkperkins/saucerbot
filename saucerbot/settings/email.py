@@ -11,7 +11,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_SUBJECT_PREFIX = f'[{HEROKU_APP_NAME}] '
 
-SERVER_EMAIL = f'noreply@{HEROKU_APP_NAME}.herokuapp.com'
+SERVER_EMAIL = 'noreply@clarkperkins.com'
 
 ADMINS = [
     ('Saucerbot Admin', os.environ.get('ADMIN_EMAIL')),
