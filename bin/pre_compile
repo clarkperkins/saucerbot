@@ -1,0 +1,16 @@
+
+# The LATEST_* env vars aren't available by default, so we need to load them
+source "$BIN_DIR/default_pythons"
+
+# Use the latest python 3.8 available
+echo "       Using $LATEST_38"
+echo "$LATEST_38" > runtime.txt
+
+echo "       Generating requirements.txt from Pipfile.lock"
+# Generate a requirements.txt file from the Pipfile.lock
+requirements=$(jq -r '.default | to_entries[] | "\(.key)\(.value.version)"' Pipfile.lock)
+echo "$requirements" > requirements.txt
+
+# Move the Pipfile out of the way so that the rest of the buildpack ignores it
+mv Pipfile Pipfile.bak
+mv Pipfile.lock Pipfile.lock.bak

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('groupme', '0004_multiple_bots'),
+        ('groupme', '0001_initial_tables'),
     ]
 
     operations = [
