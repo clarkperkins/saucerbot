@@ -10,6 +10,6 @@ class GroupMeConfig(AppConfig):
     def ready(self):
         # Import these so they get registered
         # pylint: disable=unused-import
-        import saucerbot.groupme.handlers.general
         import saucerbot.groupme.handlers.saucer
         import saucerbot.groupme.handlers.vandy
+        import saucerbot.groupme.handlers.general
