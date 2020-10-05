@@ -2,7 +2,7 @@
 
 import logging
 from functools import lru_cache
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from django.conf import settings
 from django.contrib.auth import models as auth_models
@@ -183,29 +183,37 @@ class Bot(models.Model):
     def post_message(self, message: Union[ComplexMessage, str]) -> None:
         self.bot.post(message)
 
-    def handle_message(self, message: Message) -> bool:
+    def handle_message(self, message: Message) -> List[str]:
         other_bot_names = [b.name for b in Bot.objects.filter(group_id=self.group_id)]
 
         # We don't want to respond to any other bot in the same group
         if message.sender_type == 'bot' and message.name in other_bot_names:
-            return False
+            return []
 
         handler_names = [h.handler_name for h in self.handlers.all()]
 
+        matched_handlers: List[str] = []
+
         for handler in registry:
             if handler.name not in handler_names:
+                continue
+
+            # We already matched at least one handler, don't run this one
+            if matched_handlers and not handler.always_run:
                 continue
 
             logger.debug("Trying message handler %s ...", handler.name)
 
             matched = handler.run(self.bot, message)
 
-            # just stop here if we matched
+            # Keep track of the handlers that matched
             if matched:
-                Context.add('handler', handler.name)
-                return True
+                matched_handlers.append(handler.name)
 
-        return False
+        if matched_handlers:
+            Context.add('handlers', matched_handlers)
+
+        return matched_handlers
 
     def update_bot(self, avatar_url: Optional[str]) -> None:
         self.bot.name = self.name

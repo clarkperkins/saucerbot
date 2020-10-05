@@ -74,7 +74,7 @@ def test_zo_unregistered(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
@@ -87,7 +87,7 @@ def test_zo_zo(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['zo_is_dead']}
     assert bot.group.messages.count == 1
     assert bot.group.messages.all()[0].text == ZO_EXPECTED_POST
 
@@ -101,7 +101,7 @@ def test_zo_bot(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['zo_is_dead']}
     assert bot.group.messages.count == 1
     assert bot.group.messages.all()[0].text == ZO_EXPECTED_POST
 
@@ -115,7 +115,7 @@ def test_zo_bot_bad(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
@@ -127,7 +127,7 @@ def test_system_messages_unregistered(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
@@ -140,7 +140,7 @@ def test_name_change(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['system_messages']}
     assert bot.group.messages.count == 1
     assert len(bot.group.messages.recent(1)[0].attachments) == 1
 
@@ -154,7 +154,7 @@ def test_user_add(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['system_messages']}
     assert bot.group.messages.count == 1
     assert len(bot.group.messages.recent(1)[0].attachments) == 1
 
@@ -168,7 +168,7 @@ def test_user_remove(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['system_messages']}
     assert bot.group.messages.count == 1
     assert len(bot.group.messages.recent(1)[0].attachments) == 1
 
@@ -182,7 +182,7 @@ def test_bogus_system(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
@@ -195,7 +195,7 @@ def test_non_system(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
@@ -245,7 +245,7 @@ def test_save_id_unregistered(bot, client, monkeypatch):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
@@ -265,7 +265,7 @@ def test_save_id_invalid(bot, client, monkeypatch):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['save_saucer_id']}
     assert bot.group.messages.count == 1
     assert "isn't a valid Saucer ID" in bot.group.messages.all()[0].text
 
@@ -286,9 +286,33 @@ def test_save_id_valid(bot, client, monkeypatch):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['save_saucer_id']}
     assert bot.group.messages.count == 1
     assert "isn't a valid Saucer ID" not in bot.group.messages.all()[0].text
+
+
+def test_save_id_69(bot, client, monkeypatch):
+    def get_tasted_brews(x):
+        return [{'name': 'beer'}]
+
+    monkeypatch.setattr('saucerbot.utils.get_tasted_brews', get_tasted_brews)
+    monkeypatch.setattr('saucerbot.groupme.models.get_tasted_brews', get_tasted_brews)
+    monkeypatch.setattr('saucerbot.groupme.handlers.saucer.get_tasted_brews', get_tasted_brews)
+
+    bot.handlers.create(handler_name='save_saucer_id')
+    bot.handlers.create(handler_name='teenage_saucerbot')
+
+    sample_message = get_sample_message(bot.bot, 'my saucer id is 123469')
+
+    ret = client.post('/groupme/api/bots/saucerbot/callback/', content_type='application/json',
+                      data=json.dumps(sample_message))
+
+    assert ret.status_code == 200
+    assert ret.json() == {'matched_handlers': ['teenage_saucerbot', 'save_saucer_id']}
+    assert bot.group.messages.count == 2
+    assert bot.group.messages.all()[0].text == "Nice 👌"
+    assert "I saved your Saucer ID" in bot.group.messages.all()[1].text
+    assert "isn't a valid Saucer ID" not in bot.group.messages.all()[1].text
 
 
 def test_troll_missing(bot, client):
@@ -300,7 +324,7 @@ def test_troll_missing(bot, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['troll']}
     assert bot.group.messages.count == 1
 
     posted_message = bot.group.messages.all()[0]
@@ -327,7 +351,7 @@ def test_troll_present(bot, gmi, client):
                       data=json.dumps(sample_message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['troll']}
     assert bot.group.messages.count == 1
 
     posted_message = bot.group.messages.all()[0]
@@ -419,7 +443,7 @@ def test_plate_party(bot, gmi, client):
                       data=json.dumps(message))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['plate_party']}
     assert bot.group.messages.count == 1
 
     posted_message = bot.group.messages.all()[0]
@@ -438,7 +462,7 @@ def test_too_early_for_thai_no_send(bot, gmi, client):
                       data=json.dumps(message_no_thai))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
     message_no_thai = get_sample_message(bot, "testme",
@@ -448,12 +472,12 @@ def test_too_early_for_thai_no_send(bot, gmi, client):
                       data=json.dumps(message_no_thai))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 0
 
 
 def test_too_early_for_thai_send(bot, gmi, client):
-    lockfile = Path(tempfile.gettempdir(), 'thailock')
+    lockfile = Path(tempfile.gettempdir(), 'thai_lock')
     if lockfile.exists():
         os.remove(lockfile)
 
@@ -466,7 +490,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
                       data=json.dumps(message_thai))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['too_early_for_thai']}
     assert bot.group.messages.count == 1
 
     posted_message = bot.group.messages.all()[0]
@@ -483,7 +507,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
                       data=json.dumps(message_thai))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': True}
+    assert ret.json() == {'matched_handlers': ['too_early_for_thai']}
     assert bot.group.messages.count == 2
 
     posted_message = bot.group.messages.all()[1]
@@ -496,7 +520,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
                       data=json.dumps(message_thai))
 
     assert ret.status_code == 200
-    assert ret.json() == {'message_sent': False}
+    assert ret.json() == {'matched_handlers': []}
     assert bot.group.messages.count == 2
 
     # cleanup at the end
