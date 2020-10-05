@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import logging
+from importlib import import_module
+
 from django.apps import AppConfig
+from django.conf import settings
+
+from saucerbot.groupme.handlers import registry
+
+logger = logging.getLogger(__name__)
 
 
 class GroupMeConfig(AppConfig):
@@ -8,8 +16,11 @@ class GroupMeConfig(AppConfig):
     verbose_name = 'GroupMe'
 
     def ready(self):
-        # Import these so they get registered
-        # pylint: disable=unused-import
-        import saucerbot.groupme.handlers.saucer
-        import saucerbot.groupme.handlers.vandy
-        import saucerbot.groupme.handlers.general
+        # Import the handler modules
+        for handler_module in settings.HANDLER_MODULES:
+            start_handlers = len(registry)
+            import_module(handler_module)
+            logger.info("Loaded %s handlers from %s",
+                        len(registry) - start_handlers, handler_module)
+
+        logger.info("Loaded %s total handlers", len(registry))

@@ -23,8 +23,8 @@ logger = logging.getLogger(__name__)
 CATFACTS_CHANCE = float(os.environ.get("CATFACTS_CHANCE", 10)) / 100.0
 CATFACTS_URL = 'https://catfact.ninja/fact'
 
-REMOVE_RE = re.compile(r'^(?P<remover>.*) removed (?P<removee>.*) from the group\.$')
-ADD_RE = re.compile(r'^(?P<adder>.*) added (?P<addee>.*) to the group\.$')
+REMOVE_RE = re.compile(r'^(?P<remover>.*) removed (?P<removed_member>.*) from the group\.$')
+ADD_RE = re.compile(r'^(?P<adder>.*) added (?P<new_member>.*) to the group\.$')
 CHANGE_RE = re.compile(r'^(?P<old_name>.*) changed name to (?P<new_name>.*)$')
 
 PICTURE_RESPONSE_CHANCE = float(os.environ.get("PICTURE_RESPONSE_CHANCE", 15)) / 100.0
@@ -63,7 +63,7 @@ def nickname_entry(bot: Bot, nickname: str, timestamp: arrow.Arrow) -> None:
     )
 
 
-@registry.handler()
+@registry.handler(always_run=True)
 def system_messages(bot: Bot, message: Message) -> bool:
     """
     Process system messages:
@@ -89,7 +89,7 @@ def system_messages(bot: Bot, message: Message) -> bool:
         bot.post(ComplexMessage([EmojiAttach(2, 44)]))
 
         # Log the new member
-        new_member = add_match.group('addee')
+        new_member = add_match.group('new_member')
         nickname_entry(bot, new_member, timestamp)
 
         return True
@@ -235,7 +235,7 @@ def too_early_for_thai(bot: Bot, message: Message) -> bool:
 
     hour = timestamp.time().hour
 
-    with Path(tempfile.gettempdir(), 'thailock') as lockfile:
+    with Path(tempfile.gettempdir(), 'thai_lock') as lockfile:
         if 3 <= hour < 8 and not lockfile.exists():
             bot.post("It's too early for thai")
             lockfile.touch()

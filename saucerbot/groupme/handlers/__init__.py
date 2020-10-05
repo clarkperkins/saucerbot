@@ -13,6 +13,7 @@ class Handler(NamedTuple):
     name: str
     regexes: Optional[List[Pattern[str]]]
     func: Callable
+    always_run: bool
 
     @property
     def description(self):
@@ -83,8 +84,7 @@ class HandlerRegistry(Sequence[Handler]):
     # End delegate methods
 
     # get() method to make this look like a django queryset
-    # pylint: disable=unused-argument
-    def get(self, *args, **kwargs) -> Optional[Handler]:
+    def get(self, **kwargs) -> Optional[Handler]:
         for handler in self.handlers:
             match = True
             for k, v in kwargs.items():
@@ -97,8 +97,12 @@ class HandlerRegistry(Sequence[Handler]):
 
         return None
 
-    def handler(self, regex: Union[str, List[str]] = None, name: str = None,
-                case_sensitive: bool = False) -> Callable:
+    def handler(self,
+                regex: Union[str, List[str]] = None,
+                *,
+                name: str = None,
+                case_sensitive: bool = False,
+                always_run: bool = False) -> Callable:
         """
         Add a message handler
         """
@@ -118,6 +122,7 @@ class HandlerRegistry(Sequence[Handler]):
                 name or func.__name__,
                 [re.compile(r, flags) for r in regexes],
                 func,
+                always_run
             ))
             return func
 

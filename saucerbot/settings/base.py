@@ -134,6 +134,16 @@ STATICFILES_DIRS = [
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
 
+# Add modules here that contain handlers.
+# They will get loaded when the server starts up
+
+HANDLER_MODULES = [
+    'saucerbot.groupme.handlers.general',
+    'saucerbot.groupme.handlers.saucer',
+    'saucerbot.groupme.handlers.vandy',
+]
+
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',

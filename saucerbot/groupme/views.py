@@ -94,7 +94,7 @@ class BotActionsViewSet(GenericViewSet):
             raise ParseError('Invalid GroupMe message')
 
         response = {
-            'message_sent': bot.handle_message(message),
+            'matched_handlers': bot.handle_message(message),
         }
 
         return Response(response)

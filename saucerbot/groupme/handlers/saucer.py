@@ -61,7 +61,7 @@ def user_named_saucerbot(bot: Bot, message: Message, force_random: bool = False)
     return True
 
 
-@registry.handler(r'my saucer id is (?P<saucer_id>[0-9]+)')
+@registry.handler(r'my saucer id is (?P<saucer_id>[0-9]+)', always_run=True)
 def save_saucer_id(bot: Bot, message: Message, match) -> None:
     """
     Save a person's saucer ID, so we can lookup tasted beers later
