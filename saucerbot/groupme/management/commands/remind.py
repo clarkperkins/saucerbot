@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.bot: Bot = Optional[None]
+        self._bot: Optional[Bot] = None
 
     def add_arguments(self, parser: CommandParser):
         parser.add_argument('bot', help="The name of the bot to post as")
@@ -34,6 +34,12 @@ class Command(BaseCommand):
         subparsers.add_parser('whos-coming',
                               help="Let everyone know who's coming.")
 
+    @property
+    def bot(self) -> Bot:
+        if self._bot is None:
+            raise ValueError("Bot was not initialized")
+        return self._bot
+
     def handle(self, *args, **options) -> None:
         today = arrow.now('US/Central')
 
@@ -41,7 +47,7 @@ class Command(BaseCommand):
             self.stdout.write("No reminders sent, it's not Monday!")
             return
 
-        self.bot = Bot.objects.get(slug=options['bot'])
+        self._bot = Bot.objects.get(slug=options['bot'])
 
         if options['subcommand'] == 'like-if':
             self.like_if()
