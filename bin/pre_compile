@@ -2,9 +2,9 @@
 # The LATEST_* env vars aren't available by default, so we need to load them
 source "$BIN_DIR/default_pythons"
 
-# Use the latest python 3.8 available
-echo "       Using $LATEST_38"
-echo "$LATEST_38" > runtime.txt
+# Use the latest python 3.9 available
+echo "       Using $LATEST_39"
+echo "$LATEST_39" > runtime.txt
 
 
 # Generate a requirements.txt file from the Pipfile.lock
