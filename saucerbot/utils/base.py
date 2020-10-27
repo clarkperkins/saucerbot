@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Remove this disable once https://github.com/timothycrosley/isort/pull/719 is merged / released
-# pylint: disable=wrong-import-order
-
 import json
 import logging
 import re
