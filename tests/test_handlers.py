@@ -250,7 +250,7 @@ def test_save_id_unregistered(bot, client, monkeypatch):
 
 
 def test_save_id_invalid(bot, client, monkeypatch):
-    def get_tasted_brews(x):
+    def get_tasted_brews(_):
         return []
 
     monkeypatch.setattr('saucerbot.utils.get_tasted_brews', get_tasted_brews)
@@ -271,7 +271,7 @@ def test_save_id_invalid(bot, client, monkeypatch):
 
 
 def test_save_id_valid(bot, client, monkeypatch):
-    def get_tasted_brews(x):
+    def get_tasted_brews(_):
         return [{'name': 'beer'}]
 
     monkeypatch.setattr('saucerbot.utils.get_tasted_brews', get_tasted_brews)
@@ -292,7 +292,7 @@ def test_save_id_valid(bot, client, monkeypatch):
 
 
 def test_save_id_69(bot, client, monkeypatch):
-    def get_tasted_brews(x):
+    def get_tasted_brews(_):
         return [{'name': 'beer'}]
 
     monkeypatch.setattr('saucerbot.utils.get_tasted_brews', get_tasted_brews)
