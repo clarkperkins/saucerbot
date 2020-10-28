@@ -1,6 +1,6 @@
 os: linux
 language: python
-python: 3.9-dev
+python: 3.9
 dist: bionic
 
 cache: pip
