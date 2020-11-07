@@ -13,11 +13,11 @@ from lowerpines.message import ComplexMessage
 from lowerpines.message import RefAttach
 
 emojis = [
-    '👌',  # ok sign
-    '🙏',  # praying hands
-    '🙌',  # field goal hands
-    '🙋‍♂️',  # guy raising hand
-    '🙋‍♀️',  # woman raising hand
+    "👌",  # ok sign
+    "🙏",  # praying hands
+    "🙌",  # field goal hands
+    "🙋‍♂️",  # guy raising hand
+    "🙋‍♀️",  # woman raising hand
 ]
 
 quips = {
@@ -31,18 +31,18 @@ quips = {
     "{match}?! wowwww <person>": emojis,
     "Idk, <person>, I don't know her well enough to {match}": emojis,
     "Gimme 5 <person>!": emojis[3:],
-    '{match}? Brian would be proud': emojis,
-    'Dang <person>, I barely know her': emojis,
-    '{match}? Come on, <person> don\'t leave me hangin': emojis[3:]
+    "{match}? Brian would be proud": emojis,
+    "Dang <person>, I barely know her": emojis,
+    "{match}? Come on, <person> don't leave me hangin": emojis[3:],
 }
 
 PERCENT_CHANCE = int(os.environ.get("BARELY_KNOW_HER_CHANCE", 35))
 
 
 def get_er_words() -> Set[str]:
-    er_words_file: Path = settings.BASE_DIR / 'saucerbot' / 'resources' / 'er_words.txt'
-    with er_words_file.open('rt', encoding='utf8') as er_words:
-        return set(word.strip() for word in er_words if not word.startswith('#'))
+    er_words_file: Path = settings.BASE_DIR / "saucerbot" / "resources" / "er_words.txt"
+    with er_words_file.open("rt", encoding="utf8") as er_words:
+        return set(word.strip() for word in er_words if not word.startswith("#"))
 
 
 matching_words = get_er_words()
@@ -59,17 +59,17 @@ def i_barely_know_her(bot: Bot, message: Message) -> bool:
 
 def get_quip(message: Message) -> Optional[Union[ComplexMessage, str]]:
     matches = []
-    for word in re.split(r'[^a-zA-Z]', message.text):
+    for word in re.split(r"[^a-zA-Z]", message.text):
         if word.strip().lower() in matching_words:
             matches.append(word.strip().lower())
     if matches:
         match = max(matches, key=str.__len__)
         quip = random.choice(list(quips.keys()))
         emoji = random.choice(quips[quip])
-        split_quip = quip.format(match=match).split('<person>')
+        split_quip = quip.format(match=match).split("<person>")
         if len(split_quip) > 1:
-            user_ref = RefAttach(message.user_id, f'@{message.name}')
-            return split_quip[0] + user_ref + split_quip[1] + ' ' + emoji
+            user_ref = RefAttach(message.user_id, f"@{message.name}")
+            return split_quip[0] + user_ref + split_quip[1] + " " + emoji
         else:
-            return split_quip[0] + ' ' + emoji
+            return split_quip[0] + " " + emoji
     return None

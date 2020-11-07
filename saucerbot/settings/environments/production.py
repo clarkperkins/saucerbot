@@ -5,12 +5,12 @@ import os
 from saucerbot.settings.base import HEROKU_APP_DOMAIN
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SERVER_DOMAIN = 'saucerbot.clarkperkins.com'
+SERVER_DOMAIN = "saucerbot.clarkperkins.com"
 
 ALLOWED_HOSTS = [SERVER_DOMAIN]
 

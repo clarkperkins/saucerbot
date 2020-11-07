@@ -12,15 +12,18 @@ logger = logging.getLogger(__name__)
 
 
 class GroupMeConfig(AppConfig):
-    name = 'saucerbot.groupme'
-    verbose_name = 'GroupMe'
+    name = "saucerbot.groupme"
+    verbose_name = "GroupMe"
 
     def ready(self):
         # Import the handler modules
         for handler_module in settings.HANDLER_MODULES:
             start_handlers = len(registry)
             import_module(handler_module)
-            logger.info("Loaded %s handlers from %s",
-                        len(registry) - start_handlers, handler_module)
+            logger.info(
+                "Loaded %s handlers from %s",
+                len(registry) - start_handlers,
+                handler_module,
+            )
 
         logger.info("Loaded %s total handlers", len(registry))

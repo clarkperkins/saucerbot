@@ -37,25 +37,8 @@ before_install:
 install:
   - pipenv install --deploy --dev
 
-before_script:
-  - mkdir reports
-
 script:
-  # Code linting
-  - pycodestyle saucerbot
-  - 'pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt'
-
-  # Type checking
-  - mypy saucerbot
-
-  # Build the static files so that the the tests don't produce warnings
-  - python manage.py collectstatic --noinput
-
-  # Unit tests
-  - pytest --verbose --cov=saucerbot --cov-report=xml
-
-  # Sonar
-  - sonar-scanner
+  - make ci
 
 after_success:
   - ./docker_push.sh

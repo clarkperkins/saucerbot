@@ -5,6 +5,7 @@ import logging
 import random
 import uuid
 from datetime import datetime
+
 from locust import HttpLocust, TaskSet, task
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def get_sample_message():
 
 class SaucerbotTaskSet(TaskSet):
     @task(1)
-    def groume_message(self):
+    def groupme_message(self):
         self.client.post('/groupme/callbacks/saucerbot/', json.dumps(get_sample_message()))
 
 

@@ -14,9 +14,9 @@ def optional_login(request):
     Include a login snippet if REST framework's login view is in the URL conf.
     """
     try:
-        login_url = reverse('groupme:login')
+        login_url = reverse("groupme:login")
     except NoReverseMatch:
-        return ''
+        return ""
 
     snippet = "<li><a href='{href}?next={next}'>Log in</a></li>"
     snippet = format_html(snippet, href=login_url, next=escape(request.path))
@@ -30,7 +30,7 @@ def optional_logout(request, user):
     Include a logout snippet if REST framework's logout view is in the URL conf.
     """
     try:
-        logout_url = reverse('groupme:logout')
+        logout_url = reverse("groupme:logout")
     except NoReverseMatch:
         snippet = format_html('<li class="navbar-text">{user}</li>', user=escape(user))
         return mark_safe(snippet)
@@ -44,6 +44,8 @@ def optional_logout(request, user):
             <li><a href='{href}?next={next}'>Log out</a></li>
         </ul>
     </li>"""
-    snippet = format_html(snippet, user=escape(user), href=logout_url, next=escape(request.path))
+    snippet = format_html(
+        snippet, user=escape(user), href=logout_url, next=escape(request.path)
+    )
 
     return mark_safe(snippet)

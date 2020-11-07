@@ -2,7 +2,7 @@
 
 import logging
 import random
-from typing import List, Union
+from typing import Union
 
 from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.message import Message
@@ -19,39 +19,41 @@ from saucerbot.utils import (
 
 logger = logging.getLogger(__name__)
 
-CLARK_USER_ID = '6499167'
-SHAINA_USER_ID = '6830949'
+CLARK_USER_ID = "6499167"
+SHAINA_USER_ID = "6830949"
 
-SAUCERBOT_MESSAGE_LIST: List[Union[ComplexMessage, str]] = [
+SAUCERBOT_MESSAGE_LIST: list[Union[ComplexMessage, str]] = [
     "Shut up, ",
     "Go away, ",
     "Go find your own name, ",
     "Stop being an asshole, ",
-    ComplexMessage('https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif'),
-    'random',
+    ComplexMessage("https://media.giphy.com/media/IxmzjBNRGKy8U/giphy.gif"),
+    "random",
 ]
 
 
 @registry.handler()
-def user_named_saucerbot(bot: Bot, message: Message, force_random: bool = False) -> bool:
+def user_named_saucerbot(
+    bot: Bot, message: Message, force_random: bool = False
+) -> bool:
     """
     Chastise people who make their name saucerbot
     """
-    if message.name != 'saucerbot':
+    if message.name != "saucerbot":
         return False
 
     # Send something dumb
-    user_attach = RefAttach(message.user_id, f'@{message.name}')
+    user_attach = RefAttach(message.user_id, f"@{message.name}")
 
     msg = random.choice(SAUCERBOT_MESSAGE_LIST)
 
-    if force_random or msg == 'random':
+    if force_random or msg == "random":
         insult = get_insult()
         prefix = "Stop being a"
-        if insult[0].lower() in ['a', 'e', 'i', 'o', 'u']:
-            prefix = prefix + 'n'
+        if insult[0].lower() in ["a", "e", "i", "o", "u"]:
+            prefix = prefix + "n"
 
-        msg = prefix + ' ' + insult + ', '
+        msg = prefix + " " + insult + ", "
 
     if isinstance(msg, str):
         msg = msg + user_attach
@@ -61,12 +63,12 @@ def user_named_saucerbot(bot: Bot, message: Message, force_random: bool = False)
     return True
 
 
-@registry.handler(r'my saucer id is (?P<saucer_id>[0-9]+)', always_run=True)
+@registry.handler(r"my saucer id is (?P<saucer_id>[0-9]+)", always_run=True)
 def save_saucer_id(bot: Bot, message: Message, match) -> None:
     """
     Save a person's saucer ID, so we can lookup tasted beers later
     """
-    saucer_id = match.group('saucer_id')
+    saucer_id = match.group("saucer_id")
 
     tasted_beers = get_tasted_brews(saucer_id)
 
@@ -75,37 +77,39 @@ def save_saucer_id(bot: Bot, message: Message, match) -> None:
         return
 
     # Otherwise it's valid.  Just update or create
-    _, created = SaucerUser.objects.update_or_create(groupme_id=message.user_id,
-                                                     defaults={'saucer_id': saucer_id})
+    _, created = SaucerUser.objects.update_or_create(
+        groupme_id=message.user_id, defaults={"saucer_id": saucer_id}
+    )
 
-    user_attach = RefAttach(message.user_id, f'@{message.name}')
+    user_attach = RefAttach(message.user_id, f"@{message.name}")
 
-    action = 'saved' if created else 'updated'
+    action = "saved" if created else "updated"
 
     bot.post("Thanks, " + user_attach + f"!  I {action} your Saucer ID.")
 
 
-@registry.handler(r'^info (?P<search_text>.+)$')
+@registry.handler(r"^info (?P<search_text>.+)$")
 def search_brews(bot: Bot, match) -> None:
     """
     Search for beers from various saucers
     """
-    search_text = match.group('search_text').strip()
+    search_text = match.group("search_text").strip()
     bot.post(brew_searcher.brew_info(search_text))
 
 
-@registry.handler([r'new beers( (?P<location>[a-z ]+))?',
-                   r'new arrivals( (?P<location>[a-z ]+))?'])
+@registry.handler(
+    [r"new beers( (?P<location>[a-z ]+))?", r"new arrivals( (?P<location>[a-z ]+))?"]
+)
 def new_arrivals(bot: Bot, match) -> None:
     """
     Gets all the new arrivals
     """
-    location = match.group('location') or 'Nashville'
+    location = match.group("location") or "Nashville"
 
     bot.post(get_new_arrivals(location.strip()))
 
 
-@registry.handler([r'deep dish', r'thin crust'])
+@registry.handler([r"deep dish", r"thin crust"])
 def pizza(bot: Bot) -> None:
     """
     Complain about pizza
@@ -113,7 +117,7 @@ def pizza(bot: Bot) -> None:
     bot.post("That is a false binary and you know it, asshole")
 
 
-@registry.handler(r'like if')
+@registry.handler(r"like if")
 def like_if(bot: Bot) -> None:
     """
     Nobody else can use like if!
@@ -121,7 +125,7 @@ def like_if(bot: Bot) -> None:
     bot.post("Hey that's my job")
 
 
-@registry.handler([r' bot ', r'zo'])
+@registry.handler([r" bot ", r"zo"])
 def zo_is_dead(bot: Bot) -> None:
     """
     Zo sux
@@ -129,7 +133,7 @@ def zo_is_dead(bot: Bot) -> None:
     bot.post("Zo is dead.  Long live saucerbot.")
 
 
-@registry.handler([r'pong', r'beer pong'])
+@registry.handler([r"pong", r"beer pong"])
 def troll(bot: Bot) -> None:
     """
     LOL Shaina is the troll
@@ -148,20 +152,20 @@ def troll(bot: Bot) -> None:
 def get_member(bot: Bot, member_id: str) -> Union[RefAttach, None]:
     for member in bot.group.members:
         if member.user_id == member_id:
-            return RefAttach(member_id, f'@{member.nickname}')
+            return RefAttach(member_id, f"@{member.nickname}")
     return None
 
 
-plate_party_messages: List[str] = [
+plate_party_messages: list[str] = [
     "Yeah |, when is it???",
     "Still waiting on that date |",
     "*nudge* |",
     "Don't hold your breath, | ain't gonna schedule it soon",
-    "|"
+    "|",
 ]
 
 
-@registry.handler(r'plate party')
+@registry.handler(r"plate party")
 def plate_party(bot: Bot):
     """
     This is to troll clark lolz but some future work could be fun on this
@@ -171,5 +175,5 @@ def plate_party(bot: Bot):
     if not clark:
         logger.error("Somehow clark escaped the group!!!!")
     else:
-        quip = random.choice(plate_party_messages).split('|')
+        quip = random.choice(plate_party_messages).split("|")
         bot.post(quip[0] + clark + quip[1])

@@ -2,8 +2,10 @@
 
 import json
 import logging
+from typing import Any, cast
 
 from django.conf import settings
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.views.generic import RedirectView
 from lowerpines.endpoints.message import Message
@@ -12,6 +14,7 @@ from rest_framework.exceptions import ParseError
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import GenericViewSet, ModelViewSet, ReadOnlyModelViewSet
 
 from saucerbot.groupme.handlers import registry
@@ -24,43 +27,46 @@ logger = logging.getLogger(__name__)
 
 
 class LoginRedirectView(RedirectView):
-
     def get_redirect_url(self, *args, **kwargs):
         if SESSION_KEY in self.request.session:
-            return reverse('groupme:bot-list')
+            return reverse("groupme:bot-list")
         else:
-            return 'https://oauth.groupme.com/oauth/authorize' \
-                   f'?client_id={settings.GROUPME_CLIENT_ID}'
+            return (
+                "https://oauth.groupme.com/oauth/authorize"
+                f"?client_id={settings.GROUPME_CLIENT_ID}"
+            )
 
 
 class OAuthView(RedirectView):
-    pattern_name = 'groupme:bot-list'
+    pattern_name = "groupme:bot-list"
 
     def get(self, request, *args, **kwargs):
-        access_token = self.request.GET.get('access_token')
+        access_token = self.request.GET.get("access_token")
 
         if access_token:
             new_user(self.request, access_token)
             return super().get(request, *args, **kwargs)
         else:
-            raise InvalidGroupMeUser('Missing access token')
+            raise InvalidGroupMeUser("Missing access token")
 
 
 class BotViewSet(ModelViewSet):
     serializer_class = BotSerializer
-    lookup_field = 'slug'
-    lookup_value_type = 'slug'
+    lookup_field = "slug"
+    lookup_value_type = "slug"
     permission_classes = [HasGroupMeUser]
 
     def get_queryset(self):
-        return Bot.objects.filter(owner=self.request.user) \
-            .select_related('owner') \
-            .prefetch_related('handlers')
+        return (
+            Bot.objects.filter(owner=self.request.user)
+            .select_related("owner")
+            .prefetch_related("handlers")
+        )
 
-    def perform_create(self, serializer: BotSerializer):
+    def perform_create(self, serializer: BaseSerializer[Any]):
         serializer.save(owner=self.request.user)
 
-    def perform_destroy(self, instance: Bot):
+    def perform_destroy(self, instance: Bot):  # type: ignore[override]
         # Delete the bot from groupme first, then delete ours in the database
         if instance.bot:
             instance.bot.delete()
@@ -68,10 +74,10 @@ class BotViewSet(ModelViewSet):
 
 
 class BotActionsViewSet(GenericViewSet):
-    queryset = Bot.objects.select_related('owner')
+    queryset = Bot.objects.select_related("owner")
     serializer_class = BotSerializer
-    lookup_field = 'slug'
-    lookup_value_type = 'slug'
+    lookup_field = "slug"
+    lookup_value_type = "slug"
     permission_classes = [AllowAny]
 
     def parse_as_message(self, bot: Bot) -> Message:
@@ -83,39 +89,35 @@ class BotActionsViewSet(GenericViewSet):
         try:
             return Message.from_json(bot.owner.gmi, self.request.data)
         except Exception:
-            raise ParseError('Invalid GroupMe message')
+            raise ParseError("Invalid GroupMe message")
 
-    @action(methods=['post'], detail=True)
+    @action(methods=["POST"], detail=True)
     def callback(self, request: Request, *args, **kwargs) -> Response:
         bot: Bot = self.get_object()
         message = self.parse_as_message(bot)
 
         if not message:
-            raise ParseError('Invalid GroupMe message')
+            raise ParseError("Invalid GroupMe message")
 
         response = {
-            'matched_handlers': bot.handle_message(message),
+            "matched_handlers": bot.handle_message(message),
         }
 
         return Response(response)
 
-    @action(methods=['post'], detail=True, url_path='dores-win')
+    @action(methods=["POST"], detail=True, url_path="dores-win")
     def dores_win(self, request: Request, *args, **kwargs) -> Response:
         bot = self.get_object()
         result = did_the_dores_win(False, False)
         if result:
             bot.post_message(result)
-        response = {
-            'ok': True,
-            'win': result is not None,
-            'result': result
-        }
+        response = {"ok": True, "win": result is not None, "result": result}
         return Response(response)
 
 
 class HandlerViewSet(ReadOnlyModelViewSet):
-    queryset = registry
+    queryset = cast(QuerySet, registry)
     serializer_class = HandlerSerializer
-    lookup_field = 'name'
-    lookup_value_type = 'str'
+    lookup_field = "name"
+    lookup_value_type = "str"
     permission_classes = [HasGroupMeUser]
