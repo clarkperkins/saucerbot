@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! -z "TRAVIS_PULL_REQUEST_BRANCH" ]; then
+if [ ! -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
   git_branch=$TRAVIS_PULL_REQUEST_BRANCH
   git_status=""
 elif [ ! -z "$TRAVIS_BRANCH" ]; then
@@ -11,6 +11,10 @@ else
   git_status=$(git status --porcelain)
 fi
 
+echo "Located git branch: $git_branch"
+echo "With git status:"
+echo $git_status
+
 make build
 
 docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
@@ -20,7 +24,7 @@ if [ "$git_branch" == "main" ] && [ -z "$git_status" ]; then
     docker push clarkperkins/saucerbot
 fi
 
-image="clarkperkins/saucerbot:$git_branch"
+image="clarkperkins/saucerbot:$(echo $git_branch | tr '/' '-')"
 
 echo "Pushing docker image $image"
 
