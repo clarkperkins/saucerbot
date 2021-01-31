@@ -13,7 +13,7 @@ from saucerbot.utils import (
 logger = logging.getLogger(__name__)
 
 
-@registry.handler([r'ohhh+', r'go dores'])
+@registry.handler([r"ohhh+", r"go dores"])
 def go_dores(bot: Bot) -> None:
     """
     Posts anchor down ⚓️
@@ -21,7 +21,7 @@ def go_dores(bot: Bot) -> None:
     bot.post("ANCHOR DOWN ⚓️")
 
 
-@registry.handler(r'anchor down')
+@registry.handler(r"anchor down")
 def anchor_down(bot: Bot) -> None:
     """
     Posts go dores!
@@ -29,7 +29,7 @@ def anchor_down(bot: Bot) -> None:
     bot.post("GO DORES")
 
 
-@registry.handler(r'black')
+@registry.handler(r"black")
 def black(bot: Bot) -> None:
     """
     BLACK GOLD
@@ -37,7 +37,7 @@ def black(bot: Bot) -> None:
     bot.post("GOLD")
 
 
-@registry.handler(r'gold')
+@registry.handler(r"gold")
 def gold(bot: Bot) -> None:
     """
     GOLD BLACK
@@ -45,7 +45,7 @@ def gold(bot: Bot) -> None:
     bot.post("BLACK")
 
 
-@registry.handler([r'did the dores win', r'did vandy win'])
+@registry.handler([r"did the dores win", r"did vandy win"])
 def dores_win(bot: Bot) -> None:
     """
     The 'dores never win RIP

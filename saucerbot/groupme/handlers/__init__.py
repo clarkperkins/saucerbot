@@ -2,7 +2,8 @@
 
 import inspect
 import re
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Pattern, Sequence, Union
+from collections.abc import Callable, Sequence
+from typing import Any, NamedTuple, Optional, Union
 
 from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.message import Message
@@ -11,7 +12,7 @@ from scout_apm.api import instrument
 
 class Handler(NamedTuple):
     name: str
-    regexes: Optional[List[Pattern[str]]]
+    regexes: Optional[list[re.Pattern[str]]]
     func: Callable
     always_run: bool
 
@@ -23,12 +24,14 @@ class Handler(NamedTuple):
     def __str__(self):
         ret = self.name
         if self.description:
-            ret += f' - {self.description}'
+            ret += f" - {self.description}"
         return ret
 
-    def handle_regexes(self, bot: Bot, message: Message, regexes: List[Pattern]) -> bool:
+    def handle_regexes(
+        self, bot: Bot, message: Message, regexes: list[re.Pattern]
+    ) -> bool:
         for regex in regexes:
-            with instrument('Regex', tags={'regex': regex.pattern}):
+            with instrument("Regex", tags={"regex": regex.pattern}):
                 match = regex.search(message.text)
             if match:
                 # We matched!  Now call our handler and break out of the loop
@@ -36,13 +39,13 @@ class Handler(NamedTuple):
                 # We want to see what arguments our function takes, though.
                 sig = inspect.signature(self.func)
 
-                kwargs: Dict[str, Any] = {}
-                if 'message' in sig.parameters:
-                    kwargs['message'] = message
-                if 'match' in sig.parameters:
-                    kwargs['match'] = match
+                kwargs: dict[str, Any] = {}
+                if "message" in sig.parameters:
+                    kwargs["message"] = message
+                if "match" in sig.parameters:
+                    kwargs["match"] = match
 
-                with instrument('Handler', tags={'name': self.name}):
+                with instrument("Handler", tags={"name": self.name}):
                     self.func(bot, **kwargs)
                 return True
 
@@ -56,14 +59,13 @@ class Handler(NamedTuple):
         else:
             # Just a plain handler.
             # If it returns something truthy, it matched, so it means we should stop
-            with instrument('Handler', tags={'name': self.name}):
+            with instrument("Handler", tags={"name": self.name}):
                 return self.func(bot, message)
 
 
 class HandlerRegistry(Sequence[Handler]):
-
     def __init__(self):
-        self.handlers: List[Handler] = []
+        self.handlers: list[Handler] = []
 
     # Sequence methods that just delegate to the underlying list
     def __getitem__(self, item):
@@ -97,12 +99,14 @@ class HandlerRegistry(Sequence[Handler]):
 
         return None
 
-    def handler(self,
-                regex: Union[str, List[str]] = None,
-                *,
-                name: str = None,
-                case_sensitive: bool = False,
-                always_run: bool = False) -> Callable:
+    def handler(
+        self,
+        regex: Union[str, list[str]] = None,
+        *,
+        name: str = None,
+        case_sensitive: bool = False,
+        always_run: bool = False,
+    ) -> Callable:
         """
         Add a message handler
         """
@@ -118,12 +122,14 @@ class HandlerRegistry(Sequence[Handler]):
             if not case_sensitive:
                 flags = flags | re.IGNORECASE
 
-            self.handlers.append(Handler(
-                name or func.__name__,
-                [re.compile(r, flags) for r in regexes],
-                func,
-                always_run
-            ))
+            self.handlers.append(
+                Handler(
+                    name or func.__name__,
+                    [re.compile(r, flags) for r in regexes],
+                    func,
+                    always_run,
+                )
+            )
             return func
 
         return wrapper

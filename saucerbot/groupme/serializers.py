@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Any, Dict, Union
+from typing import Any, Union, cast
 
+from django.db.models import QuerySet
 from lowerpines.endpoints.group import Group
 from lowerpines.exceptions import NoneFoundException
 from rest_framework import serializers
@@ -14,8 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 class HandlerSerializer(serializers.Serializer):
-    url = serializers.HyperlinkedIdentityField(view_name='groupme:handler-detail',
-                                               lookup_field='name')
+    url = serializers.HyperlinkedIdentityField(
+        view_name="groupme:handler-detail", lookup_field="name"
+    )
     name = serializers.CharField()
     description = serializers.CharField()
     regexes = serializers.ListField(child=serializers.CharField())
@@ -32,7 +34,8 @@ class HandlerRelatedField(serializers.RelatedField):
     This field is kind of weird - it's able to handle both the Handler objects
     that are in the registry, along with the Handler model objects.
     """
-    queryset = registry
+
+    queryset = cast(QuerySet, registry)
 
     def to_internal_value(self, data: str) -> RHandler:
         """
@@ -40,7 +43,9 @@ class HandlerRelatedField(serializers.RelatedField):
         """
         handler = self.get_queryset().get(name=data)
         if not handler:
-            raise serializers.ValidationError(f"Handler with name '{data}' doesn't exist")
+            raise serializers.ValidationError(
+                f"Handler with name '{data}' doesn't exist"
+            )
         return handler
 
     def to_representation(self, value: Union[Handler, RHandler]) -> str:
@@ -54,9 +59,8 @@ class HandlerRelatedField(serializers.RelatedField):
 
 
 class GroupRelatedField(serializers.RelatedField):
-
     def get_queryset(self):
-        user: User = self.context['request'].user
+        user: User = self.context["request"].user
         return user.gmi.groups
 
     def to_internal_value(self, data: str) -> Group:
@@ -71,20 +75,24 @@ class GroupRelatedField(serializers.RelatedField):
 
 class BotSerializer(serializers.HyperlinkedModelSerializer):
     group = GroupRelatedField()
-    avatar_url = serializers.URLField(write_only=True, label='Avatar URL', allow_null=True,
-                                      required=False, default=None)
+    avatar_url = serializers.URLField(
+        write_only=True,
+        label="Avatar URL",
+        allow_null=True,
+        required=False,
+    )
     handlers = HandlerRelatedField(many=True, required=False, default=[])
 
     class Meta:
         model = Bot
-        fields = ['url', 'name', 'slug', 'group', 'avatar_url', 'handlers']
+        fields = ["url", "name", "slug", "group", "avatar_url", "handlers"]
         extra_kwargs = {
-            'slug': {'required': False},
-            'url': {'lookup_field': 'slug', 'view_name': 'groupme:bot-detail'},
+            "slug": {"required": False},
+            "url": {"lookup_field": "slug", "view_name": "groupme:bot-detail"},
         }
 
-    def create(self, validated_data: Dict[str, Any]) -> Bot:
-        handlers = validated_data.pop('handlers')
+    def create(self, validated_data: dict[str, Any]) -> Bot:
+        handlers = validated_data.pop("handlers")
 
         bot = super().create(validated_data)
 
@@ -99,6 +107,7 @@ class BotSerializer(serializers.HyperlinkedModelSerializer):
 
     def validate_group(self, group: Group):
         # Make sure the group doesn't change
+        self.instance: Bot
         if self.instance:
             if group and self.instance.group_id != group.group_id:
                 raise serializers.ValidationError("Group may not be changed")
@@ -106,12 +115,12 @@ class BotSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.SkipField()
         return group
 
-    def update(self, instance: Bot, validated_data: Dict[str, Any]) -> Bot:
-        handlers = validated_data.pop('handlers', None)
+    def update(self, instance: Bot, validated_data: dict[str, Any]) -> Bot:
+        handlers = validated_data.pop("handlers", None)
 
         bot = super().update(instance, validated_data)
 
-        bot.update_bot(validated_data.get('avatar_url'))
+        bot.update_bot(validated_data.get("avatar_url"))
 
         if handlers:
             new_handler_set = set(h.name for h in handlers)

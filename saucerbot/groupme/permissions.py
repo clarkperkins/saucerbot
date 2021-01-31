@@ -12,6 +12,5 @@ logger = logging.getLogger(__name__)
 
 
 class HasGroupMeUser(BasePermission):
-
     def has_permission(self, request: Request, view: APIView) -> bool:
-        return request.user and isinstance(request.user, User)
+        return bool(request.user and isinstance(request.user, User))

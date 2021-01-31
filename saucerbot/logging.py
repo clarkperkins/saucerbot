@@ -8,7 +8,6 @@ from colorlog import ColoredFormatter
 
 
 class HighlightingFormatter(ColoredFormatter):
-
     def formatTime(self, record: LogRecord, datefmt: Optional[str] = None) -> str:
         dt = datetime.fromtimestamp(record.created).astimezone()
         if datefmt:

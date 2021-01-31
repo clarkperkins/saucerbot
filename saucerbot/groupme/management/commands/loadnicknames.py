@@ -16,10 +16,12 @@ class Command(BaseCommand):
 
         for bot in Bot.objects.all():
             for member in bot.group.members:
-                nickname_list.append(HistoricalNickname(
-                    groupme_id=member.user_id,
-                    timestamp=timestamp.datetime,
-                    nickname=member.nickname,
-                ))
+                nickname_list.append(
+                    HistoricalNickname(
+                        groupme_id=member.user_id,
+                        timestamp=timestamp.datetime,
+                        nickname=member.nickname,
+                    )
+                )
 
         HistoricalNickname.objects.bulk_create(nickname_list)

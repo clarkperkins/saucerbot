@@ -13,48 +13,45 @@ class PathRouter(DefaultRouter):
     routes = [
         # List route.
         Route(
-            url='{prefix}{trailing_slash}',
-            mapping={
-                'get': 'list',
-                'post': 'create'
-            },
-            name='{basename}-list',
+            url="{prefix}{trailing_slash}",
+            mapping={"get": "list", "post": "create"},
+            name="{basename}-list",
             detail=False,
-            initkwargs={'suffix': 'List'}
+            initkwargs={"suffix": "List"},
         ),
         # Dynamically generated list routes. Generated using
         # @action(detail=False) decorator on methods of the viewset.
         DynamicRoute(
-            url='{prefix}/{url_path}{trailing_slash}',
-            name='{basename}-{url_name}',
+            url="{prefix}/{url_path}{trailing_slash}",
+            name="{basename}-{url_name}",
             detail=False,
-            initkwargs={}
+            initkwargs={},
         ),
         # Detail route.
         Route(
-            url='{prefix}/{lookup}{trailing_slash}',
+            url="{prefix}/{lookup}{trailing_slash}",
             mapping={
-                'get': 'retrieve',
-                'put': 'update',
-                'patch': 'partial_update',
-                'delete': 'destroy'
+                "get": "retrieve",
+                "put": "update",
+                "patch": "partial_update",
+                "delete": "destroy",
             },
-            name='{basename}-detail',
+            name="{basename}-detail",
             detail=True,
-            initkwargs={'suffix': 'Instance'}
+            initkwargs={"suffix": "Instance"},
         ),
         # Dynamically generated detail routes. Generated using
         # @action(detail=True) decorator on methods of the viewset.
         DynamicRoute(
-            url='{prefix}/{lookup}/{url_path}{trailing_slash}',
-            name='{basename}-{url_name}',
+            url="{prefix}/{lookup}/{url_path}{trailing_slash}",
+            name="{basename}-{url_name}",
             detail=True,
-            initkwargs={}
+            initkwargs={},
         ),
     ]
 
     @staticmethod
-    def get_lookup_path(viewset, lookup_prefix: str = '') -> str:
+    def get_lookup_path(viewset, lookup_prefix: str = "") -> str:
         """
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.
@@ -65,16 +62,16 @@ class PathRouter(DefaultRouter):
 
         https://github.com/alanjds/drf-nested-routers
         """
-        base_path = '<{lookup_value}:{lookup_prefix}{lookup_url_kwarg}>'
+        base_path = "<{lookup_value}:{lookup_prefix}{lookup_url_kwarg}>"
         # Use `pk` as default field, unset set.  Default regex should not
         # consume `.json` style suffixes and should break at '/' boundaries.
-        lookup_field = getattr(viewset, 'lookup_field', 'pk')
-        lookup_url_kwarg = getattr(viewset, 'lookup_url_kwarg', None) or lookup_field
-        lookup_value = getattr(viewset, 'lookup_value_type', 'int')
+        lookup_field = getattr(viewset, "lookup_field", "pk")
+        lookup_url_kwarg = getattr(viewset, "lookup_url_kwarg", None) or lookup_field
+        lookup_value = getattr(viewset, "lookup_value_type", "int")
         return base_path.format(
             lookup_prefix=lookup_prefix,
             lookup_url_kwarg=lookup_url_kwarg,
-            lookup_value=lookup_value
+            lookup_value=lookup_value,
         )
 
     def get_urls(self):
@@ -96,9 +93,7 @@ class PathRouter(DefaultRouter):
 
                 # Build the url pattern
                 path_str = route.url.format(
-                    prefix=prefix,
-                    lookup=lookup,
-                    trailing_slash=self.trailing_slash
+                    prefix=prefix, lookup=lookup, trailing_slash=self.trailing_slash
                 )
 
                 # If there is no prefix, the first part of the url is probably
@@ -109,10 +104,12 @@ class PathRouter(DefaultRouter):
                 #     regex = '^' + path_str[2:]
 
                 initkwargs = route.initkwargs.copy()
-                initkwargs.update({
-                    'basename': basename,
-                    'detail': route.detail,
-                })
+                initkwargs.update(
+                    {
+                        "basename": basename,
+                        "detail": route.detail,
+                    }
+                )
 
                 view = viewset.as_view(mapping, **initkwargs)
                 name = route.name.format(basename=basename)
@@ -120,7 +117,7 @@ class PathRouter(DefaultRouter):
 
         if self.include_root_view:
             view = self.get_api_root_view(api_urls=urls)
-            root_url = path('', view, name=self.root_view_name)
+            root_url = path("", view, name=self.root_view_name)
             urls.append(root_url)
 
         if self.include_format_suffixes:

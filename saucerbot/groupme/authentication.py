@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.request import Request
@@ -12,8 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class GroupMeUserAuthentication(SessionAuthentication):
-
-    def authenticate(self, request: Request) -> Optional[Tuple[Optional[Any], Optional[Any]]]:
+    def authenticate(
+        self, request: Request
+    ) -> Optional[tuple[Optional[Any], Optional[Any]]]:
         user = get_user(request)
 
         if not user:

@@ -6,7 +6,7 @@ from collections import defaultdict
 import pytest
 
 
-@pytest.fixture(name='gmi')
+@pytest.fixture(name="gmi")
 def gmi(monkeypatch):
     from lowerpines.endpoints.bot import Bot
     from lowerpines.endpoints.group import Group, GroupMessagesManager
@@ -19,7 +19,6 @@ def gmi(monkeypatch):
     global_messages = defaultdict(list)
 
     class TestUser(User):
-
         def save(self):
             global_users[self.gmi.access_token] = self
 
@@ -28,14 +27,13 @@ def gmi(monkeypatch):
                 self._refresh_from_other(global_users[self.gmi.access_token])
 
     class TestGroup(Group):
-
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.messages = TestGroupMessageManager(self)
 
         def save(self):
             if not self.group_id:
-                self.group_id = str(uuid.uuid4()).replace('-', '')
+                self.group_id = str(uuid.uuid4()).replace("-", "")
             global_groups[self.group_id] = self
 
         def delete(self):
@@ -57,7 +55,6 @@ def gmi(monkeypatch):
             return global_groups.get(group_id)
 
     class TestGroupMessageManager(GroupMessagesManager):
-
         @property
         def count(self):
             return len(global_messages[self.group.group_id])
@@ -71,22 +68,23 @@ def gmi(monkeypatch):
         def before(self, message, count=100):
             group_messages = global_messages[self.group.group_id]
             idx = group_messages.index(message)
-            return group_messages[max(idx - count, 0):idx]
+            return group_messages[max(idx - count, 0) : idx]
 
         def since(self, message, count=100):
             group_messages = global_messages[self.group.group_id]
             idx = group_messages.index(message)
-            return group_messages[idx:min(idx + count, len(group_messages))]
+            return group_messages[idx : min(idx + count, len(group_messages))]
 
     class TestMessage(Message):
-
         def save(self):
             if self.message_id:
                 from lowerpines.exceptions import InvalidOperationException
+
                 raise InvalidOperationException(
-                    "You cannot change a message that has already been sent")
+                    "You cannot change a message that has already been sent"
+                )
             else:
-                self.message_id = str(uuid.uuid4()).replace('-', '')
+                self.message_id = str(uuid.uuid4()).replace("-", "")
                 global_messages[self.group_id].append(self)
 
         def refresh(self):
@@ -107,10 +105,9 @@ def gmi(monkeypatch):
             return Message.from_json(gmi, json_dict, *args)
 
     class TestBot(Bot):
-
         def save(self):
             if self.bot_id is None:
-                self.bot_id = str(uuid.uuid4()).replace('-', '')
+                self.bot_id = str(uuid.uuid4()).replace("-", "")
 
             global_bots[self.bot_id] = self
 
@@ -120,9 +117,11 @@ def gmi(monkeypatch):
 
         def post(self, text):
             from lowerpines.message import smart_split_complex_message
+
             text, attachments = smart_split_complex_message(text)
-            message = TestMessage(self.gmi, group_id=self.group_id, text=text,
-                                  attachments=attachments)
+            message = TestMessage(
+                self.gmi, group_id=self.group_id, text=text, attachments=attachments
+            )
             message.favorited_by = []
             message.name = self.name
             message.save()
@@ -131,35 +130,36 @@ def gmi(monkeypatch):
         def get_all(gmi):
             return global_bots.values()
 
-    monkeypatch.setattr('lowerpines.endpoints.user.User', TestUser)
-    monkeypatch.setattr('lowerpines.endpoints.group.Group', TestGroup)
-    monkeypatch.setattr('lowerpines.endpoints.message.Message', TestMessage)
-    monkeypatch.setattr('lowerpines.endpoints.bot.Bot', TestBot)
-    monkeypatch.setattr('lowerpines.user.User', TestUser)
-    monkeypatch.setattr('lowerpines.group.Group', TestGroup)
-    monkeypatch.setattr('lowerpines.bot.Bot', TestBot)
+    monkeypatch.setattr("lowerpines.endpoints.user.User", TestUser)
+    monkeypatch.setattr("lowerpines.endpoints.group.Group", TestGroup)
+    monkeypatch.setattr("lowerpines.endpoints.message.Message", TestMessage)
+    monkeypatch.setattr("lowerpines.endpoints.bot.Bot", TestBot)
+    monkeypatch.setattr("lowerpines.user.User", TestUser)
+    monkeypatch.setattr("lowerpines.group.Group", TestGroup)
+    monkeypatch.setattr("lowerpines.bot.Bot", TestBot)
 
     from lowerpines.gmi import GMI
 
-    return GMI('faketoken')
+    return GMI("faketoken")
 
 
-@pytest.fixture(name='bot')
+@pytest.fixture(name="bot")
 def setup_bot(db, gmi, monkeypatch):
     """
     Create a bot for saucerbot tests
     """
-    monkeypatch.setattr('saucerbot.groupme.models.get_gmi', lambda a: gmi)
+    monkeypatch.setattr("saucerbot.groupme.models.get_gmi", lambda a: gmi)
 
     from lowerpines.group import Group
     from saucerbot.groupme.models import User, Bot
 
-    user = User.objects.create(access_token='123456', user_id='123456')
+    user = User.objects.create(access_token="123456", user_id="123456")
 
-    group = Group(user.gmi, name='test group')
+    group = Group(user.gmi, name="test group")
     group.save()
 
-    bot = Bot.objects.create(owner=user, group=group,
-                             name='saucerbot', slug='saucerbot')
+    bot = Bot.objects.create(
+        owner=user, group=group, name="saucerbot", slug="saucerbot"
+    )
 
     return bot
