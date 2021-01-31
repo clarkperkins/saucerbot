@@ -30,6 +30,8 @@ limit-inference-results=100
 # usually to register additional checkers.
 load-plugins=pylint_django
 
+django-settings-module=saucerbot.settings
+
 # Pickle collected data for later comparisons.
 persistent=yes
 
@@ -143,10 +145,10 @@ disable=print-statement,
 
         # Extras
         invalid-name,
-        logging-fstring-interpolation,
         missing-docstring,
         no-else-return,
-        too-few-public-methods
+        too-few-public-methods,
+        unsubscriptable-object
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
