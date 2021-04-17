@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4d915463ab317de5ad20c7621c6cf1709c46c596e1ec2d174373792d27b3fae7"
+            "sha256": "b5179c38f735c624f6680dd6eb0cf62d264657b566c184c86c8777d8f60b4ba2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -178,12 +178,12 @@
             "version": "==2.10"
         },
         "lowerpines": {
+            "git": "https://github.com/clarkperkins/lowerpines.git",
             "hashes": [
                 "sha256:56bc490e2d8d7bb49d6e2722ac273ccbc412810947b01be3c8bf14021ba124a1",
                 "sha256:71f9893683452cdcb37d15156341a65308a8322ff3cb89c2ecaeee29b45d840e"
             ],
-            "index": "pypi",
-            "version": "==0.6.0"
+            "ref": "1eea2ad185aa0b2cac91d4bd6468fa460a95d14a"
         },
         "psutil": {
             "hashes": [
@@ -555,7 +555,7 @@
                 "sha256:f0b278ce10936db1a37e6954e15a3730bea96a0997c26d7fee88e6c396c2086d",
                 "sha256:f11642dddbb0253cc8853254301b51390ba0081750a8ac03f20ea8103f0c56b6"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4.0'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'",
             "version": "==5.5"
         },
         "django": {
@@ -609,7 +609,7 @@
                 "sha256:0a943902919f65c5684ac4e0154b1ad4fac6dcaa5d9f3426b732f1c8b5419be6",
                 "sha256:2bb1680aad211e3c9944dbce1d4ba09a989f04e238296c87fe2139faa26d655d"
             ],
-            "markers": "python_version >= '3.6' and python_version < '4.0'",
+            "markers": "python_version >= '3.6' and python_version < '4'",
             "version": "==5.8.0"
         },
         "itypes": {
