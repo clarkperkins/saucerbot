@@ -3,7 +3,7 @@
 set -e
 
 export PACKAGES='curl'
-export BUILD_PACKAGES='gcc g++ gnupg'
+export BUILD_PACKAGES='gcc g++ git gnupg'
 
 echo "Installing system dependencies..."
 apt-get update
