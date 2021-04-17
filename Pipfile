@@ -13,7 +13,7 @@ django-split-settings = "*"
 djangorestframework = "~=3.12.0"
 elasticsearch = "~=7.0"
 gunicorn = "*"
-lowerpines = "*"
+lowerpines = {git = "https://github.com/clarkperkins/lowerpines.git", ref = "bugfix/empty-responses"}
 "psycopg2-binary" = "*"
 pyyaml = "*"
 requests = "*"
