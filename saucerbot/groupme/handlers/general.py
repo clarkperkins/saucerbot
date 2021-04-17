@@ -9,7 +9,6 @@ from pathlib import Path
 
 import arrow
 import requests
-from dateutil.tz import gettz
 from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.message import Message
 from lowerpines.message import ComplexMessage, EmojiAttach, RefAttach
@@ -39,7 +38,7 @@ PICTURE_RESPONSES = [
     "I think I'm in that picture!",
 ]
 
-CENTRAL_TIME = gettz("US/Central")
+CENTRAL_TIME = "US/Central"
 
 
 def nickname_entry(bot: Bot, nickname: str, timestamp: arrow.Arrow) -> None:

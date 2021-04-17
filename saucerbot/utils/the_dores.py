@@ -157,6 +157,7 @@ def did_the_dores_win(
 
 # Good for testing the feature
 if __name__ == "__main__":
+    date: Optional[arrow.Arrow]
     if len(sys.argv) > 1:
         date = arrow.get(sys.argv[1], "MM-DD-YYYY")
     else:
