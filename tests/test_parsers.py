@@ -38,18 +38,18 @@ def event_equals(expected, actual) -> bool:
 
 
 expected_events = [
-    create_event("Nashville Predators vs. Winnipeg Jets", 11, 19),
-    create_event("Nashville Predators vs. Vancouver Canucks", 11, 21),
-    create_event("The Last Waltz", 11, 23),
-    create_event("Scott Hamilton and Friends", 11, 24),
-    create_event("Nashville Predators vs. St. Louis Blues", 11, 25),
-    create_event("Nashville Predators vs. Vegas Golden Knights", 11, 27),
-    create_event("Western Kentucky vs Louisville Men’s Basketball", 11, 29),
-    create_event("WWE Monday Night Raw", 12, 2),
-    create_event("Nashville Predators vs. Tampa Bay Lightning", 12, 3),
-    create_event("Trans-Siberian Orchestra", 12, 4),
-    create_event("Ariana Grande", 12, 5),
-    create_event("Nashville Predators vs. New Jersey Devils", 12, 7),
+    create_event("Panthers vs. Predators", 4, 26),
+    create_event("Panthers vs. Predators", 4, 27),
+    create_event("Stars vs. Predators", 5, 1),
+    create_event("Hurricanes vs. Predators", 5, 8),
+    create_event("Hurricanes vs. Predators", 5, 10),
+    create_event("CINCH World's Toughest Rodeo", 6, 12),
+    create_event("ALABAMA with very special guest Martina McBride", 7, 3),
+    create_event("RESCHEDULED: The Doobie Brothers", 7, 24),
+    create_event("RESCHEDULED: Justin Bieber", 7, 26),
+    create_event("RESCHEDULED: Luke Bryan", 7, 30),
+    create_event("RESCHEDULED: Matchbox Twenty", 8, 4),
+    create_event("RESCHEDULED: James Taylor", 8, 16),
 ]
 
 
@@ -63,7 +63,7 @@ def test_event_list_parsing():
 
     assert all([ev["details"] for ev in events_list])
 
-    sample_date = arrow.get(2000, 12, 5)
+    sample_date = arrow.get(2000, 8, 4)
     dated_events = get_events_for_date(events_list, sample_date)
     assert len(dated_events) == 1
     assert event_equals(expected_events[10], dated_events[0])
@@ -71,7 +71,7 @@ def test_event_list_parsing():
 
 def test_event_time_parsing():
     provider = LocalFileContentProvider("test_resources/event-time-sample.html")
-    event_name = "Preds v Jets"  # Doesn't really matter
+    event_name = "Panthers vs. Predators"  # Doesn't really matter
     extracted = get_event_time_helper(provider, event_name)
 
     assert extracted == "7:00"
