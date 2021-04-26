@@ -72,7 +72,7 @@ def create_message(event: dict[str, Any]) -> str:
         time_string = ""
     else:
         time_string = " at " + time_string
-    preds_match = re.fullmatch("Nashville Predators vs. ([A-Za-z. ]+)", event["name"])
+    preds_match = re.fullmatch("([A-Za-z. ]+) vs. Predators", event["name"])
     if preds_match:
         team = preds_match.group(1)
         event_string = random.choice(__preds_quips).format(team=team)
