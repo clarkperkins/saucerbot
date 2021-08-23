@@ -138,14 +138,16 @@ class BridgestoneEventsParser(Parser):
     base = "div#list > div > div.info.clearfix"
     fields = [
         ("link", "h3 > a", None),
-        ("date", "div.date", "aria-label"),
+        ("date", "div.date", None),
     ]
 
     def post_process(self, row):
+        date_str = row.get("date")
+
         result = {
             "details": row["link"]["href"],
             "name": row["link"]["text"].strip(),
-            "date": row["date"].strip(),
+            "date": date_str.strip() if date_str else None,
         }
         return result
 

@@ -13,7 +13,7 @@ from saucerbot.utils.bridgestone import create_message, get_todays_events
 
 logger = logging.getLogger(__name__)
 
-LIKE_IF_POST = "Saucer at 7PM. Like if."
+LIKE_IF_POST = "Saucer tonight! Time TBD. Like if."
 
 
 class Command(BaseCommand):

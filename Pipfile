@@ -8,12 +8,12 @@ arrow = "*"
 "beautifulsoup4" = "*"
 colorlog = "*"
 dj-database-url = "*"
-django = "~=3.1.0"
+django = "~=3.2.0"
 django-split-settings = "*"
 djangorestframework = "~=3.12.0"
 elasticsearch = "~=7.0"
 gunicorn = "*"
-lowerpines = {git = "https://github.com/clarkperkins/lowerpines.git", ref = "bugfix/empty-responses"}
+lowerpines = {git = "https://github.com/bigfootjon/lowerpines.git", ref = "master"}
 "psycopg2-binary" = "*"
 pyyaml = "*"
 requests = "*"
@@ -22,7 +22,7 @@ scout-apm = "*"
 whitenoise = "*"
 
 [dev-packages]
-black = "==20.8b1"
+black = "==21.6b0"
 django-stubs = "*"
 djangorestframework-stubs = "*"
 mypy = "*"
@@ -31,6 +31,8 @@ pylint-django = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-django = "*"
+types-pyyaml = "*"
+types-requests = "*"
 
 [requires]
 python_version = "3.9"

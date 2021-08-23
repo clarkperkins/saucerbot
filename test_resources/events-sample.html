@@ -1,35 +1,37 @@
-
 <!doctype html>
 <!--[if lt IE 7 ]><html lang="en" class="no-js ie6 ie"><![endif]-->
 <!--[if IE 7 ]><html lang="en" class="no-js ie7 ie"><![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--><html lang="en" class="no-js"><!--<![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+<html lang="en" class="no-js">
+<!--<![endif]-->
+
 <head>
-	<script>
-	if (/*@cc_on!@*/false) {
-	    document.documentElement.className+=' ie10';
-	}
-	//detect ie11 by CSS Capability Testing
-	if ('msTextCombineHorizontal' != undefined) {
+    <script>
+    if ( /*@cc_on!@*/ false) {
+        document.documentElement.className += ' ie10';
+    }
+    //detect ie11 by CSS Capability Testing
+    if ('msTextCombineHorizontal' != undefined) {
 
-		//add class if userAgent isn't Chrome or Safari
-		var ua = navigator.userAgent;
-		var chromesafari_check  = new RegExp("Safari");
-		if (chromesafari_check.exec(ua) != null){
-		  var isMSIE = false;
-		}else{
-			var isMSIE = true;
-		}
+        //add class if userAgent isn't Chrome or Safari
+        var ua = navigator.userAgent;
+        var chromesafari_check = new RegExp("Safari");
+        if (chromesafari_check.exec(ua) != null) {
+            var isMSIE = false;
+        } else {
+            var isMSIE = true;
+        }
 
-		if (isMSIE) {
-	    	document.documentElement.className+=' ie11';
-		}
-	}
-	</script>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Events | Bridgestone Arena</title>
+        if (isMSIE) {
+            document.documentElement.className += ' ie11';
+        }
+    }
+    </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Events | Bridgestone Arena</title>
 
-	<meta name="author" content="Bridgestone Arena" />
+    <meta name="author" content="Bridgestone Arena" />
 		<meta property="og:title" content="Events | Bridgestone Arena" />
 		<meta property="og:description" content="" />
 		<meta property="og:type" content="website" />
@@ -43,35 +45,36 @@
 		<meta name="twitter:title" content="Events | Bridgestone Arena" />
 		<meta name="twitter:description" content="" />
 		<meta name="twitter:image" content="https://www.bridgestonearena.com/assets/img/default_thumb-70289e77a4.jpg" />
-
+		
 		<meta name="viewport" content="width=1200" />
 
+		<meta name="facebook-domain-verification" content="83cf8b5eik2fvh5qua0vtu8q0yr9u6" />
+	
+        <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <link rel="stylesheet" media="screen" href="/assets-hybrid-framework--modular-js/production/1de31264ec/css/hybrid_framework.css">
+                    <link rel="stylesheet" media="screen" href="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//css/style.css">
+        
+    <link rel="stylesheet" media="print" href="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//css/print.css">
+        <script>
+    var BASE_URL = "https://www.bridgestonearena.com/";
+    var APPLICATION_URL = "https://www.bridgestonearena.com/";
+    var S3_BUCKET = "bridgestonearena";
+    var SHOWTIME_TRANSLATION_ID = "engUS";
+    var FRAMEWORK_ASSETS_PATH = "91273917cc";
+    var FRAMEWORK_JS_PATH = "/assets-hybrid-framework--modular-js/production/1de31264ec/js/app.optimized";
+    var FRAMEWORK_PATH_TO_JS = "/assets-hybrid-framework--modular-js/production/1de31264ec/js";
+    var SITE_S3_URL = "https://www.bridgestonearena.com/assets/production/3a0b8f40b4//";
+        var ADMIN_S3_URL = "/assets-showtime/production/429c831766/";
+        var _sf_startpt = (new Date()).getTime();
+    </script>
 
-		<link rel="shortcut icon" href="/favicon.ico">
-	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-			<link rel="stylesheet" media="screen" href="/assets-hybrid-framework--modular-js/production/dbfb035024/css/hybrid_framework.css">
-									<link rel="stylesheet" media="screen" href="https://www.bridgestonearena.com/assets/production/79cd0f7a61//css/style.css">
+        <script src="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//js/libs/layout.engine.min.js"></script>
+    
+        <script src="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//js/libs/modernizr.min.js"></script>
+    
 
-	<link rel="stylesheet" media="print" href="https://www.bridgestonearena.com/assets/production/79cd0f7a61//css/print.css">
-		<script>
-		var BASE_URL = "https://www.bridgestonearena.com/";
-		var APPLICATION_URL = "https://www.bridgestonearena.com/";
-		var S3_BUCKET = "bridgestonearena";
-		var SHOWTIME_TRANSLATION_ID = "engUS";
-		var FRAMEWORK_ASSETS_PATH = "91273917cc";
-        var FRAMEWORK_JS_PATH = "/assets-hybrid-framework--modular-js/production/dbfb035024/js/app.optimized";
-        var FRAMEWORK_PATH_TO_JS = "/assets-hybrid-framework--modular-js/production/dbfb035024/js";
-		var SITE_S3_URL = "https://www.bridgestonearena.com/assets/production/79cd0f7a61//";
-				var ADMIN_S3_URL = "/assets-showtime/production/ada0c2bdaa/";
-				var _sf_startpt=(new Date()).getTime();
-	</script>
-
-            <script src="https://www.bridgestonearena.com/assets/production/79cd0f7a61//js/libs/layout.engine.min.js"></script>
-
-            <script src="https://www.bridgestonearena.com/assets/production/79cd0f7a61//js/libs/modernizr.min.js"></script>
-
-
-		<script>
+    	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -81,7 +84,7 @@
 	  ga('send', 'pageview');
 
 	</script>
-	<!-- Google Tag Manager -->
+    <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -95,26 +98,25 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <script type="text/javascript">
 function OptanonWrapper() { }
 </script>
-<!-- OneTrust Cookies Consent Notice end -->
+<!-- OneTrust Cookies Consent Notice end -->        
 <style>
   @import url(https://fonts.googleapis.com/css?family=Exo:400,500,600,700);
   @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700:latin);
 </style>
 
-
-	<script>
+    
+    <script>
 	var firstViewport = document.getElementsByName("viewport")[0];
 	document.head.removeChild(firstViewport);
 </script>
 <meta id="variable-viewport" name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://use.fontawesome.com/fb9ae9118d.js"></script>
 </head>
-
 <body id="events" class="index ">
 	<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3G5GRH"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+<!-- End Google Tag Manager (noscript) -->				
 <div class="accessibility_links" style="width: 0px;height: 0;overflow: hidden;" role="complementary" aria-label="Accessibility Toolbar" data-options="default">
 	<ul>
 		<li><a id="skip_link" class="skip_link" href="#content">Skip to content</a></li>
@@ -123,7 +125,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		<li><a href="/search">Search</a></li>
 	</ul>
 </div>
-
+		
 	<div id="container">
 		<div id="layout">
 		    <header class="header clearfix">
@@ -182,7 +184,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </a>	</div>
 </div>	<div class="logo">
 			<a href="https://www.bridgestonearena.com/" title="Bridgestone Arena">Bridgestone Arena</a>
-	</div>
+	</div>		
 
 <button id="nav-toggle" role="button" aria-label="Toggle navigation" aria-expanded="false">
 	<span class="top"></span>
@@ -346,8 +348,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 																	<li class="">
 																				<a href="https://www.bridgestonearena.com/connect-with-us/contact-us" class="page_54">Contact Us</a>																			</li>
 																	<li class="">
-																				<a href="https://www.bridgestonearena.com/connect-with-us/express-feedback" class="page_55">Express Feedback</a>																			</li>
-																	<li class="">
 																				<a href="https://www.bridgestonearena.com/connect-with-us/lost-found" class="page_56">Lost & Found</a>																			</li>
 																	<li class="">
 																				<a href="https://www.bridgestonearena.com/connect-with-us/careers" class="page_60">Careers</a>																			</li>
@@ -415,7 +415,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 	<div class="full_column non-widget-area">
 				<div class="event_list_header">
 			<div class="overview">
-
+				
 									<h1>Upcoming Events</h1>
 												<div class="category-dropdown m-eventList__filter" data-options="filter_events" tabindex="0"  aria-expanded="false" aria-label="Toggle Filter Choices">
 	<div class="select">
@@ -428,7 +428,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 			<li><span tabindex="0" class="event_filter_item display_all_events" data-category="0" data-increment="12">All Event Types</span></li><li><span tabindex="0" class="event_filter_item " data-category="1" data-increment="12">Sports</span></li><li><span tabindex="0" class="event_filter_item " data-category="2" data-increment="12">Family Events</span></li><li><span tabindex="0" class="event_filter_item " data-category="3" data-increment="12">Concerts</span></li>					</ul>
 	</div>
 	</div>
-
+				
 <div class="event_list_toggles" data-options="default">
 	<button class="toggle active is-active" data-event-toggle="grid">
 		<div class="toggle-svg-border-wrap"><svg aria-hidden="true" width="36px" height="13px" viewBox="0 0 36 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -447,7 +447,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </svg></div>
 		<span>Grid</span>
 	</button>
-
+	
 	<button class="toggle "  data-event-toggle="listing">
 		<div class="toggle-svg-border-wrap"><svg aria-hidden="true" width="36px" height="13px" viewBox="0 0 36 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>List Icon</title>
@@ -486,166 +486,170 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 		</div>
 		<div class="eventList event_list_grid event_list">
 			<div class="eventList__wrapper list" id="list">
-																<div class="eventItem entry secondary featured team clearfix">
+																<div class="eventItem entry featured parking premium_seating clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-fla-2" title="More Info for Panthers vs. Predators" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/FLA-12c16d8320.jpg" alt="More Info for Panthers vs. Predators"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/dave-chappelle-joe-rogan-2" title="More Info for Dave Chappelle &amp; Joe Rogan" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/TR_ChappelleRogan_National_SG_1200x628-1-6187b1de67.jpg" alt="More Info for Dave Chappelle &amp; Joe Rogan"/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="April 26 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">Apr</span><span class="m-date__day"> 26</span></span>	</div>
-
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 03</span></span>	</div>
+	
 	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-fla-2" title="More Info">Panthers vs. Predators</a>	</h3>
+		<a href="https://www.bridgestonearena.com/events/detail/dave-chappelle-joe-rogan-2" title="More Info">Dave Chappelle & Joe Rogan</a>	</h3>
 				</div>
 			<div class="buttons">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-fla-2" class="more " title="Panthers vs. Predators Ticket Details">Ticket Details</a></div>		</div>
+	<a href="https://www.ticketmaster.com/event/1B005AD0122C6A5F" target="_blank" class="tickets onsalenow " title="Buy Tickets for Dave Chappelle &amp; Joe Rogan "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/dave-chappelle-joe-rogan-2" class="more buttons-hide" title="Dave Chappelle & Joe Rogan Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry alt featured parking premium_seating clearfix">
+			<div class="thumb">
+		<a href="https://www.bridgestonearena.com/events/detail/blake-shelton-2" title="More Info for Blake Shelton" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/0909-Nashville-BS-2021-1200x628-UPDATED-643cbdd812.jpg" alt="More Info for Blake Shelton"/></a>		
+</div>			<div class="info clearfix">
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 09</span></span>	</div>
+	
+	<h3 class="title title-withTagline ">
+		<a href="https://www.bridgestonearena.com/events/detail/blake-shelton-2" title="More Info">Blake Shelton</a>	</h3>
+			<h4 class="tagline">
+            FRIENDS AND HEROES 2021		</h4>
+    			</div>
+			<div class="buttons">
+	<a href="https://www.ticketmaster.com/blake-shelton-friends-and-heroes-2021-nashville-tennessee-09-09-2021/event/1B005AAE83663238" target="_blank" class="tickets onsalenow " title="Buy Tickets for Blake Shelton "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/blake-shelton-2" class="more buttons-hide" title="Blake Shelton Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry featured team parking platinum-club premium_seating clearfix">
+			<div class="thumb">
+		<a href="https://www.bridgestonearena.com/events/detail/alanis-morissette" title="More Info for RESCHEDULED: Alanis Morissette" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/TR_NationalAsset_AlanisMorissette_SG_1200x628-a88151fb78.jpg" alt="More Info for RESCHEDULED: Alanis Morissette"/></a>		
+</div>			<div class="info clearfix">
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 17</span></span>	</div>
+	
+	<h3 class="title  long_title">
+		<a href="https://www.bridgestonearena.com/events/detail/alanis-morissette" title="More Info">RESCHEDULED: Alanis Morissette</a>	</h3>
+				</div>
+			<div class="buttons">
+	<a href="http://bit.ly/2R8XHNn" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: Alanis Morissette "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/alanis-morissette" class="more buttons-hide" title="RESCHEDULED: Alanis Morissette Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry alt parking premium_seating clearfix">
+			<div class="thumb">
+		<a href="https://www.bridgestonearena.com/events/detail/eric-clapton" title="More Info for Eric Clapton" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/EricClapton2021-1050x600-Web-fd44a51600.jpg" alt="More Info for Eric Clapton"/></a>		
+</div>			<div class="info clearfix">
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 21</span></span>	</div>
+	
+	<h3 class="title title-withTagline ">
+		<a href="https://www.bridgestonearena.com/events/detail/eric-clapton" title="More Info">Eric Clapton</a>	</h3>
+			<h4 class="tagline">
+            Special Guest Jimmie Vaughan		</h4>
+    			</div>
+			<div class="buttons">
+	<a href="https://www.ticketmaster.com/event/1B005ACAA028304B" target="_blank" class="tickets onsalenow " title="Buy Tickets for Eric Clapton "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/eric-clapton" class="more buttons-hide" title="Eric Clapton Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry home featured platinum-club premium_seating clearfix">
+			<div class="thumb">
+		<a href="https://www.bridgestonearena.com/events/detail/disney-on-ice-dream-big-1" title="More Info for Disney On Ice: Dream Big" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/Website-Graphic-1050x600-4b7da57e47.jpg" alt="More Info for Disney On Ice: Dream Big"/></a>		
+</div>			<div class="info clearfix">
+				<div class="date">
+	<span class="m-date__rangeFirst"><span class="m-date__month">Sep</span><span class="m-date__day"> 23</span></span><span class="m-date__separator"> - </span><span class="m-date__rangeLast"><span class="m-date__day"> 26</span></span>	</div>
+	
+	<h3 class="title  ">
+		<a href="https://www.bridgestonearena.com/events/detail/disney-on-ice-dream-big-1" title="More Info">Disney On Ice: Dream Big</a>	</h3>
+				</div>
+			<div class="buttons">
+	<a href="https://www.ticketmaster.com/artist/1638731?venueId=221417" target="_blank" class="tickets soon " title="Buy Tickets for Disney On Ice: Dream Big "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>On Sale Soon</a><a href="https://www.bridgestonearena.com/events/detail/disney-on-ice-dream-big-1" class="more buttons-hide" title="Disney On Ice: Dream Big Ticket Details">Ticket Details</a></div>		</div>
 		<div class="eventItem entry alt secondary featured team clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-fla-3" title="More Info for Panthers vs. Predators" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/FLA-12c16d8320.jpg" alt="More Info for Panthers vs. Predators"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/peteys-preds-party-6" title="More Info for Petey's Preds Party " tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/cut-360531e3fa.png" alt="More Info for Petey's Preds Party "/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="April 27 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">Apr</span><span class="m-date__day"> 27</span></span>	</div>
-
-	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-fla-3" title="More Info">Panthers vs. Predators</a>	</h3>
-				</div>
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 28</span></span>	</div>
+	
+	<h3 class="title title-withTagline ">
+		<a href="https://www.bridgestonearena.com/events/detail/peteys-preds-party-6" title="More Info">Petey's Preds Party </a>	</h3>
+			<h4 class="tagline">
+            Presented by First Horizon		</h4>
+    			</div>
 			<div class="buttons">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-fla-3" class="more " title="Panthers vs. Predators Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry secondary featured team clearfix">
+	<a href="https://am.ticketmaster.com/predators/2021petey/?&amp;_ga=2.180981287.1205909804.1626236222-1060245236.1588192771#/" target="_blank" class="tickets onsalenow " title="Buy Tickets for Petey's Preds Party  "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/peteys-preds-party-6" class="more buttons-hide" title="Petey's Preds Party  Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry secondary featured parking platinum-club premium_seating clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-dal-3" title="More Info for Stars vs. Predators" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/DAL-281052d648.jpg" alt="More Info for Stars vs. Predators"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/harry-styles-presents-love-on-tour" title="More Info for Harry Styles presents Love On Tour" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/HARRYSTYLES-JL_bridgestoneweb-395dc37f9b.jpg" alt="More Info for Harry Styles presents Love On Tour"/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="May  1 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">May</span><span class="m-date__day"> 01</span></span>	</div>
-
-	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-dal-3" title="More Info">Stars vs. Predators</a>	</h3>
-				</div>
-			<div class="buttons">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-dal-3" class="more " title="Stars vs. Predators Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry alt secondary featured team clearfix">
-			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-car-3" title="More Info for Hurricanes vs. Predators" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/CAR-39c47a26cb.jpg" alt="More Info for Hurricanes vs. Predators"/></a>
-</div>			<div class="info clearfix">
-				<div class="date" aria-label="May  8 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">May</span><span class="m-date__day"> 08</span></span>	</div>
-
-	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-car-3" title="More Info">Hurricanes vs. Predators</a>	</h3>
-				</div>
-			<div class="buttons">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-car-3" class="more " title="Hurricanes vs. Predators Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry secondary featured team clearfix">
-			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-car-2" title="More Info for Hurricanes vs. Predators" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/CAR-39c47a26cb.jpg" alt="More Info for Hurricanes vs. Predators"/></a>
-</div>			<div class="info clearfix">
-				<div class="date" aria-label="May 10 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">May</span><span class="m-date__day"> 10</span></span>	</div>
-
-	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-car-2" title="More Info">Hurricanes vs. Predators</a>	</h3>
-				</div>
-			<div class="buttons">
-	<a href="https://www.bridgestonearena.com/events/detail/nsh-vs-car-2" class="more " title="Hurricanes vs. Predators Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry alt home featured parking clearfix">
-			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/cinch-worlds-toughest-rodeo-1" title="More Info for CINCH World's Toughest Rodeo" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/Picture1-165d71734c.jpg" alt="More Info for CINCH World's Toughest Rodeo"/></a>
-</div>			<div class="info clearfix">
-				<div class="date" aria-label="June 12 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">June</span><span class="m-date__day"> 12</span></span>	</div>
-
-	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/cinch-worlds-toughest-rodeo-1" title="More Info">CINCH World's Toughest Rodeo</a>	</h3>
-				</div>
-			<div class="buttons">
-	<a href="https://www.ticketmaster.com/worlds-toughest-rodeo-tickets/artist/804555?venueId=221417" target="_blank" class="tickets onsalenow " title="Buy Tickets for CINCH World's Toughest Rodeo "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/cinch-worlds-toughest-rodeo-1" class="more buttons-hide" title="CINCH World's Toughest Rodeo Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry secondary featured team parking platinum-club premium_seating clearfix">
-			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/alabama" title="More Info for ALABAMA with very special guest Martina McBride" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/Alabama-revised-image-9e6ad4eda4.jpg" alt="More Info for ALABAMA with very special guest Martina McBride"/></a>
-</div>			<div class="info clearfix">
-				<div class="date" aria-label="July 3 2021">
-	<span class="m-date__rangeFirst"><span class="m-date__month">July</span><span class="m-date__day"> 02</span></span><span class="m-date__separator"> - </span><span class="m-date__rangeLast"><span class="m-date__day"> 03</span></span>	</div>
-
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 29</span></span>	</div>
+	
 	<h3 class="title title-withTagline long_title">
-		<a href="https://www.bridgestonearena.com/events/detail/alabama" title="More Info">ALABAMA with very special guest Martina McBride</a>	</h3>
+		<a href="https://www.bridgestonearena.com/events/detail/harry-styles-presents-love-on-tour" title="More Info">Harry Styles presents Love On Tour</a>	</h3>
 			<h4 class="tagline">
-            50th Anniversary Tour End of Tour Celebration		</h4>
+            with special guest Jenny Lewis		</h4>
     			</div>
 			<div class="buttons">
-	<a href="https://www.ticketmaster.com/venue/221417?attractionId=732671" target="_blank" class="tickets onsalenow " title="Buy Tickets for ALABAMA with very special guest Martina McBride "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/alabama" class="more buttons-hide" title="ALABAMA with very special guest Martina McBride Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry alt secondary team parking platinum-club premium_seating clearfix">
+	<a href="https://www.ticketmaster.com/event/1B005AECCED73DDD" target="_blank" class="tickets onsalenow " title="Buy Tickets for Harry Styles presents Love On Tour "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/harry-styles-presents-love-on-tour" class="more buttons-hide" title="Harry Styles presents Love On Tour Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry alt featured parking premium_seating clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/the-doobie-brothers" title="More Info for RESCHEDULED: The Doobie Brothers" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/DoobieBrothers_560x320_OSNow-a2dae2750e.jpg" alt="More Info for RESCHEDULED: The Doobie Brothers"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/jim-gaffigan-the-fun-tour" title="More Info for Jim Gaffigan: The Fun Tour" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/JimGaffigan_V1-1050x600socials-e6c91f5eec.jpg" alt="More Info for Jim Gaffigan: The Fun Tour"/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="July 24 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">July</span><span class="m-date__day"> 24</span></span>	</div>
-
-	<h3 class="title title-withTagline long_title">
-		<a href="https://www.bridgestonearena.com/events/detail/the-doobie-brothers" title="More Info">RESCHEDULED: The Doobie Brothers</a>	</h3>
-			<h4 class="tagline">
-            50th Anniversary Tour		</h4>
-    			</div>
-			<div class="buttons">
-	<a href="https://www1.ticketmaster.com/the-doobie-brothers-50th-anniversary-tour/event/1B005772A18A6F2F" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: The Doobie Brothers "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/the-doobie-brothers" class="more buttons-hide" title="RESCHEDULED: The Doobie Brothers Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry secondary featured team parking platinum-club premium_seating clearfix">
-			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/justin-bieber-1" title="More Info for RESCHEDULED: Justin Bieber" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/0726-Nash-JUSTINBIEBER-2021-1050x600-f0a2058475.jpg" alt="More Info for RESCHEDULED: Justin Bieber"/></a>
-</div>			<div class="info clearfix">
-				<div class="date" aria-label="July 26 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">July</span><span class="m-date__day"> 26</span></span>	</div>
-
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Sep</span><span class="m-date__day"> 30</span></span>	</div>
+	
 	<h3 class="title  ">
-		<a href="https://www.bridgestonearena.com/events/detail/justin-bieber-1" title="More Info">RESCHEDULED: Justin Bieber</a>	</h3>
+		<a href="https://www.bridgestonearena.com/events/detail/jim-gaffigan-the-fun-tour" title="More Info">Jim Gaffigan: The Fun Tour</a>	</h3>
 				</div>
 			<div class="buttons">
-	<a href="http://bit.ly/3aBGVwC" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: Justin Bieber "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/justin-bieber-1" class="more buttons-hide" title="RESCHEDULED: Justin Bieber Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry alt secondary featured team parking platinum-club premium_seating clearfix">
+	<a href="https://www.ticketmaster.com/event/1B005AA57F7F150A" target="_blank" class="tickets onsalenow " title="Buy Tickets for Jim Gaffigan: The Fun Tour "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/jim-gaffigan-the-fun-tour" class="more buttons-hide" title="Jim Gaffigan: The Fun Tour Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry featured team parking platinum-club premium_seating clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/luke-bryan-2" title="More Info for RESCHEDULED: Luke Bryan" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/LukeBryan_1920x1080_OSNow-481131fefc.jpg" alt="More Info for RESCHEDULED: Luke Bryan"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/harry-styles" title="More Info for RESCHEDULED: Harry Styles" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/HARRYSTYLES-JL_Oct1-Bridgestoneweb-75ba5b7e63.jpg" alt="More Info for RESCHEDULED: Harry Styles"/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="July 30 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">July</span><span class="m-date__day"> 30</span></span>	</div>
-
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Oct</span><span class="m-date__day"> 01</span></span>	</div>
+	
 	<h3 class="title title-withTagline ">
-		<a href="https://www.bridgestonearena.com/events/detail/luke-bryan-2" title="More Info">RESCHEDULED: Luke Bryan</a>	</h3>
+		<a href="https://www.bridgestonearena.com/events/detail/harry-styles" title="More Info">RESCHEDULED: Harry Styles</a>	</h3>
 			<h4 class="tagline">
-            Proud to be Right Here Tour		</h4>
+            Love on Tour		</h4>
     			</div>
 			<div class="buttons">
-	<a href="http://bit.ly/2RIWUkS" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: Luke Bryan "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/luke-bryan-2" class="more buttons-hide" title="RESCHEDULED: Luke Bryan Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry secondary featured team clearfix">
+	<a href="http://bit.ly/32Khepw" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: Harry Styles "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/harry-styles" class="more buttons-hide" title="RESCHEDULED: Harry Styles Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry alt home secondary featured platinum-club premium_seating clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/matchbox-twenty" title="More Info for RESCHEDULED: Matchbox Twenty" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/MatchboxTwenty_Facebook_InvestorThumbnail_NewsFeedImage_1200x628_Static-eab2cb6138.jpg" alt="More Info for RESCHEDULED: Matchbox Twenty"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/wwe-1" title="More Info for WWE" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/76749_Raw_Nashville_1200x630-b4bc16af8e.jpg" alt="More Info for WWE"/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="August  4 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">Aug</span><span class="m-date__day"> 04</span></span>	</div>
-
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Oct</span><span class="m-date__day"> 04</span></span>	</div>
+	
 	<h3 class="title title-withTagline ">
-		<a href="https://www.bridgestonearena.com/events/detail/matchbox-twenty" title="More Info">RESCHEDULED: Matchbox Twenty</a>	</h3>
+		<a href="https://www.bridgestonearena.com/events/detail/wwe-1" title="More Info">WWE</a>	</h3>
 			<h4 class="tagline">
-            With Special Guest The Wallflowers		</h4>
+            Monday Night RAW		</h4>
     			</div>
 			<div class="buttons">
-	<a href="http://bit.ly/37WlRQe" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: Matchbox Twenty "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/matchbox-twenty" class="more buttons-hide" title="RESCHEDULED: Matchbox Twenty Ticket Details">Ticket Details</a></div>		</div>
-		<div class="eventItem entry alt secondary featured team clearfix">
+	<a href="https://www.ticketmaster.com/event/1B005B0A950B18EC" target="_blank" class="tickets onsalenow " title="Buy Tickets for WWE "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/wwe-1" class="more buttons-hide" title="WWE Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry secondary featured parking premium_seating clearfix">
 			<div class="thumb">
-	<a href="https://www.bridgestonearena.com/events/detail/james-taylor-2" title="More Info for RESCHEDULED: James Taylor" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/JamesTaylor-2021-1050x600-40859ce991.jpg" alt="More Info for RESCHEDULED: James Taylor"/></a>
+		<a href="https://www.bridgestonearena.com/events/detail/pitbull" title="More Info for Pitbull: I Feel Good Tour " tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/pitbull-0e55839d7a.jpg" alt="More Info for Pitbull: I Feel Good Tour "/></a>		
 </div>			<div class="info clearfix">
-				<div class="date" aria-label="August 16 2021">
-	<span class="m-date__singleDate"><span class="m-date__month">Aug</span><span class="m-date__day"> 16</span></span>	</div>
-
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Oct</span><span class="m-date__day"> 07</span></span>	</div>
+	
 	<h3 class="title title-withTagline ">
-		<a href="https://www.bridgestonearena.com/events/detail/james-taylor-2" title="More Info">RESCHEDULED: James Taylor</a>	</h3>
+		<a href="https://www.bridgestonearena.com/events/detail/pitbull" title="More Info">Pitbull: I Feel Good Tour </a>	</h3>
 			<h4 class="tagline">
-            and His All-Star Band With Very Special Guest Jackson Browne		</h4>
+            with special guest Iggy Azalea		</h4>
     			</div>
 			<div class="buttons">
-	<a href="http://bit.ly/2RiVbDY" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: James Taylor "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/james-taylor-2" class="more buttons-hide" title="RESCHEDULED: James Taylor Ticket Details">Ticket Details</a></div>		</div>
+	<a href="https://www.ticketmaster.com/event/1B005ACEB1A03A08" target="_blank" class="tickets onsalenow " title="Buy Tickets for Pitbull: I Feel Good Tour  "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/pitbull" class="more buttons-hide" title="Pitbull: I Feel Good Tour  Ticket Details">Ticket Details</a></div>		</div>
+		<div class="eventItem entry alt featured team parking premium_seating clearfix">
+			<div class="thumb">
+		<a href="https://www.bridgestonearena.com/events/detail/alan-jackson" title="More Info for RESCHEDULED: Alan Jackson" tabindex="-1"><img src="https://www.bridgestonearena.com/assets/img/ALAN-JACKSON_NASHVILLE_1050X600_NEW3-e0c5b8779d.jpg" alt="More Info for RESCHEDULED: Alan Jackson"/></a>		
+</div>			<div class="info clearfix">
+				<div class="date">
+	<span class="m-date__singleDate"><span class="m-date__month">Oct</span><span class="m-date__day"> 08</span></span>	</div>
+	
+	<h3 class="title  ">
+		<a href="https://www.bridgestonearena.com/events/detail/alan-jackson" title="More Info">RESCHEDULED: Alan Jackson</a>	</h3>
+				</div>
+			<div class="buttons">
+	<a href="http://bit.ly/2PZO7vF" target="_blank" class="tickets onsalenow " title="Buy Tickets for RESCHEDULED: Alan Jackson "><svg xmlns="http://www.w3.org/2000/svg" width="32" height="18" viewBox="0 0 32 18"><path d="M3422,696l-0.06-4.867h0a4.136,4.136,0,0,1-4.06-4.295,4.286,4.286,0,0,1,4.08-4.4h0.01l0.01-4.431L3412,678v18h10Zm-32-18,0.04,4.877a4.135,4.135,0,0,1,4.06,4.3,4.3,4.3,0,0,1-4.09,4.4L3390,696l20,0V678h-20Z" transform="translate(-3390 -678)"/></svg>Buy Tickets</a><a href="https://www.bridgestonearena.com/events/detail/alan-jackson" class="more buttons-hide" title="RESCHEDULED: Alan Jackson Ticket Details">Ticket Details</a></div>		</div>
 													</div>
 							<button id="loadMoreEvents" class="eventList__showMore" disabled="disabled" data-options="events" data-category="0" data-venue="0" data-team="0" data-offset="12" data-increment="12 " data-camefrom="event-list-page">
 				    Load More Events				    				</button>
 					</div>
 			</div>
-
+	
 	<div id="venue_widgets_framework" class="widgets_area l-hybrid-widgets">
 		<div class="content_item_sizer"></div>
 		<section class='l-m-venue_widget l-m-venue_widget__socialwidget font_exo-demibold_open-sans ' id='socialwidget_793' data-instagramlayout="square" data-twitterlayout="square" data-layout="social" data-network="facebookwidget">
@@ -690,7 +694,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                                 </svg>
                             </i>
                         </div>
-                        <h2 id="cal-month" class="cal-month">Apr 2021</h2>
+                        <h2 id="cal-month" class="cal-month">Aug 2021</h2>
                     </div>
 
                     <div id="calendar" tabindex="-1" aria-hidden="true" class="fc-calendar-container">
@@ -897,8 +901,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 																																			<li>
 													<a href="https://www.bridgestonearena.com/connect-with-us/contact-us" class="page_54">Contact Us</a>												</li>
 																																			<li>
-													<a href="https://www.bridgestonearena.com/connect-with-us/express-feedback" class="page_55">Express Feedback</a>												</li>
-																																			<li>
 													<a href="https://www.bridgestonearena.com/connect-with-us/lost-found" class="page_56">Lost & Found</a>												</li>
 																																			<li>
 													<a href="https://www.bridgestonearena.com/connect-with-us/careers" class="page_60">Careers</a>												</li>
@@ -921,7 +923,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>			</footer>
 		</div>
 
-
+		
 <script type="application/ld+json">
 {
   "@context": "http://schema.org",
@@ -929,9 +931,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   "name": "Bridgestone Arena",
   "url": "https://www.bridgestonearena.com/",
   "sameAs": [
-    "https://www.twitter.com/brdgstonearena",
-"https://www.facebook.com/BridgestoneArena",
-"https://www.instagram.com/bridgestonearenaofficial",
+    "https://www.twitter.com/brdgstonearena", 
+"https://www.facebook.com/BridgestoneArena", 
+"https://www.instagram.com/bridgestonearenaofficial", 
 "https://bridgestonearena.com/accessibility"  ]
 }
 </script>
@@ -951,10 +953,10 @@ var captureOutboundLink = function(url) {
 }
 </script><script>
 (function() {
-  var loadAlertBar = function loadAlertBar(){
+  var loadAlertBar = function loadAlertBar(){		
 		var alertMessage = document.getElementById('alertBarMessage');
-
-
+		
+        
 		if(alertMessage){
 			var alert = document.createElement('div');
 			alert.className = 'alertBars';
@@ -963,7 +965,7 @@ var captureOutboundLink = function(url) {
 			alert.style.top = 0;
 			alert.style.left = 0;
 			alert.style.width = '100%';
-
+			
 			alert.style.background = '50px';
 			alert.style.borderColor= "rgba(255, 255, 255, 0.5)";
 			alert.style.backgroundColor= "#dcecc9";
@@ -977,14 +979,14 @@ var captureOutboundLink = function(url) {
 			document.body.appendChild(alert);
 		}
 	}
-
+   
     var oldonload = window.onload;
-
+   
     var loadFunction = (typeof window.onload != 'function') ?
       loadAlertBar : function() { oldonload(); loadAlertBar();};
-
-    window.addEventListener ?
-        window.addEventListener("load",loadFunction,false) :
+    
+    window.addEventListener ? 
+        window.addEventListener("load",loadFunction,false) : 
         window.attachEvent && window.attachEvent("onload",loadFunction);
   })();
 
@@ -999,11 +1001,11 @@ var captureOutboundLink = function(url) {
 
 	</script>
 
-            <script src="https://www.bridgestonearena.com/assets/production/79cd0f7a61//js/dist/production/vendor.production.js"></script>
-        <script src="https://www.bridgestonearena.com/assets/production/79cd0f7a61//js/dist/production/component-vendor.production.js"></script>
-        <script src="https://www.bridgestonearena.com/assets/production/79cd0f7a61//js/dist/production/libs.production.js"></script>
-        <script src="https://www.bridgestonearena.com/assets/production/79cd0f7a61//js/dist/production/site.production.js"></script>
-
+            <script src="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//js/dist/production/vendor.production.js"></script>
+        <script src="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//js/dist/production/component-vendor.production.js"></script>
+        <script src="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//js/dist/production/libs.production.js"></script>
+        <script src="https://www.bridgestonearena.com/assets/production/3a0b8f40b4//js/dist/production/site.production.js"></script>
+    
     
 </body>
 </html>
