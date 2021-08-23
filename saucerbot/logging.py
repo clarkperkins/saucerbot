@@ -12,10 +12,10 @@ class HighlightingFormatter(ColoredFormatter):
         dt = datetime.fromtimestamp(record.created).astimezone()
         if datefmt:
             s = dt.strftime(datefmt)
-        else:
+        else:  # pragma: no cover
             t = dt.strftime(self.default_time_format)
             if self.default_msec_format:
                 s = self.default_msec_format % (t, record.msecs)
             else:
-                s = '%s,%03d' % (t, record.msecs)
+                s = "%s,%03d" % (t, record.msecs)
         return s
