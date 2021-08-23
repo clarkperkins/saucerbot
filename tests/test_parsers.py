@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from saucerbot.utils.base import get_new_arrivals
 from saucerbot.utils.bridgestone import bridgestone_events_url
 from saucerbot.utils.bridgestone import (
+    get_year,
     get_event_time_helper,
     get_all_events,
     get_events_for_date,
@@ -25,8 +26,8 @@ class LocalFileContentProvider(HtmlContentProvider):
             return BeautifulSoup(content, "html.parser")
 
 
-def create_event(name: str, month: int, date: int) -> dict[str, Any]:
-    return {"name": name, "parsed_date": arrow.get(2000, month, date)}
+def create_event(name: str, month: int, day: int) -> dict[str, Any]:
+    return {"name": name, "parsed_date": arrow.get(get_year(month), month, day)}
 
 
 def event_equals(expected, actual) -> bool:
@@ -38,18 +39,18 @@ def event_equals(expected, actual) -> bool:
 
 
 expected_events = [
-    create_event("Panthers vs. Predators", 4, 26),
-    create_event("Panthers vs. Predators", 4, 27),
-    create_event("Stars vs. Predators", 5, 1),
-    create_event("Hurricanes vs. Predators", 5, 8),
-    create_event("Hurricanes vs. Predators", 5, 10),
-    create_event("CINCH World's Toughest Rodeo", 6, 12),
-    create_event("ALABAMA with very special guest Martina McBride", 7, 3),
-    create_event("RESCHEDULED: The Doobie Brothers", 7, 24),
-    create_event("RESCHEDULED: Justin Bieber", 7, 26),
-    create_event("RESCHEDULED: Luke Bryan", 7, 30),
-    create_event("RESCHEDULED: Matchbox Twenty", 8, 4),
-    create_event("RESCHEDULED: James Taylor", 8, 16),
+    create_event("Dave Chappelle & Joe Rogan", 9, 3),
+    create_event("Blake Shelton", 9, 9),
+    create_event("RESCHEDULED: Alanis Morissette", 9, 17),
+    create_event("Eric Clapton", 9, 21),
+    create_event("Disney On Ice: Dream Big", 9, 23),
+    create_event("Petey's Preds Party", 9, 28),
+    create_event("Harry Styles presents Love On Tour", 9, 29),
+    create_event("Jim Gaffigan: The Fun Tour", 9, 30),
+    create_event("RESCHEDULED: Harry Styles", 10, 1),
+    create_event("WWE", 10, 4),
+    create_event("Pitbull: I Feel Good Tour", 10, 7),
+    create_event("RESCHEDULED: Alan Jackson", 10, 8),
 ]
 
 
@@ -57,16 +58,16 @@ def test_event_list_parsing():
     provider = LocalFileContentProvider("test_resources/events-sample.html")
     events_list = get_all_events(provider)
 
-    assert len(expected_events) == len(events_list)
+    assert len(events_list) == len(expected_events)
     for i in range(0, len(expected_events)):
         assert event_equals(expected_events[i], events_list[i])
 
     assert all([ev["details"] for ev in events_list])
 
-    sample_date = arrow.get(2000, 8, 4)
+    sample_date = arrow.get(get_year(9), 9, 23)
     dated_events = get_events_for_date(events_list, sample_date)
-    assert len(dated_events) == 1
-    assert event_equals(expected_events[10], dated_events[0])
+    assert 1 == len(dated_events)
+    assert event_equals(expected_events[4], dated_events[0])
 
 
 def test_event_time_parsing():

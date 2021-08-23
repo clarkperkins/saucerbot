@@ -14,7 +14,7 @@ from saucerbot.utils.parsers import BridgestoneEventsParser
 
 logger = logging.getLogger(__name__)
 
-__bridgestone_date_pattern = r"MMMM[\s*]D[\s*]YYYY"
+__bridgestone_date_pattern = r"MMM[\s*]D"
 __bridgestone_time_pattern = r"h:mm[\s*]A"
 __message_formats = [
     "Better get there early: {event} at Bridgestone{time} tonight!",
@@ -52,16 +52,32 @@ def get_events_for_date(events: list[dict[str, Any]], date) -> list[dict[str, An
     return results
 
 
+def get_year(month: int) -> int:
+    current_date = arrow.now()
+    current_year = current_date.date().year
+
+    if month >= current_date.date().month:
+        return current_year
+    else:
+        return current_year + 1
+
+
 def get_all_events(provider: HtmlContentProvider) -> list[dict[str, Any]]:
     events = []
     for ev in BridgestoneEventsParser(provider).parse():
-        try:
-            ev["parsed_date"] = arrow.get(ev["date"], __bridgestone_date_pattern)
-            events.append(ev)
-        except ParserError:
-            logger.info("Failed to parse date '%s'", ev["date"])
-            # Date won't parse, just skip it
-            continue
+        if ev["date"]:
+            # WTF Bridgestone, just use 3 letter months everywhere
+            fixed_date = ev["date"].replace("June", "Jun").replace("July", "Jul")
+            try:
+                parsed_date = arrow.get(fixed_date, __bridgestone_date_pattern)
+                ev["parsed_date"] = parsed_date.replace(
+                    year=get_year(parsed_date.date().month)
+                )
+                events.append(ev)
+            except ParserError:
+                logger.info("Failed to parse date '%s'", fixed_date)
+                # Date won't parse, just skip it
+                continue
     return events
 
 

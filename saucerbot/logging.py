@@ -14,5 +14,8 @@ class HighlightingFormatter(ColoredFormatter):
             s = dt.strftime(datefmt)
         else:
             t = dt.strftime(self.default_time_format)
-            s = self.default_msec_format % (t, record.msecs)
+            if self.default_msec_format:
+                s = self.default_msec_format % (t, record.msecs)
+            else:
+                s = '%s,%03d' % (t, record.msecs)
         return s
