@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from elasticsearch import Elasticsearch, RequestError
 from elasticsearch.helpers import bulk
+from elasticsearch.serializer import JSONSerializer
 
 from saucerbot.utils.parsers import NewArrivalsParser
 
@@ -81,9 +82,22 @@ class Brew:
                 self.abv = float(abv_match.group("abv"))
 
 
+class FixingJsonSerializer(JSONSerializer):
+    def loads(self, s: str) -> Any:
+        ret = super().loads(s)
+
+        if isinstance(ret, dict) and "version" in ret:
+            ret["version"]["build_flavor"] = "default"
+
+        return ret
+
+
 class BrewsLoaderUtil:
     def __init__(self):
-        self.es = Elasticsearch(settings.ELASTICSEARCH_URL)
+        self.es = Elasticsearch(
+            settings.ELASTICSEARCH_URL,
+            serializer=FixingJsonSerializer(),
+        )
 
         timestamp = arrow.now("US/Central").format("YYYYMMDD-HHmmss-SSS")
 
@@ -202,7 +216,10 @@ class BrewsLoaderUtil:
 
 class BrewsSearchUtil:
     def __init__(self):
-        self.es = Elasticsearch(settings.ELASTICSEARCH_URL)
+        self.es = Elasticsearch(
+            settings.ELASTICSEARCH_URL,
+            serializer=FixingJsonSerializer(),
+        )
 
     def brew_info(self, search_term: str) -> str:
         tokens = search_term.split()
