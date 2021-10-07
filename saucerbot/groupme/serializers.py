@@ -1,61 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Any, Union, cast
+from typing import Any
 
-from django.db.models import QuerySet
 from lowerpines.endpoints.group import Group
 from lowerpines.exceptions import NoneFoundException
 from rest_framework import serializers
 
-from saucerbot.groupme.handlers import registry, Handler as RHandler
+from saucerbot.core.serializers import HandlerRelatedField
 from saucerbot.groupme.models import Bot, Handler, User
 
 logger = logging.getLogger(__name__)
-
-
-class HandlerSerializer(serializers.Serializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="groupme:handler-detail", lookup_field="name"
-    )
-    name = serializers.CharField()
-    description = serializers.CharField()
-    regexes = serializers.ListField(child=serializers.CharField())
-
-    def create(self, validated_data):
-        raise NotImplementedError("Read-only serializer")
-
-    def update(self, instance, validated_data):
-        raise NotImplementedError("Read-only serializer")
-
-
-class HandlerRelatedField(serializers.RelatedField):
-    """
-    This field is kind of weird - it's able to handle both the Handler objects
-    that are in the registry, along with the Handler model objects.
-    """
-
-    queryset = cast(QuerySet, registry)
-
-    def to_internal_value(self, data: str) -> RHandler:
-        """
-        This returns the registry handler associated with the given name
-        """
-        handler = self.get_queryset().get(name=data)
-        if not handler:
-            raise serializers.ValidationError(
-                f"Handler with name '{data}' doesn't exist"
-            )
-        return handler
-
-    def to_representation(self, value: Union[Handler, RHandler]) -> str:
-        """
-        Can deal with both registry handlers and handler model objects
-        """
-        if isinstance(value, RHandler):
-            return value.name
-        else:
-            return value.handler_name
 
 
 class GroupRelatedField(serializers.RelatedField):
@@ -81,7 +36,9 @@ class BotSerializer(serializers.HyperlinkedModelSerializer):
         allow_null=True,
         required=False,
     )
-    handlers = HandlerRelatedField(many=True, required=False, default=[])
+    handlers = HandlerRelatedField(
+        platform="groupme", many=True, required=False, default=[]
+    )
 
     class Meta:
         model = Bot

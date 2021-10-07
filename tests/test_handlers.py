@@ -35,7 +35,7 @@ def get_sample_message(
 
 def test_mars(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import general
+    from saucerbot.handlers import general
 
     raw_message = get_sample_message(bot.bot, "", [{"type": "image"}])
 
@@ -55,7 +55,7 @@ def test_mars(bot, gmi):
 
 def test_mars_no_message(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import general
+    from saucerbot.handlers import general
 
     raw_message = get_sample_message(bot.bot, "", [])
 
@@ -239,7 +239,7 @@ def test_non_system(bot, client):
 
 def test_saucerbot_user_not(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import saucer
+    from saucerbot.handlers import saucer
 
     raw_message = get_sample_message(bot.bot, "")
 
@@ -251,7 +251,7 @@ def test_saucerbot_user_not(bot, gmi):
 
 def test_saucerbot_user(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import saucer
+    from saucerbot.handlers import saucer
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
@@ -263,7 +263,7 @@ def test_saucerbot_user(bot, gmi):
 
 def test_saucerbot_user_random(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import saucer
+    from saucerbot.handlers import saucer
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
@@ -300,9 +300,7 @@ def test_save_id_invalid(bot, client, monkeypatch):
 
     monkeypatch.setattr("saucerbot.utils.get_tasted_brews", get_tasted_brews)
     monkeypatch.setattr("saucerbot.groupme.models.get_tasted_brews", get_tasted_brews)
-    monkeypatch.setattr(
-        "saucerbot.groupme.handlers.saucer.get_tasted_brews", get_tasted_brews
-    )
+    monkeypatch.setattr("saucerbot.handlers.saucer.get_tasted_brews", get_tasted_brews)
 
     bot.handlers.create(handler_name="save_saucer_id")
 
@@ -326,9 +324,7 @@ def test_save_id_valid(bot, client, monkeypatch):
 
     monkeypatch.setattr("saucerbot.utils.get_tasted_brews", get_tasted_brews)
     monkeypatch.setattr("saucerbot.groupme.models.get_tasted_brews", get_tasted_brews)
-    monkeypatch.setattr(
-        "saucerbot.groupme.handlers.saucer.get_tasted_brews", get_tasted_brews
-    )
+    monkeypatch.setattr("saucerbot.handlers.saucer.get_tasted_brews", get_tasted_brews)
 
     bot.handlers.create(handler_name="save_saucer_id")
 
@@ -352,9 +348,7 @@ def test_save_id_69(bot, client, monkeypatch):
 
     monkeypatch.setattr("saucerbot.utils.get_tasted_brews", get_tasted_brews)
     monkeypatch.setattr("saucerbot.groupme.models.get_tasted_brews", get_tasted_brews)
-    monkeypatch.setattr(
-        "saucerbot.groupme.handlers.saucer.get_tasted_brews", get_tasted_brews
-    )
+    monkeypatch.setattr("saucerbot.handlers.saucer.get_tasted_brews", get_tasted_brews)
 
     bot.handlers.create(handler_name="save_saucer_id")
     bot.handlers.create(handler_name="teenage_saucerbot")
@@ -400,7 +394,7 @@ def test_troll_present(bot, gmi, client):
     bot.handlers.create(handler_name="troll")
 
     from lowerpines.endpoints.member import Member
-    from saucerbot.groupme.handlers.saucer import SHAINA_USER_ID
+    from saucerbot.handlers import SHAINA_USER_ID
 
     random = Member(gmi, bot.group.group_id, "Random", "123456")
     bot.group.add_member(random)
@@ -428,7 +422,7 @@ def test_troll_present(bot, gmi, client):
 
 def test_whoami(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import general
+    from saucerbot.handlers import general
     from saucerbot.groupme.models import HistoricalNickname
 
     fake_user_id = "123456"
@@ -457,7 +451,7 @@ def test_whoami(bot, gmi):
 
 def test_whoami_long(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.groupme.handlers import general
+    from saucerbot.handlers import general
     from saucerbot.groupme.models import HistoricalNickname
 
     long_nickname = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -513,7 +507,7 @@ def test_plate_party(bot, gmi, client):
     bot.handlers.create(handler_name="plate_party")
 
     from lowerpines.endpoints.member import Member
-    from saucerbot.groupme.handlers.saucer import CLARK_USER_ID
+    from saucerbot.handlers import CLARK_USER_ID
 
     clark_member = Member(gmi, bot.group.group_id, "Clark The Shark", CLARK_USER_ID)
     bot.group.add_member(clark_member)

@@ -1,18 +1,56 @@
 # -*- coding: utf-8 -*-
 
 import inspect
+import logging
 import re
+from abc import ABCMeta, abstractmethod
 from collections.abc import Callable, Sequence
-from typing import Any, NamedTuple, Optional, Union
+from importlib import import_module
+from typing import Any, Iterable, NamedTuple, Optional, Union
 
-from lowerpines.endpoints.bot import Bot
-from lowerpines.endpoints.message import Message
+from arrow import Arrow
 from scout_apm.api import instrument
+
+logger = logging.getLogger(__name__)
+
+VALID_PLATFORMS = {"discord", "groupme"}
+
+
+class BotContext(metaclass=ABCMeta):
+    @abstractmethod
+    def post(self, message: Any):
+        raise NotImplementedError()
+
+
+class Message(metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def user_id(self) -> str:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def user_name(self) -> str:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def content(self) -> str:
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def created_at(self) -> Arrow:
+        """
+        In UTC
+        """
+        raise NotImplementedError
 
 
 class Handler(NamedTuple):
     name: str
     regexes: Optional[list[re.Pattern[str]]]
+    platforms: set[str]
     func: Callable
     always_run: bool
 
@@ -28,11 +66,11 @@ class Handler(NamedTuple):
         return ret
 
     def handle_regexes(
-        self, bot: Bot, message: Message, regexes: list[re.Pattern]
+        self, context: BotContext, message: Message, regexes: list[re.Pattern]
     ) -> bool:
         for regex in regexes:
             with instrument("Regex", tags={"regex": regex.pattern}):
-                match = regex.search(message.text)
+                match = regex.search(message.content)
             if match:
                 # We matched!  Now call our handler and break out of the loop
 
@@ -46,26 +84,27 @@ class Handler(NamedTuple):
                     kwargs["match"] = match
 
                 with instrument("Handler", tags={"name": self.name}):
-                    self.func(bot, **kwargs)
+                    self.func(context, **kwargs)
                 return True
 
         # Nothing matched
         return False
 
-    def run(self, bot: Bot, message: Message) -> bool:
+    def run(self, context: BotContext, message: Message) -> bool:
         if self.regexes:
             # This is a regex handler, special case
-            return self.handle_regexes(bot, message, self.regexes)
+            return self.handle_regexes(context, message, self.regexes)
         else:
             # Just a plain handler.
             # If it returns something truthy, it matched, so it means we should stop
             with instrument("Handler", tags={"name": self.name}):
-                return self.func(bot, message)
+                return self.func(context, message)
 
 
 class HandlerRegistry(Sequence[Handler]):
-    def __init__(self):
-        self.handlers: list[Handler] = []
+    def __init__(self, handlers: list[Handler] = None, loaded_modules: set[str] = None):
+        self.handlers: list[Handler] = handlers or []
+        self._loaded_modules: set[str] = loaded_modules or set()
 
     # Sequence methods that just delegate to the underlying list
     def __getitem__(self, item):
@@ -84,6 +123,36 @@ class HandlerRegistry(Sequence[Handler]):
         return reversed(self.handlers)
 
     # End delegate methods
+
+    def initialize(self, handler_modules: Iterable[str]):
+        initial_handler_count = len(self)
+
+        # Import the handler modules
+        for handler_module in handler_modules:
+            if handler_module in self._loaded_modules:
+                logger.debug("Already loaded %s", handler_module)
+            else:
+                start_handlers = len(self)
+                import_module(handler_module)
+                logger.info(
+                    "Loaded %s handlers from %s",
+                    len(self) - start_handlers,
+                    handler_module,
+                )
+                self._loaded_modules.add(handler_module)
+
+        total_handlers = len(self)
+
+        logger.info(
+            "Loaded %s new handlers, %s handlers total",
+            total_handlers - initial_handler_count,
+            total_handlers,
+        )
+
+    # filter method to only get handlers for a specific platform
+    def filter(self, platform: str) -> "HandlerRegistry":
+        filtered = [h for h in self.handlers if platform in h.platforms]
+        return HandlerRegistry(filtered, self._loaded_modules)
 
     # get() method to make this look like a django queryset
     def get(self, **kwargs) -> Optional[Handler]:
@@ -105,11 +174,18 @@ class HandlerRegistry(Sequence[Handler]):
         *,
         name: str = None,
         case_sensitive: bool = False,
+        platforms: Optional[Iterable[str]] = None,
         always_run: bool = False,
     ) -> Callable:
         """
         Add a message handler
         """
+        if platforms:
+            platforms = {p.lower() for p in platforms}
+            invalid_platforms = platforms - VALID_PLATFORMS
+            if invalid_platforms:
+                raise ValueError(f"Invalid platforms: {invalid_platforms}")
+
         regexes = regex or []
         if isinstance(regex, str):
             regexes = [regex]
@@ -126,6 +202,7 @@ class HandlerRegistry(Sequence[Handler]):
                 Handler(
                     name or func.__name__,
                     [re.compile(r, flags) for r in regexes],
+                    platforms or VALID_PLATFORMS,
                     func,
                     always_run,
                 )

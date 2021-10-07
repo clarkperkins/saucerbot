@@ -4,7 +4,7 @@ import pytest
 from django.http import HttpRequest
 from rest_framework.request import Request
 
-from saucerbot.groupme.handlers import registry
+from saucerbot.handlers import registry
 from saucerbot.groupme.serializers import BotSerializer
 
 

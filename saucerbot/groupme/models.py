@@ -2,8 +2,9 @@
 
 import logging
 from functools import lru_cache
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
+import arrow
 from django.conf import settings
 from django.contrib.auth import models as auth_models
 from django.core.exceptions import SuspiciousOperation
@@ -14,14 +15,14 @@ from django.utils.functional import cached_property
 from django.utils.text import slugify
 from lowerpines.endpoints.bot import Bot as LPBot
 from lowerpines.endpoints.group import Group as LPGroup
-from lowerpines.endpoints.message import Message
+from lowerpines.endpoints.message import Message as LPMessage
 from lowerpines.endpoints.user import User as LPUser
 from lowerpines.exceptions import UnauthorizedException
 from lowerpines.gmi import GMI
 from lowerpines.message import ComplexMessage
 from scout_apm.api import Context
 
-from saucerbot.groupme.handlers import registry
+from saucerbot.handlers import BotContext, Message, registry
 from saucerbot.utils import get_tasted_brews
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,38 @@ SESSION_KEY = "_groupme_user_id"
 @lru_cache()
 def get_gmi(access_token: str) -> GMI:
     return GMI(access_token)
+
+
+class GroupMeBotContext(BotContext):
+    def __init__(self, bot: LPBot):
+        self.bot = bot
+
+    def post(self, message: Any):
+        if isinstance(message, str) or isinstance(message, ComplexMessage):
+            self.bot.post(message)
+        else:
+            raise ValueError(f"Invalid message of type {type(message)}")
+
+
+class GroupMeMessage(Message):
+    def __init__(self, groupme_message: LPMessage):
+        self.groupme_message = groupme_message
+
+    @property
+    def user_id(self) -> str:
+        return self.groupme_message.user_id
+
+    @property
+    def user_name(self) -> str:
+        return self.groupme_message.name
+
+    @property
+    def content(self) -> str:
+        return self.groupme_message.text
+
+    @property
+    def created_at(self) -> arrow.Arrow:
+        return arrow.get(self.groupme_message.created_at)
 
 
 class User(models.Model):
@@ -176,7 +209,7 @@ class Bot(models.Model):
     def post_message(self, message: Union[ComplexMessage, str]) -> None:
         self.bot.post(message)
 
-    def handle_message(self, message: Message) -> list[str]:
+    def handle_message(self, message: LPMessage) -> list[str]:
         other_bot_names = [b.name for b in Bot.objects.filter(group_id=self.group_id)]
 
         # We don't want to respond to any other bot in the same group
@@ -188,6 +221,9 @@ class Bot(models.Model):
         matched_handlers: list[str] = []
 
         for handler in registry:
+            if "groupme" not in handler.platforms:
+                continue
+
             if handler.name not in handler_names:
                 continue
 
@@ -197,7 +233,10 @@ class Bot(models.Model):
 
             logger.debug("Trying message handler %s ...", handler.name)
 
-            matched = handler.run(self.bot, message)
+            matched = handler.run(
+                GroupMeBotContext(self.bot),
+                GroupMeMessage(message),
+            )
 
             # Keep track of the handlers that matched
             if matched:
@@ -255,6 +294,4 @@ class HistoricalNickname(models.Model):
         return f"{self.nickname} - {self.timestamp}"
 
     def __repr__(self):
-        return (
-            f"HistoricalNickname({self.groupme_id}, {self.timestamp}, {self.nickname})"
-        )
+        return f"HistoricalNickname({self.group_id}, {self.groupme_id}, {self.timestamp}, {self.nickname})"
