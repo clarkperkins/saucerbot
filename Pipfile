@@ -24,6 +24,7 @@ whitenoise = "*"
 
 [dev-packages]
 black = "==21.9b0"
+"discord.py-stubs" = "*"
 django-stubs = "*"
 djangorestframework-stubs = "*"
 mypy = "*"

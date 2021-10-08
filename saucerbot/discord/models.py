@@ -3,13 +3,14 @@
 import asyncio
 import logging
 from datetime import timedelta
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import arrow
 from asgiref.sync import async_to_sync, sync_to_async
-from discord import Message as DMessage, User as DUser
+from discord import Member as DMember, Message as DMessage, User as DUser
 from discord.abc import Messageable
-from discord.http import HTTPClient, HTTPException
+from discord.errors import HTTPException
+from discord.http import HTTPClient
 from django.contrib.auth import models as auth_models
 from django.core.exceptions import SuspiciousOperation
 from django.db import models
@@ -48,12 +49,12 @@ class DiscordMessage(Message):
         self.discord_message = discord_message
 
     @property
-    def author(self) -> DUser:
+    def author(self) -> Union[DUser, DMember]:
         return self.discord_message.author
 
     @property
     def user_id(self) -> str:
-        return self.author.id
+        return str(self.author.id)
 
     @property
     def user_name(self) -> str:

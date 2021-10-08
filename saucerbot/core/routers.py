@@ -5,23 +5,15 @@ from collections import OrderedDict
 
 from django.urls import NoReverseMatch
 from django.urls import path
-from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.routers import Route, DynamicRoute, DefaultRouter
+from rest_framework.routers import Route, DynamicRoute, DefaultRouter, APIRootView
 from rest_framework.urlpatterns import format_suffix_patterns
 
 logger = logging.getLogger(__name__)
 
 
-class APIRootView(views.APIView):
-    """
-    The default basic root view for DefaultRouter
-    """
-
-    _ignore_model_permissions = True
-    schema = None  # exclude from schema
-    api_root_dict = None
+class SaucerbotAPIRootView(APIRootView):
     name = "API Root"
 
     def get(self, request, *args, **kwargs):
@@ -51,7 +43,7 @@ class APIRootView(views.APIView):
 
 
 class PathRouter(DefaultRouter):
-    APIRootView = APIRootView
+    APIRootView = SaucerbotAPIRootView
 
     routes = [
         # List route.

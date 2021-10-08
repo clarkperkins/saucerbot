@@ -21,7 +21,7 @@ def _get_namespace(request: HttpRequest) -> Optional[str]:
 
 
 @register.simple_tag
-def optional_login(request: HttpRequest):
+def optional_login(request: HttpRequest) -> str:
     """
     Include a login snippet if REST framework's login view is in the URL conf.
     """
@@ -42,7 +42,7 @@ def optional_login(request: HttpRequest):
 
 
 @register.simple_tag
-def optional_logout(request: HttpRequest, user):
+def optional_logout(request: HttpRequest, user) -> str:
     """
     Include a logout snippet if REST framework's logout view is in the URL conf.
     """
@@ -50,6 +50,8 @@ def optional_logout(request: HttpRequest, user):
 
     if namespace is None:
         return ""
+
+    snippet: str
 
     try:
         logout_url = reverse(f"{namespace}:logout")

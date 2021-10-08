@@ -124,7 +124,7 @@ def whoami(context: GroupMeBotContext, message: Message) -> None:
     now = arrow.now(CENTRAL_TIME)
 
     for nickname in nicknames:
-        timestamp = arrow.get(nickname.created_at)
+        timestamp = arrow.get(nickname.timestamp)
         next_line = f"{nickname.nickname} {timestamp.humanize(now)}\n"
         if len(response) + len(next_line) > 1000:
             context.post(response)

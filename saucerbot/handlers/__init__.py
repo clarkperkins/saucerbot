@@ -202,7 +202,7 @@ class HandlerRegistry(Sequence[Handler]):
                 Handler(
                     name or func.__name__,
                     [re.compile(r, flags) for r in regexes],
-                    platforms or VALID_PLATFORMS,
+                    set(platforms or VALID_PLATFORMS),
                     func,
                     always_run,
                 )

@@ -4,6 +4,7 @@ import logging
 from typing import Any
 
 from rest_framework import serializers
+from rest_framework.request import Request
 from rest_framework.reverse import reverse
 
 from saucerbot.core.serializers import HandlerRelatedField
@@ -13,14 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 class ChannelHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
-    def get_url(self, channel: Channel, view_name: str, request, format):
+    def get_url(self, channel: Channel, view_name: str, request: Request, format: str):  # type: ignore[override]
         url_kwargs = {
             "guild_name": channel.guild.name,
             "name": channel.name,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
-    def get_object(self, view_name: str, view_args, view_kwargs: dict[str, str]):
+    # The DRF mypy plugin has the typing wrong for this method.
+    # Se when we add type hints mypy fails.
+    def get_object(self, view_name, view_args, view_kwargs):
         lookup_kwargs = {
             "guild__name": view_kwargs["guild_name"],
             "name": view_kwargs["name"],

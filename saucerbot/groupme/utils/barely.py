@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional, Set, Union
 
 from django.conf import settings
-from lowerpines.endpoints.message import Message as LPMessage
 from lowerpines.message import ComplexMessage
 from lowerpines.message import RefAttach
 
@@ -58,9 +57,9 @@ def i_barely_know_her(context: BotContext, message: Message) -> bool:
     return False
 
 
-def get_quip(message: LPMessage) -> Optional[Union[ComplexMessage, str]]:
+def get_quip(message: Message) -> Optional[Union[ComplexMessage, str]]:
     matches = []
-    for word in re.split(r"[^a-zA-Z]", message.text):
+    for word in re.split(r"[^a-zA-Z]", message.content):
         if word.strip().lower() in matching_words:
             matches.append(word.strip().lower())
     if matches:
@@ -69,7 +68,7 @@ def get_quip(message: LPMessage) -> Optional[Union[ComplexMessage, str]]:
         emoji = random.choice(quips[quip])
         split_quip = quip.format(match=match).split("<person>")
         if len(split_quip) > 1:
-            user_ref = RefAttach(message.user_id, f"@{message.name}")
+            user_ref = RefAttach(message.user_id, f"@{message.user_name}")
             return split_quip[0] + user_ref + split_quip[1] + " " + emoji
         else:
             return split_quip[0] + " " + emoji

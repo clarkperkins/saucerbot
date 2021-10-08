@@ -2,7 +2,7 @@
 import logging
 from datetime import datetime
 from typing import Sequence, Union
-from collections.abc import Coroutine
+from collections.abc import Awaitable, Coroutine
 
 from discord import (
     Client,
@@ -40,31 +40,31 @@ class SaucerbotClient(Client):
 
     @staticmethod
     def _lookup_guild(guild: Guild) -> SGuild:
-        guild, _ = SGuild.objects.get_or_create(
+        s_guild, _ = SGuild.objects.get_or_create(
             guild_id=guild.id,
             defaults={
                 "name": guild.name,
             },
         )
-        return guild
+        return s_guild
 
-    def lookup_guild(self, guild: Guild) -> Coroutine[None, None, SGuild]:
+    def lookup_guild(self, guild: Guild) -> Awaitable[SGuild]:
         return self.loop.run_in_executor(None, self._lookup_guild, guild)
 
     @staticmethod
     def _lookup_channel(guild: SGuild, channel: TextChannel) -> SChannel:
-        channel, _ = SChannel.objects.get_or_create(
+        s_channel, _ = SChannel.objects.get_or_create(
             guild=guild,
             channel_id=channel.id,
             defaults={
                 "name": channel.name,
             },
         )
-        return channel
+        return s_channel
 
     def lookup_channel(
         self, guild: SGuild, channel: TextChannel
-    ) -> Coroutine[None, None, SChannel]:
+    ) -> Awaitable[SChannel]:
         return self.loop.run_in_executor(None, self._lookup_channel, guild, channel)
 
     async def on_message(self, message: Message):
@@ -79,10 +79,13 @@ class SaucerbotClient(Client):
         if message.author == self.user:
             return
 
-        stored_guild = await self.lookup_guild(message.guild)
-        if isinstance(message.channel, TextChannel):
-            stored_channel = await self.lookup_channel(stored_guild, message.channel)
-            await stored_channel.handle_message(self.loop, message)
+        if message.guild:
+            stored_guild = await self.lookup_guild(message.guild)
+            if isinstance(message.channel, TextChannel):
+                stored_channel = await self.lookup_channel(
+                    stored_guild, message.channel
+                )
+                await stored_channel.handle_message(self.loop, message)
 
     async def on_message_edit(self, before: Message, after: Message):
         pass
