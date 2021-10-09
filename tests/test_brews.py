@@ -4,11 +4,12 @@ import logging
 import time
 
 import arrow
+import pytest
 from django.conf import settings
 from django.core.management import execute_from_command_line
 from elasticsearch import Elasticsearch
 
-from saucerbot.utils.base import BrewsLoaderUtil, brew_searcher, BREWS_ALIAS_NAME
+from saucerbot.utils.base import BREWS_ALIAS_NAME, BrewsLoaderUtil, brew_searcher
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ def es_assertions(es):
     return list(indices.keys())[0]
 
 
+@pytest.mark.integration
 def test_loadbrews():
     loader = BrewsLoaderUtil()
     loader.load_all_brews()
@@ -43,6 +45,7 @@ def test_loadbrews():
     assert new_index != original_index
 
 
+@pytest.mark.integration
 def test_cleanup_old():
     es = Elasticsearch(settings.ELASTICSEARCH_URL)
     timestamp = arrow.now("US/Central").format("YYYYMMDD-HHmmss-SSS")
@@ -56,6 +59,7 @@ def test_cleanup_old():
     es_assertions(es)
 
 
+@pytest.mark.integration
 def test_load_command():
     execute_from_command_line(["manage.py", "loadbrews"])
 
@@ -65,6 +69,7 @@ def test_load_command():
     es_assertions(es)
 
 
+@pytest.mark.integration
 def test_searchbrews():
     # Make sure there's something to search
     brew_searcher.es.indices.flush("")

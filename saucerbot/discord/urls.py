@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.views import LogoutView
-from django.urls import path, include
+from django.urls import include, path
 
 from saucerbot.core.routers import PathRouter
 from saucerbot.discord.authentication import DiscordUserAuthentication

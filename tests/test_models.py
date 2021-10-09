@@ -24,7 +24,7 @@ def test_get_user_no_session():
 
 @pytest.mark.django_db
 def test_get_user_invalid_id():
-    from saucerbot.groupme.models import get_user, SESSION_KEY
+    from saucerbot.groupme.models import SESSION_KEY, get_user
 
     fake_request = HttpRequest()
     fake_request.session = SessionStore()
@@ -37,7 +37,7 @@ def test_get_user_invalid_id():
 
 @pytest.mark.django_db
 def test_get_user_valid():
-    from saucerbot.groupme.models import User, get_user, SESSION_KEY
+    from saucerbot.groupme.models import SESSION_KEY, User, get_user
 
     user = User.objects.create(access_token="123456", user_id="123456")
 
@@ -63,7 +63,7 @@ def test_get_user_valid():
 
 @pytest.mark.django_db
 def test_new_user_valid(gmi):
-    from saucerbot.groupme.models import get_gmi, new_user, SESSION_KEY
+    from saucerbot.groupme.models import SESSION_KEY, get_gmi, new_user
 
     # pre-create the user
     gmi = get_gmi("abcdef")
@@ -83,10 +83,10 @@ def test_new_user_valid(gmi):
 @pytest.mark.django_db
 def test_new_user_invalid(monkeypatch):
     from saucerbot.groupme.models import (
+        SESSION_KEY,
+        InvalidGroupMeUser,
         get_gmi,
         new_user,
-        InvalidGroupMeUser,
-        SESSION_KEY,
     )
 
     gmi = get_gmi("abcdef")

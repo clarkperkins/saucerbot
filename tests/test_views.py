@@ -23,7 +23,7 @@ def test_login_redirect_no_session():
 
 @pytest.mark.django_db
 def test_login_redirect_with_session():
-    from saucerbot.groupme.views import LoginRedirectView, SESSION_KEY
+    from saucerbot.groupme.views import SESSION_KEY, LoginRedirectView
 
     fake_request = HttpRequest()
     fake_request.session = SessionStore()
@@ -41,7 +41,7 @@ def test_login_redirect_with_session():
 
 @pytest.mark.django_db
 def test_oauth_missing_token():
-    from saucerbot.groupme.views import OAuthView, InvalidGroupMeUser
+    from saucerbot.groupme.views import InvalidGroupMeUser, OAuthView
 
     fake_request = HttpRequest()
     fake_request.session = SessionStore()
@@ -59,7 +59,7 @@ def test_oauth_with_token(gmi):
     u.user_id = "123456"
     u.save()
 
-    from saucerbot.groupme.views import OAuthView, SESSION_KEY
+    from saucerbot.groupme.views import SESSION_KEY, OAuthView
 
     fake_request = HttpRequest()
     fake_request.session = SessionStore()
@@ -131,6 +131,7 @@ def test_bot_view_update(monkeypatch, gmi, client):
 
     from lowerpines.endpoints.group import Group
     from lowerpines.exceptions import NoneFoundException
+
     from saucerbot.groupme.models import Bot
 
     group = Group(gmi, name="view test group")
@@ -197,6 +198,7 @@ def test_bot_view_delete(monkeypatch, gmi, client):
 
     from lowerpines.endpoints.group import Group
     from lowerpines.exceptions import NoneFoundException
+
     from saucerbot.groupme.models import Bot
 
     group = Group(gmi, name="view test group")

@@ -17,7 +17,7 @@ from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from saucerbot.groupme.authentication import GroupMeUserAuthentication
-from saucerbot.groupme.models import Bot, InvalidGroupMeUser, new_user, SESSION_KEY
+from saucerbot.groupme.models import SESSION_KEY, Bot, InvalidGroupMeUser, new_user
 from saucerbot.groupme.permissions import HasGroupMeUser
 from saucerbot.groupme.serializers import BotSerializer
 from saucerbot.utils import did_the_dores_win

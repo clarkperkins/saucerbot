@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+from collections.abc import Awaitable
 from datetime import datetime
 from typing import Sequence, Union
-from collections.abc import Awaitable, Coroutine
 
 from discord import (
     Client,
@@ -21,7 +21,8 @@ from discord import (
 )
 from discord.abc import Messageable
 
-from saucerbot.discord.models import Channel as SChannel, Guild as SGuild
+from saucerbot.discord.models import Channel as SChannel
+from saucerbot.discord.models import Guild as SGuild
 
 logger = logging.getLogger(__name__)
 

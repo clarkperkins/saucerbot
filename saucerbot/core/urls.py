@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.urls import path, include
+from django.urls import include, path
 
 from saucerbot.core.routers import PathRouter
 from saucerbot.core.views import HandlerViewSet

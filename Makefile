@@ -12,8 +12,16 @@ build: build/docker
 reports:
 	mkdir -p reports
 
-format:
+format/isort:
+	isort saucerbot tests
+
+format/black:
 	black saucerbot tests
+
+format: format/isort format/black
+
+check/isort:
+	isort saucerbot --check
 
 check/black:
 	black saucerbot --check
@@ -24,7 +32,7 @@ check/pylint: reports
 check/mypy:
 	mypy saucerbot
 
-check: check/black check/pylint check/mypy
+check: check/isort check/black check/pylint check/mypy
 
 staticfiles:
 	python manage.py collectstatic --noinput
@@ -40,7 +48,15 @@ test: test/pytest/xml
 cov: test/pytest/html
 	open reports/html/index.html
 
-sonar: check/pylint test/pytest/xml
+integration-test/pytest/xml: reports
+	pytest -m integration --cov=saucerbot --cov-report=xml --cov-append
+
+integration-test/pytest/html: reports
+	pytest -m integration --cov=saucerbot --cov-report=html --cov-append
+
+integration-test: integration-test/pytest/xml
+
+sonar: check/pylint test/pytest/xml integration-test/pytest/xml
 	sonar-scanner
 
-ci: check test sonar
+ci: check test integration-test sonar

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.views import LogoutView
-from django.urls import path, include
+from django.urls import include, path
 
 from saucerbot.core.routers import PathRouter
 from saucerbot.groupme.authentication import GroupMeUserAuthentication
 from saucerbot.groupme.views import (
+    BotActionsViewSet,
+    BotViewSet,
     LoginRedirectView,
     OAuthView,
-    BotViewSet,
-    BotActionsViewSet,
 )
 
 app_name = "groupme"

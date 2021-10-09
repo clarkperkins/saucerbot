@@ -3,11 +3,10 @@
 import logging
 from collections import OrderedDict
 
-from django.urls import NoReverseMatch
-from django.urls import path
+from django.urls import NoReverseMatch, path
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.routers import Route, DynamicRoute, DefaultRouter, APIRootView
+from rest_framework.routers import APIRootView, DefaultRouter, DynamicRoute, Route
 from rest_framework.urlpatterns import format_suffix_patterns
 
 logger = logging.getLogger(__name__)

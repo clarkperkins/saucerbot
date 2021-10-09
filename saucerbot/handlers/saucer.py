@@ -9,11 +9,7 @@ from lowerpines.message import ComplexMessage, RefAttach
 
 from saucerbot.groupme.models import GroupMeBotContext
 from saucerbot.handlers import BotContext, Message, registry
-from saucerbot.utils import (
-    brew_searcher,
-    get_insult,
-    get_new_arrivals,
-)
+from saucerbot.utils import brew_searcher, get_insult, get_new_arrivals
 
 logger = logging.getLogger(__name__)
 

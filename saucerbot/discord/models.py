@@ -7,7 +7,9 @@ from typing import Any, Optional, Union
 
 import arrow
 from asgiref.sync import async_to_sync, sync_to_async
-from discord import Member as DMember, Message as DMessage, User as DUser
+from discord import Member as DMember
+from discord import Message as DMessage
+from discord import User as DUser
 from discord.abc import Messageable
 from discord.errors import HTTPException
 from discord.http import HTTPClient

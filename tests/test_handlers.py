@@ -35,6 +35,7 @@ def get_sample_message(
 
 def test_mars(bot, gmi):
     from lowerpines.endpoints.message import Message
+
     from saucerbot.groupme.handlers import mars
     from saucerbot.groupme.models import GroupMeMessage
 
@@ -56,6 +57,7 @@ def test_mars(bot, gmi):
 
 def test_mars_no_message(bot, gmi):
     from lowerpines.endpoints.message import Message
+
     from saucerbot.groupme.handlers import mars
     from saucerbot.groupme.models import GroupMeMessage
 
@@ -241,8 +243,9 @@ def test_non_system(bot, client):
 
 def test_saucerbot_user_not(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import saucer
+
     from saucerbot.groupme.models import GroupMeMessage
+    from saucerbot.handlers import saucer
 
     raw_message = get_sample_message(bot.bot, "")
 
@@ -256,8 +259,9 @@ def test_saucerbot_user_not(bot, gmi):
 
 def test_saucerbot_user(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import saucer
+
     from saucerbot.groupme.models import GroupMeMessage
+    from saucerbot.handlers import saucer
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
@@ -271,8 +275,9 @@ def test_saucerbot_user(bot, gmi):
 
 def test_saucerbot_user_random(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import saucer
+
     from saucerbot.groupme.models import GroupMeMessage
+    from saucerbot.handlers import saucer
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
@@ -403,6 +408,7 @@ def test_troll_present(bot, gmi, client):
     bot.handlers.create(handler_name="troll")
 
     from lowerpines.endpoints.member import Member
+
     from saucerbot.handlers.saucer import SHAINA_USER_ID
 
     random = Member(gmi, bot.group.group_id, "Random", "123456")
@@ -431,6 +437,7 @@ def test_troll_present(bot, gmi, client):
 
 def test_whoami(bot, gmi):
     from lowerpines.endpoints.message import Message
+
     from saucerbot.groupme.handlers import whoami
     from saucerbot.groupme.models import (
         GroupMeBotContext,
@@ -464,6 +471,7 @@ def test_whoami(bot, gmi):
 
 def test_whoami_long(bot, gmi):
     from lowerpines.endpoints.message import Message
+
     from saucerbot.groupme.handlers import whoami
     from saucerbot.groupme.models import (
         GroupMeBotContext,
@@ -524,6 +532,7 @@ def test_plate_party(bot, gmi, client):
     bot.handlers.create(handler_name="plate_party")
 
     from lowerpines.endpoints.member import Member
+
     from saucerbot.handlers.saucer import CLARK_USER_ID
 
     clark_member = Member(gmi, bot.group.group_id, "Clark The Shark", CLARK_USER_ID)

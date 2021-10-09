@@ -7,8 +7,7 @@ from pathlib import Path
 from typing import Optional, Set, Union
 
 from django.conf import settings
-from lowerpines.message import ComplexMessage
-from lowerpines.message import RefAttach
+from lowerpines.message import ComplexMessage, RefAttach
 
 from saucerbot.handlers import BotContext, Message
 

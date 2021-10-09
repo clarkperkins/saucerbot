@@ -13,11 +13,11 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from saucerbot.discord.authentication import DiscordUserAuthentication
 from saucerbot.discord.models import (
-    Guild,
-    User,
-    InvalidDiscordUser,
-    new_user,
     SESSION_KEY,
+    Guild,
+    InvalidDiscordUser,
+    User,
+    new_user,
 )
 from saucerbot.discord.permissions import HasDiscordUser
 from saucerbot.discord.serializers import ChannelSerializer, GuildSerializer

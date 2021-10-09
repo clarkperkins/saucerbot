@@ -7,7 +7,8 @@ from django.db.models import QuerySet
 from rest_framework import serializers
 
 from saucerbot.groupme.models import Handler
-from saucerbot.handlers import registry, Handler as RHandler
+from saucerbot.handlers import Handler as RHandler
+from saucerbot.handlers import registry
 
 logger = logging.getLogger(__name__)
 
