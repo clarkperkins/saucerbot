@@ -7,4 +7,4 @@ from saucerbot.discord import models
 admin.site.register(models.Guild)
 admin.site.register(models.Channel)
 admin.site.register(models.Handler)
-admin.site.register(models.HistoricalNickname)
+admin.site.register(models.HistoricalDisplayName)

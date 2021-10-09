@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
-from collections.abc import Awaitable
-from typing import Union
+from collections.abc import Awaitable, Callable
+from functools import wraps
+from typing import TypeVar, Union
 
 from discord import (
     Client,
@@ -14,22 +15,41 @@ from discord import (
     TextChannel,
     User,
 )
+from django.utils import timezone
 
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
+from saucerbot.discord.models import HistoricalDisplayName
 
 logger = logging.getLogger(__name__)
 
+T = TypeVar("T")
+
+
+def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
+    """
+    Decorator to make a method of SaucerbotClient async.
+    Should only decorate methods within the SaucerbotClient class.
+    """
+
+    @wraps(func)
+    def wrapper(self, *args) -> Awaitable[T]:
+        return self.loop.run_in_executor(None, func, self, *args)
+
+    return wrapper
+
 
 class SaucerbotClient(Client):
+    # pylint: disable=no-self-use, unused-argument
+
     def __init__(self):
         super().__init__(intents=Intents.all())
 
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
 
-    @staticmethod
-    def _lookup_guild(guild: Guild) -> SGuild:
+    @make_async
+    def lookup_guild(self, guild: Guild) -> SGuild:
         s_guild, _ = SGuild.objects.get_or_create(
             guild_id=guild.id,
             defaults={
@@ -38,11 +58,8 @@ class SaucerbotClient(Client):
         )
         return s_guild
 
-    def lookup_guild(self, guild: Guild) -> Awaitable[SGuild]:
-        return self.loop.run_in_executor(None, self._lookup_guild, guild)
-
-    @staticmethod
-    def _lookup_channel(guild: SGuild, channel: TextChannel) -> SChannel:
+    @make_async
+    def lookup_channel(self, guild: SGuild, channel: TextChannel) -> SChannel:
         s_channel, _ = SChannel.objects.get_or_create(
             guild=guild,
             channel_id=channel.id,
@@ -51,11 +68,6 @@ class SaucerbotClient(Client):
             },
         )
         return s_channel
-
-    def lookup_channel(
-        self, guild: SGuild, channel: TextChannel
-    ) -> Awaitable[SChannel]:
-        return self.loop.run_in_executor(None, self._lookup_channel, guild, channel)
 
     async def on_message(self, message: Message):
         logger.info(
@@ -89,14 +101,23 @@ class SaucerbotClient(Client):
     async def on_reaction_clear_emoji(self, reaction: Reaction):
         pass
 
+    @make_async
+    def store_display_name(self, member: Member):
+        HistoricalDisplayName.objects.create(
+            guild_id=str(member.guild.id),
+            user_id=str(member.id),
+            timestamp=timezone.now(),
+            display_name=member.display_name,
+        )
+
     async def on_member_join(self, member: Member):
-        pass
+        await self.store_display_name(member)
 
     async def on_member_remove(self, member: Member):
         pass
 
     async def on_member_update(self, before: Member, after: Member):
-        pass
+        await self.store_display_name(after)
 
     async def on_user_update(self, before: User, after: User):
         pass

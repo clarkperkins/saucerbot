@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 class ChannelHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     # pylint: disable=redefined-builtin
-    def get_url(
+    def get_url(  # type: ignore[override]
         self, obj: Channel, view_name: str, request: Request, format: str
-    ):  # type: ignore[override]
+    ):
         url_kwargs = {
             "guild_name": obj.guild.name,
             "name": obj.name,

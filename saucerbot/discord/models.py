@@ -254,11 +254,11 @@ class Handler(models.Model):
         return f"Handler({self.channel_id}, {self.handler_name})"
 
 
-class HistoricalNickname(models.Model):
+class HistoricalDisplayName(models.Model):
     guild_id = models.CharField(max_length=64)
     user_id = models.CharField(max_length=64)
     timestamp = models.DateTimeField()
-    nickname = models.CharField(max_length=256)
+    display_name = models.CharField(max_length=256)
 
     class Meta:
         indexes = [
@@ -266,11 +266,11 @@ class HistoricalNickname(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.nickname} - {self.timestamp}"
+        return f"{self.display_name} - {self.timestamp}"
 
     def __repr__(self):
         return (
-            f"HistoricalNickname("
-            f"{self.guild_id}, {self.user_id}, {self.timestamp}, {self.nickname}"
+            f"HistoricalDisplayName("
+            f"{self.guild_id}, {self.user_id}, {self.timestamp}, {self.display_name}"
             f")"
         )
