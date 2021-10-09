@@ -14,14 +14,14 @@ from saucerbot.utils.base import BREWS_ALIAS_NAME, BrewsLoaderUtil, brew_searche
 logger = logging.getLogger(__name__)
 
 
-def es_assertions(es):
-    assert es.indices.exists_template("brews")
+def es_assertions(es: Elasticsearch):
+    assert es.indices.exists_template(name="brews")
 
     assert es.indices.exists_alias(name=BREWS_ALIAS_NAME)
     alias = es.indices.get_alias(name=BREWS_ALIAS_NAME)
     assert len(alias.keys()) == 1
 
-    indices = es.indices.get(f"{BREWS_ALIAS_NAME}-*")
+    indices = es.indices.get(index=f"{BREWS_ALIAS_NAME}-*")
     assert len(indices.keys()) == 1
 
     return list(indices.keys())[0]
@@ -51,7 +51,7 @@ def test_cleanup_old():
     timestamp = arrow.now("US/Central").format("YYYYMMDD-HHmmss-SSS")
 
     # Create an empty index
-    es.indices.create(f"{BREWS_ALIAS_NAME}-{timestamp}")
+    es.indices.create(index=f"{BREWS_ALIAS_NAME}-{timestamp}")
 
     loader = BrewsLoaderUtil()
     loader.load_all_brews()
@@ -72,7 +72,7 @@ def test_load_command():
 @pytest.mark.integration
 def test_searchbrews():
     # Make sure there's something to search
-    brew_searcher.es.indices.flush("")
+    brew_searcher.es.indices.flush(index="")
     time.sleep(1)
 
     # something that will never match

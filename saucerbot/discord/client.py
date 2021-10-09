@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
 from collections.abc import Awaitable
-from datetime import datetime
-from typing import Sequence, Union
+from typing import Union
 
 from discord import (
     Client,
-    Emoji,
     GroupChannel,
     Guild,
     Intents,
-    Invite,
     Member,
     Message,
     Reaction,
-    Role,
     TextChannel,
     User,
-    VoiceState,
 )
-from discord.abc import Messageable
 
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
@@ -33,11 +27,6 @@ class SaucerbotClient(Client):
 
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
-
-    async def on_typing(
-        self, channel: Messageable, user: Union[User, Member], when: datetime
-    ):
-        logger.info("%s is typing in %s", user, channel)
 
     @staticmethod
     def _lookup_guild(guild: Guild) -> SGuild:
@@ -88,15 +77,6 @@ class SaucerbotClient(Client):
                 )
                 await stored_channel.handle_message(self.loop, message)
 
-    async def on_message_edit(self, before: Message, after: Message):
-        pass
-
-    async def on_message_delete(self, message: Message):
-        pass
-
-    async def on_bulk_message_delete(self, messages: list[Message]):
-        pass
-
     async def on_reaction_add(self, reaction: Reaction, user: Union[User, Member]):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)
 
@@ -121,50 +101,10 @@ class SaucerbotClient(Client):
     async def on_user_update(self, before: User, after: User):
         pass
 
-    async def on_guild_join(self, guild: Guild):
-        pass
-
-    async def on_guild_remove(self, guild: Guild):
-        pass
-
-    async def on_guild_update(self, before: Guild, after: Guild):
-        pass
-
-    async def on_guild_role_create(self, role: Role):
-        pass
-
-    async def on_guild_role_delete(self, role: Role):
-        pass
-
-    async def on_guild_role_update(self, before: Role, after: Role):
-        pass
-
-    async def on_guild_emojis_update(
-        self, guild: Guild, before: Sequence[Emoji], after: Sequence[Emoji]
-    ):
-        pass
-
     async def on_guild_available(self, guild: Guild):
         pass
 
     async def on_guild_unavailable(self, guild: Guild):
-        pass
-
-    async def on_voice_state_update(
-        self, member: Member, before: VoiceState, after: VoiceState
-    ):
-        pass
-
-    async def on_member_ban(self, guild: Guild, user: Union[User, Member]):
-        pass
-
-    async def on_member_unban(self, guild: Guild, user: Union[User, Member]):
-        pass
-
-    async def on_invite_create(self, invite: Invite):
-        pass
-
-    async def on_invite_delete(self, invite: Invite):
         pass
 
     async def on_group_join(self, channel: GroupChannel, user: User):
