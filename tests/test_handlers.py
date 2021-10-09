@@ -35,11 +35,12 @@ def get_sample_message(
 
 def test_mars(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import general
+    from saucerbot.groupme.handlers import mars
+    from saucerbot.groupme.models import GroupMeMessage
 
     raw_message = get_sample_message(bot.bot, "", [{"type": "image"}])
 
-    ret = general.mars(bot.bot, Message.from_json(gmi, raw_message), 1)
+    ret = mars(bot.bot, GroupMeMessage(Message.from_json(gmi, raw_message)), 1)
 
     assert ret
     assert bot.group.messages.count == 1
@@ -55,11 +56,12 @@ def test_mars(bot, gmi):
 
 def test_mars_no_message(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import general
+    from saucerbot.groupme.handlers import mars
+    from saucerbot.groupme.models import GroupMeMessage
 
     raw_message = get_sample_message(bot.bot, "", [])
 
-    ret = general.mars(bot.bot, Message.from_json(gmi, raw_message), 1)
+    ret = mars(bot.bot, GroupMeMessage(Message.from_json(gmi, raw_message)), 1)
 
     assert not ret
     assert bot.group.messages.count == 0
@@ -73,7 +75,7 @@ def test_zo_unregistered(bot, client):
     sample_message = get_sample_message(bot.bot, "zo")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -89,7 +91,7 @@ def test_zo_zo(bot, client):
     sample_message = get_sample_message(bot.bot, "zo")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -106,7 +108,7 @@ def test_zo_bot(bot, client):
     sample_message = get_sample_message(bot.bot, "hey there bot hey")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -123,7 +125,7 @@ def test_zo_bot_bad(bot, client):
     sample_message = get_sample_message(bot.bot, "bot")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -138,7 +140,7 @@ def test_system_messages_unregistered(bot, client):
     sample_message = get_sample_message(bot.bot, "foo changed name to bar", system=True)
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -154,7 +156,7 @@ def test_name_change(bot, client):
     sample_message = get_sample_message(bot.bot, "foo changed name to bar", system=True)
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -173,7 +175,7 @@ def test_user_add(bot, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -192,7 +194,7 @@ def test_user_remove(bot, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -209,7 +211,7 @@ def test_bogus_system(bot, client):
     sample_message = get_sample_message(bot.bot, "bogus message", system=True)
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -227,7 +229,7 @@ def test_non_system(bot, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -240,10 +242,13 @@ def test_non_system(bot, client):
 def test_saucerbot_user_not(bot, gmi):
     from lowerpines.endpoints.message import Message
     from saucerbot.handlers import saucer
+    from saucerbot.groupme.models import GroupMeMessage
 
     raw_message = get_sample_message(bot.bot, "")
 
-    ret = saucer.user_named_saucerbot(bot.bot, Message.from_json(gmi, raw_message))
+    ret = saucer.user_named_saucerbot(
+        bot.bot, GroupMeMessage(Message.from_json(gmi, raw_message))
+    )
 
     assert not ret
     assert bot.group.messages.count == 0
@@ -252,10 +257,13 @@ def test_saucerbot_user_not(bot, gmi):
 def test_saucerbot_user(bot, gmi):
     from lowerpines.endpoints.message import Message
     from saucerbot.handlers import saucer
+    from saucerbot.groupme.models import GroupMeMessage
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
-    ret = saucer.user_named_saucerbot(bot.bot, Message.from_json(gmi, raw_message))
+    ret = saucer.user_named_saucerbot(
+        bot.bot, GroupMeMessage(Message.from_json(gmi, raw_message))
+    )
 
     assert ret
     assert bot.group.messages.count == 1
@@ -264,11 +272,12 @@ def test_saucerbot_user(bot, gmi):
 def test_saucerbot_user_random(bot, gmi):
     from lowerpines.endpoints.message import Message
     from saucerbot.handlers import saucer
+    from saucerbot.groupme.models import GroupMeMessage
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
     ret = saucer.user_named_saucerbot(
-        bot.bot, Message.from_json(gmi, raw_message), True
+        bot.bot, GroupMeMessage(Message.from_json(gmi, raw_message)), True
     )
 
     assert ret
@@ -284,7 +293,7 @@ def test_save_id_unregistered(bot, client, monkeypatch):
     sample_message = get_sample_message(bot.bot, "my saucer id is 123456")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -300,14 +309,14 @@ def test_save_id_invalid(bot, client, monkeypatch):
 
     monkeypatch.setattr("saucerbot.utils.get_tasted_brews", get_tasted_brews)
     monkeypatch.setattr("saucerbot.groupme.models.get_tasted_brews", get_tasted_brews)
-    monkeypatch.setattr("saucerbot.handlers.saucer.get_tasted_brews", get_tasted_brews)
+    monkeypatch.setattr("saucerbot.groupme.handlers.get_tasted_brews", get_tasted_brews)
 
     bot.handlers.create(handler_name="save_saucer_id")
 
     sample_message = get_sample_message(bot.bot, "my saucer id is 123456")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -324,14 +333,14 @@ def test_save_id_valid(bot, client, monkeypatch):
 
     monkeypatch.setattr("saucerbot.utils.get_tasted_brews", get_tasted_brews)
     monkeypatch.setattr("saucerbot.groupme.models.get_tasted_brews", get_tasted_brews)
-    monkeypatch.setattr("saucerbot.handlers.saucer.get_tasted_brews", get_tasted_brews)
+    monkeypatch.setattr("saucerbot.groupme.handlers.get_tasted_brews", get_tasted_brews)
 
     bot.handlers.create(handler_name="save_saucer_id")
 
     sample_message = get_sample_message(bot.bot, "my saucer id is 123456")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -348,7 +357,7 @@ def test_save_id_69(bot, client, monkeypatch):
 
     monkeypatch.setattr("saucerbot.utils.get_tasted_brews", get_tasted_brews)
     monkeypatch.setattr("saucerbot.groupme.models.get_tasted_brews", get_tasted_brews)
-    monkeypatch.setattr("saucerbot.handlers.saucer.get_tasted_brews", get_tasted_brews)
+    monkeypatch.setattr("saucerbot.groupme.handlers.get_tasted_brews", get_tasted_brews)
 
     bot.handlers.create(handler_name="save_saucer_id")
     bot.handlers.create(handler_name="teenage_saucerbot")
@@ -356,7 +365,7 @@ def test_save_id_69(bot, client, monkeypatch):
     sample_message = get_sample_message(bot.bot, "my saucer id is 123469")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -375,7 +384,7 @@ def test_troll_missing(bot, client):
     sample_message = get_sample_message(bot.bot, "we play pong")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -394,7 +403,7 @@ def test_troll_present(bot, gmi, client):
     bot.handlers.create(handler_name="troll")
 
     from lowerpines.endpoints.member import Member
-    from saucerbot.handlers import SHAINA_USER_ID
+    from saucerbot.handlers.saucer import SHAINA_USER_ID
 
     random = Member(gmi, bot.group.group_id, "Random", "123456")
     bot.group.add_member(random)
@@ -405,7 +414,7 @@ def test_troll_present(bot, gmi, client):
     sample_message = get_sample_message(bot.bot, "beer pong")
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(sample_message),
     )
@@ -422,8 +431,12 @@ def test_troll_present(bot, gmi, client):
 
 def test_whoami(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import general
-    from saucerbot.groupme.models import HistoricalNickname
+    from saucerbot.groupme.handlers import whoami
+    from saucerbot.groupme.models import (
+        GroupMeBotContext,
+        GroupMeMessage,
+        HistoricalNickname,
+    )
 
     fake_user_id = "123456"
 
@@ -443,7 +456,7 @@ def test_whoami(bot, gmi):
     message = Message(gmi)
     message.user_id = fake_user_id
 
-    general.whoami(bot.bot, message)
+    whoami(GroupMeBotContext(bot.bot), GroupMeMessage(message))
 
     assert bot.group.messages.count == 1
     assert bot.group.messages.all()[0].text == "abc123 a day ago\ndef456 2 days ago\n"
@@ -451,8 +464,12 @@ def test_whoami(bot, gmi):
 
 def test_whoami_long(bot, gmi):
     from lowerpines.endpoints.message import Message
-    from saucerbot.handlers import general
-    from saucerbot.groupme.models import HistoricalNickname
+    from saucerbot.groupme.handlers import whoami
+    from saucerbot.groupme.models import (
+        GroupMeBotContext,
+        GroupMeMessage,
+        HistoricalNickname,
+    )
 
     long_nickname = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     fake_user_id = "123456"
@@ -468,7 +485,7 @@ def test_whoami_long(bot, gmi):
     message = Message(gmi)
     message.user_id = fake_user_id
 
-    general.whoami(bot.bot, message)
+    whoami(GroupMeBotContext(bot.bot), GroupMeMessage(message))
 
     assert bot.group.messages.count == 2
 
@@ -507,7 +524,7 @@ def test_plate_party(bot, gmi, client):
     bot.handlers.create(handler_name="plate_party")
 
     from lowerpines.endpoints.member import Member
-    from saucerbot.handlers import CLARK_USER_ID
+    from saucerbot.handlers.saucer import CLARK_USER_ID
 
     clark_member = Member(gmi, bot.group.group_id, "Clark The Shark", CLARK_USER_ID)
     bot.group.add_member(clark_member)
@@ -516,7 +533,7 @@ def test_plate_party(bot, gmi, client):
         bot, "CLARK! When's your plate party???", name="Everyone"
     )
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(message),
     )
@@ -539,7 +556,7 @@ def test_too_early_for_thai_no_send(bot, gmi, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(message_no_thai),
     )
@@ -553,7 +570,7 @@ def test_too_early_for_thai_no_send(bot, gmi, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(message_no_thai),
     )
@@ -575,7 +592,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(message_thai),
     )
@@ -596,7 +613,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
     )
 
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(message_thai),
     )
@@ -612,7 +629,7 @@ def test_too_early_for_thai_send(bot, gmi, client):
 
     # Post again, it won't post
     ret = client.post(
-        "/groupme/api/bots/saucerbot/callback/",
+        "/api/groupme/bots/saucerbot/callback/",
         content_type="application/json",
         data=json.dumps(message_thai),
     )

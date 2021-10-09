@@ -36,7 +36,7 @@ def test_login_redirect_with_session():
 
     assert r.status_code == 302
     assert not r.url.startswith("https://oauth.groupme.com")
-    assert "/groupme/api/bots/" in r.url
+    assert "/api/groupme/" in r.url
 
 
 @pytest.mark.django_db
@@ -72,7 +72,7 @@ def test_oauth_with_token(gmi):
 
     assert r.status_code == 302
     assert not r.url.startswith("https://oauth.groupme.com")
-    assert "/groupme/api/bots/" in r.url
+    assert "/api/groupme/" in r.url
 
     assert SESSION_KEY in fake_request.session
 
@@ -100,7 +100,7 @@ def test_bot_view_create(monkeypatch, gmi, client):
         "handlers": ["system_messages"],
     }
 
-    resp = client.post("/groupme/api/bots/", content_type="application/json", data=data)
+    resp = client.post("/api/groupme/bots/", content_type="application/json", data=data)
 
     assert resp.status_code == 201
 
@@ -114,7 +114,7 @@ def test_bot_view_create(monkeypatch, gmi, client):
     assert new_bot.bot_id == gmi_bot.bot_id
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 1
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
 
@@ -143,7 +143,7 @@ def test_bot_view_update(monkeypatch, gmi, client):
         "handlers": ["system_messages"],
     }
 
-    resp = client.post("/groupme/api/bots/", content_type="application/json", data=data)
+    resp = client.post("/api/groupme/bots/", content_type="application/json", data=data)
 
     assert resp.status_code == 201
 
@@ -155,13 +155,13 @@ def test_bot_view_update(monkeypatch, gmi, client):
     assert new_bot.bot_id == gmi_bot.bot_id
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 1
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
     update_data = {"name": "new test", "slug": "floop2", "handlers": ["whoami"]}
 
     resp = client.patch(
-        "/groupme/api/bots/floop/", content_type="application/json", data=update_data
+        "/api/groupme/bots/floop/", content_type="application/json", data=update_data
     )
 
     assert resp.status_code == 200
@@ -176,7 +176,7 @@ def test_bot_view_update(monkeypatch, gmi, client):
 
     # The gmi bot got fixed too
     gmi_bot = gmi.bots.get(name="new test")
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop2/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop2/callback/"
     assert gmi_bot.name == "new test"
 
     # The old bot is gone
@@ -209,7 +209,7 @@ def test_bot_view_delete(monkeypatch, gmi, client):
         "handlers": ["system_messages"],
     }
 
-    resp = client.post("/groupme/api/bots/", content_type="application/json", data=data)
+    resp = client.post("/api/groupme/bots/", content_type="application/json", data=data)
 
     assert resp.status_code == 201
 
@@ -221,10 +221,10 @@ def test_bot_view_delete(monkeypatch, gmi, client):
     assert new_bot.bot_id == gmi_bot.bot_id
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 1
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
-    resp = client.delete("/groupme/api/bots/floop/")
+    resp = client.delete("/api/groupme/bots/floop/")
 
     assert resp.status_code == 204
 
