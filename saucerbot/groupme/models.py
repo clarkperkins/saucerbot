@@ -40,7 +40,7 @@ class GroupMeBotContext(BotContext):
         self.bot = bot
 
     def post(self, message: Any):
-        if isinstance(message, str) or isinstance(message, ComplexMessage):
+        if isinstance(message, (ComplexMessage, str)):
             self.bot.post(message)
         else:
             raise ValueError(f"Invalid message of type {type(message)}")
@@ -142,8 +142,8 @@ def new_user(request, access_token: str):
         gmi = get_gmi(access_token)
         try:
             user_id = gmi.user.get().user_id
-        except UnauthorizedException:
-            raise InvalidGroupMeUser("Invalid access token")
+        except UnauthorizedException as e:
+            raise InvalidGroupMeUser("Invalid access token") from e
 
         # Either create the user, or update the given user with a new access token
         defaults = {"access_token": access_token}
@@ -153,10 +153,8 @@ def new_user(request, access_token: str):
 
 
 def _callback_url(slug: str) -> str:
-    return "https://{}{}".format(
-        settings.SERVER_DOMAIN,
-        reverse("groupme:bot-callback", kwargs={"slug": slug}),
-    )
+    path = reverse("groupme:bot-callback", kwargs={"slug": slug})
+    return f"https://{settings.SERVER_DOMAIN}{path}"
 
 
 class BotManager(models.Manager):
@@ -294,4 +292,8 @@ class HistoricalNickname(models.Model):
         return f"{self.nickname} - {self.timestamp}"
 
     def __repr__(self):
-        return f"HistoricalNickname({self.group_id}, {self.groupme_id}, {self.timestamp}, {self.nickname})"
+        return (
+            f"HistoricalNickname("
+            f"{self.group_id}, {self.groupme_id}, {self.timestamp}, {self.nickname}"
+            f")"
+        )

@@ -6,6 +6,8 @@ from typing import Optional
 
 from colorlog import ColoredFormatter
 
+_MSEC_FORMAT = "%s,%03d"
+
 
 class HighlightingFormatter(ColoredFormatter):
     def formatTime(self, record: LogRecord, datefmt: Optional[str] = None) -> str:
@@ -17,5 +19,5 @@ class HighlightingFormatter(ColoredFormatter):
             if self.default_msec_format:
                 s = self.default_msec_format % (t, record.msecs)
             else:
-                s = "%s,%03d" % (t, record.msecs)
+                s = _MSEC_FORMAT % (t, record.msecs)
         return s

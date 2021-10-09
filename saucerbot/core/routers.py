@@ -19,24 +19,24 @@ class SaucerbotAPIRootView(APIRootView):
         # Return a plain {"name": "hyperlink"} response.
         ret = OrderedDict()
         namespace = request.resolver_match.namespace
+
+        def try_add(_key: str, _url_name: str):
+            try:
+                ret[_key] = reverse(
+                    _url_name,
+                    args=args,
+                    kwargs=kwargs,
+                    request=request,
+                    format=kwargs.get("format", None),
+                )
+            except NoReverseMatch:
+                # Don't bail out if eg. no list routes exist, only detail routes.
+                pass
+
         for key, url_name in self.api_root_dict.items():
-
-            def try_add(_url_name: str):
-                try:
-                    ret[key] = reverse(
-                        _url_name,
-                        args=args,
-                        kwargs=kwargs,
-                        request=request,
-                        format=kwargs.get("format", None),
-                    )
-                except NoReverseMatch:
-                    # Don't bail out if eg. no list routes exist, only detail routes.
-                    pass
-
-            try_add(url_name)
+            try_add(key, url_name)
             if namespace:
-                try_add(namespace + ":" + url_name)
+                try_add(key, namespace + ":" + url_name)
 
         return Response(ret)
 
@@ -173,7 +173,7 @@ class PathRouter(DefaultRouter):
         """
         api_root_dict = OrderedDict()
         list_name = self.routes[0].name
-        for prefix, viewset, basename in self.registry:
+        for prefix, _, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
         if self.extra_api_root_paths:

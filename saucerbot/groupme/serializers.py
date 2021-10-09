@@ -21,8 +21,10 @@ class GroupRelatedField(serializers.RelatedField):
     def to_internal_value(self, data: str) -> Group:
         try:
             return self.get_queryset().get(group_id=data)
-        except NoneFoundException:
-            raise serializers.ValidationError(f"Group with id '{data}' doesn't exist")
+        except NoneFoundException as e:
+            raise serializers.ValidationError(
+                f"Group with id '{data}' doesn't exist"
+            ) from e
 
     def to_representation(self, value: Group) -> str:
         return value.group_id

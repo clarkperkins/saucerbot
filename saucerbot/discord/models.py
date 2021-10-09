@@ -20,7 +20,7 @@ from django.db.models.manager import EmptyManager
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from saucerbot.discord.utils import refresh_token
+from saucerbot.discord.utils import get_new_token
 from saucerbot.handlers import BotContext, Message, registry
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def _sending_done_callback(fut: asyncio.Future):
     # just retrieve any exception and call it a day
     try:
         fut.exception()
-    except (asyncio.CancelledError, Exception):
+    except asyncio.CancelledError:
         pass
 
 
@@ -99,7 +99,7 @@ class User(models.Model):
     def _check_expired(self):
         if timezone.now() + timedelta(minutes=5) > self.expires_at:
             # Need a new refresh token
-            token_data = refresh_token(self.refresh_token)
+            token_data = get_new_token(self.refresh_token)
             self.access_token = token_data["access_token"]
             self.token_type = token_data["token_type"]
             self.refresh_token = token_data["refresh_token"]
@@ -136,7 +136,7 @@ class User(models.Model):
         client = await self._new_client()
         guilds = await client.get_guilds(50)
         await client.close()
-        return [g["id"] for g in guilds]
+        return [str(g["id"]) for g in guilds]
 
     @property
     def groups(self):
@@ -184,8 +184,8 @@ def new_user(
     try:
         user_data = lookup_user_info(access_token, token_type)
         user_id = str(user_data["id"])
-    except HTTPException:
-        raise InvalidDiscordUser("Invalid access token")
+    except HTTPException as e:
+        raise InvalidDiscordUser("Invalid access token") from e
 
     # Either create the user, or update the given user with a new access token
     defaults = {
@@ -269,4 +269,8 @@ class HistoricalNickname(models.Model):
         return f"{self.nickname} - {self.timestamp}"
 
     def __repr__(self):
-        return f"HistoricalNickname({self.guild_id}, {self.user_id}, {self.timestamp}, {self.nickname})"
+        return (
+            f"HistoricalNickname("
+            f"{self.guild_id}, {self.user_id}, {self.timestamp}, {self.nickname}"
+            f")"
+        )

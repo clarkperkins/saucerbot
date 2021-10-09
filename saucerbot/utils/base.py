@@ -246,11 +246,13 @@ class BrewsSearchUtil:
 
         response = self.es.search(
             index=BREWS_ALIAS_NAME,
-            query={
-                "bool": {
-                    "must": [{"match": {"name": search_term}}],
-                    "filter": {"term": {"store_id": store_id}},
-                },
+            body={
+                "query": {
+                    "bool": {
+                        "must": [{"match": {"name": search_term}}],
+                        "filter": {"term": {"store_id": store_id}},
+                    }
+                }
             },
         )
 

@@ -14,10 +14,13 @@ logger = logging.getLogger(__name__)
 
 
 class ChannelHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
-    def get_url(self, channel: Channel, view_name: str, request: Request, format: str):  # type: ignore[override]
+    # pylint: disable=redefined-builtin
+    def get_url(
+        self, obj: Channel, view_name: str, request: Request, format: str
+    ):  # type: ignore[override]
         url_kwargs = {
-            "guild_name": channel.guild.name,
-            "name": channel.name,
+            "guild_name": obj.guild.name,
+            "name": obj.name,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 

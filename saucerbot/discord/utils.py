@@ -3,7 +3,6 @@
 from typing import Any
 
 import requests
-from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.urls import reverse
 
@@ -35,8 +34,8 @@ def exchange_code(code: str) -> dict[str, Any]:
     )
 
 
-def refresh_token(token: str) -> dict[str, Any]:
+def get_new_token(refresh_token: str) -> dict[str, Any]:
     return _token_request(
         grant_type="refresh_token",
-        refresh_token=token,
+        refresh_token=refresh_token,
     )
