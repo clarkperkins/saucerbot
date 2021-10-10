@@ -16,8 +16,9 @@ from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from saucerbot.core.models import InvalidUser
 from saucerbot.groupme.authentication import GroupMeUserAuthentication
-from saucerbot.groupme.models import SESSION_KEY, Bot, InvalidGroupMeUser, new_user
+from saucerbot.groupme.models import SESSION_KEY, Bot, new_user
 from saucerbot.groupme.permissions import HasGroupMeUser
 from saucerbot.groupme.serializers import BotSerializer
 from saucerbot.utils import did_the_dores_win
@@ -46,7 +47,7 @@ class OAuthView(RedirectView):
             new_user(self.request, access_token)
             return super().get(request, *args, **kwargs)
         else:
-            raise InvalidGroupMeUser("Missing access token")
+            raise InvalidUser("Missing access token")
 
 
 class BotViewSet(ModelViewSet):

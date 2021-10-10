@@ -6,10 +6,7 @@ from typing import Any, Optional, Union
 
 import arrow
 from django.conf import settings
-from django.contrib.auth import models as auth_models
-from django.core.exceptions import SuspiciousOperation
 from django.db import models
-from django.db.models.manager import EmptyManager
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
@@ -22,6 +19,7 @@ from lowerpines.gmi import GMI
 from lowerpines.message import ComplexMessage
 from scout_apm.api import Context
 
+from saucerbot.core.models import BaseUser, InvalidUser, get_user_builder
 from saucerbot.handlers import BotContext, Message, registry
 from saucerbot.utils import get_tasted_brews
 
@@ -67,20 +65,9 @@ class GroupMeMessage(Message):
         return arrow.get(self.groupme_message.created_at)
 
 
-class User(models.Model):
+class User(BaseUser):
     access_token = models.CharField(max_length=64)
     user_id = models.CharField(max_length=32, unique=True)
-
-    # User is always active
-    is_active = True
-
-    # Never staff or superuser
-    is_staff = False
-    is_superuser = False
-
-    objects = models.Manager()
-    _groups = EmptyManager(auth_models.Group)
-    _user_permissions = EmptyManager(auth_models.Permission)
 
     def __str__(self):
         return self.groupme_user.name
@@ -93,43 +80,12 @@ class User(models.Model):
     def username(self):
         return self.groupme_user.user_id
 
-    def get_username(self):
-        return self.username
-
     @property
     def gmi(self):
         return get_gmi(self.access_token)
 
-    @property
-    def groups(self):
-        return User._groups
 
-    @property
-    def user_permissions(self):
-        return User._user_permissions
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    @property
-    def is_authenticated(self):
-        return True
-
-
-class InvalidGroupMeUser(SuspiciousOperation):
-    pass
-
-
-def get_user(request) -> Optional[User]:
-    try:
-        user_id = User._meta.pk.to_python(request.session[SESSION_KEY])  # type: ignore[union-attr]
-        return User.objects.get(pk=user_id)
-    except KeyError:
-        pass
-    except User.DoesNotExist:
-        pass
-    return None
+get_user = get_user_builder(User, SESSION_KEY)
 
 
 def new_user(request, access_token: str):
@@ -143,7 +99,7 @@ def new_user(request, access_token: str):
         try:
             user_id = gmi.user.get().user_id
         except UnauthorizedException as e:
-            raise InvalidGroupMeUser("Invalid access token") from e
+            raise InvalidUser("Invalid access token") from e
 
         # Either create the user, or update the given user with a new access token
         defaults = {"access_token": access_token}
@@ -214,31 +170,14 @@ class Bot(models.Model):
         if message.sender_type == "bot" and message.name in other_bot_names:
             return []
 
-        handler_names = [h.handler_name for h in self.handlers.all()]
+        handler_names = {h.handler_name for h in self.handlers.all()}
 
-        matched_handlers: list[str] = []
-
-        for handler in registry:
-            if "groupme" not in handler.platforms:
-                continue
-
-            if handler.name not in handler_names:
-                continue
-
-            # We already matched at least one handler, don't run this one
-            if matched_handlers and not handler.always_run:
-                continue
-
-            logger.debug("Trying message handler %s ...", handler.name)
-
-            matched = handler.run(
-                GroupMeBotContext(self.bot),
-                GroupMeMessage(message),
-            )
-
-            # Keep track of the handlers that matched
-            if matched:
-                matched_handlers.append(handler.name)
+        matched_handlers = registry.handle_message(
+            "groupme",
+            handler_names,
+            GroupMeBotContext(self.bot),
+            GroupMeMessage(message),
+        )
 
         if matched_handlers:
             Context.add("handlers", matched_handlers)

@@ -211,6 +211,36 @@ class HandlerRegistry(Sequence[Handler]):
 
         return wrapper
 
+    def handle_message(
+        self,
+        platform: str,
+        handler_names: set[str],
+        context: BotContext,
+        message: Message,
+    ) -> list[str]:
+        matched_handlers: list[str] = []
+
+        for handler in self:
+            if platform not in handler.platforms:
+                continue
+
+            if handler.name not in handler_names:
+                continue
+
+            # We already matched at least one handler, don't run this one
+            if matched_handlers and not handler.always_run:
+                continue
+
+            logger.debug("Trying message handler %s ...", handler.name)
+
+            matched = handler.run(context, message)
+
+            # Keep track of the handlers that matched
+            if matched:
+                matched_handlers.append(handler.name)
+
+        return matched_handlers
+
 
 # Create the registry
 registry = HandlerRegistry()

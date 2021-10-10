@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from datetime import timedelta
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 import arrow
 from asgiref.sync import async_to_sync, sync_to_async
@@ -13,13 +13,11 @@ from discord import User as DUser
 from discord.abc import Messageable
 from discord.errors import HTTPException
 from discord.http import HTTPClient
-from django.contrib.auth import models as auth_models
-from django.core.exceptions import SuspiciousOperation
 from django.db import models
-from django.db.models.manager import EmptyManager
 from django.utils import timezone
 from django.utils.functional import cached_property
 
+from saucerbot.core.models import BaseUser, InvalidUser, get_user_builder
 from saucerbot.discord.utils import get_new_token
 from saucerbot.handlers import BotContext, Message, registry
 
@@ -71,23 +69,12 @@ class DiscordMessage(Message):
         return arrow.get(self.discord_message.created_at)
 
 
-class User(models.Model):
+class User(BaseUser):
     access_token = models.CharField(max_length=64)
     token_type = models.CharField(max_length=64)
     refresh_token = models.CharField(max_length=64)
     expires_at = models.DateTimeField()
     user_id = models.CharField(max_length=32, unique=True)
-
-    # User is always active
-    is_active = True
-
-    # Never staff or superuser
-    is_staff = False
-    is_superuser = False
-
-    objects = models.Manager()
-    _groups = EmptyManager(auth_models.Group)
-    _user_permissions = EmptyManager(auth_models.Permission)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -127,9 +114,6 @@ class User(models.Model):
     def username(self):
         return self.user_info.get("username")
 
-    def get_username(self):
-        return self.username
-
     @cached_property
     @async_to_sync
     async def guild_ids(self) -> list[str]:
@@ -138,36 +122,8 @@ class User(models.Model):
         await client.close()
         return [str(g["id"]) for g in guilds]
 
-    @property
-    def groups(self):
-        return User._groups
 
-    @property
-    def user_permissions(self):
-        return User._user_permissions
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    @property
-    def is_authenticated(self):
-        return True
-
-
-class InvalidDiscordUser(SuspiciousOperation):
-    pass
-
-
-def get_user(request) -> Optional[User]:
-    try:
-        user_id = User._meta.pk.to_python(request.session[SESSION_KEY])  # type: ignore[union-attr]
-        return User.objects.get(pk=user_id)
-    except KeyError:
-        pass
-    except User.DoesNotExist:
-        pass
-    return None
+get_user = get_user_builder(User, SESSION_KEY)
 
 
 @async_to_sync
@@ -185,7 +141,7 @@ def new_user(
         user_data = lookup_user_info(access_token, token_type)
         user_id = str(user_data["id"])
     except HTTPException as e:
-        raise InvalidDiscordUser("Invalid access token") from e
+        raise InvalidUser("Invalid access token") from e
 
     # Either create the user, or update the given user with a new access token
     defaults = {
@@ -213,34 +169,15 @@ class Channel(models.Model):
         self, loop: asyncio.AbstractEventLoop, message: DMessage
     ) -> list[str]:
         handler_names = await loop.run_in_executor(
-            None, lambda: [h.handler_name for h in self.handlers.all()]
+            None, lambda: {h.handler_name for h in self.handlers.all()}
         )
 
-        matched_handlers: list[str] = []
-
-        for handler in registry:
-            if "discord" not in handler.platforms:
-                continue
-
-            if handler.name not in handler_names:
-                continue
-
-            # We already matched at least one handler, don't run this one
-            if matched_handlers and not handler.always_run:
-                continue
-
-            logger.debug("Trying message handler %s ...", handler.name)
-
-            matched = handler.run(
-                DiscordBotContext(loop, message.channel),
-                DiscordMessage(message),
-            )
-
-            # Keep track of the handlers that matched
-            if matched:
-                matched_handlers.append(handler.name)
-
-        return matched_handlers
+        return registry.handle_message(
+            "discord",
+            handler_names,
+            DiscordBotContext(loop, message.channel),
+            DiscordMessage(message),
+        )
 
 
 class Handler(models.Model):

@@ -11,14 +11,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from saucerbot.core.models import InvalidUser
 from saucerbot.discord.authentication import DiscordUserAuthentication
-from saucerbot.discord.models import (
-    SESSION_KEY,
-    Guild,
-    InvalidDiscordUser,
-    User,
-    new_user,
-)
+from saucerbot.discord.models import SESSION_KEY, Guild, User, new_user
 from saucerbot.discord.permissions import HasDiscordUser
 from saucerbot.discord.serializers import ChannelSerializer, GuildSerializer
 from saucerbot.discord.utils import exchange_code, get_redirect_uri
@@ -56,7 +51,7 @@ class OAuthView(RedirectView):
         stored_state = self.request.session[STATE_SESSION_KEY]
 
         if state != stored_state:
-            raise InvalidDiscordUser("State token didn't match")
+            raise InvalidUser("State token didn't match")
 
         del self.request.session[STATE_SESSION_KEY]
 
@@ -71,7 +66,7 @@ class OAuthView(RedirectView):
             )
             return super().get(request, *args, **kwargs)
         else:
-            raise InvalidDiscordUser("Missing access token")
+            raise InvalidUser("Missing access token")
 
 
 class GuildViewSet(ReadOnlyModelViewSet):
