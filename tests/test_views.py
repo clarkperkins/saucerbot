@@ -41,7 +41,8 @@ def test_login_redirect_with_session():
 
 @pytest.mark.django_db
 def test_oauth_missing_token():
-    from saucerbot.groupme.views import InvalidGroupMeUser, OAuthView
+    from saucerbot.core.models import InvalidUser
+    from saucerbot.groupme.views import OAuthView
 
     fake_request = HttpRequest()
     fake_request.session = SessionStore()
@@ -49,7 +50,7 @@ def test_oauth_missing_token():
     v = OAuthView()
     v.setup(fake_request)
 
-    with pytest.raises(InvalidGroupMeUser):
+    with pytest.raises(InvalidUser):
         v.get(fake_request)
 
 

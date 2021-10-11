@@ -35,11 +35,11 @@ class BaseUser(models.Model):
 
     @property
     def groups(self):
-        return BaseUser._groups
+        return self.__class__._groups
 
     @property
     def user_permissions(self):
-        return BaseUser._user_permissions
+        return self.__class__._user_permissions
 
     @property
     def is_anonymous(self):

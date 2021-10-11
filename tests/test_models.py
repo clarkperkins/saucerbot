@@ -82,9 +82,9 @@ def test_new_user_valid(gmi):
 
 @pytest.mark.django_db
 def test_new_user_invalid(monkeypatch):
+    from saucerbot.core.models import InvalidUser
     from saucerbot.groupme.models import (
         SESSION_KEY,
-        InvalidGroupMeUser,
         get_gmi,
         new_user,
     )
@@ -100,7 +100,7 @@ def test_new_user_invalid(monkeypatch):
     fake_request = HttpRequest()
     fake_request.session = SessionStore()
 
-    with pytest.raises(InvalidGroupMeUser):
+    with pytest.raises(InvalidUser):
         new_user(fake_request, "abcdef")
 
     assert SESSION_KEY not in fake_request.session
