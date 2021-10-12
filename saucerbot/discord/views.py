@@ -5,6 +5,7 @@ import uuid
 from urllib.parse import quote
 
 from django.conf import settings
+from django.http.response import HttpResponseBase
 from django.urls import reverse
 from django.views.generic import RedirectView
 from rest_framework.generics import get_object_or_404
@@ -45,10 +46,13 @@ class LoginRedirectView(RedirectView):
 class OAuthView(RedirectView):
     pattern_name = "discord:guild-list"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> HttpResponseBase:
         code = self.request.GET.get("code")
         state = self.request.GET.get("state")
-        stored_state = self.request.session[STATE_SESSION_KEY]
+        stored_state = self.request.session.get(STATE_SESSION_KEY)
+
+        if not state:
+            raise InvalidUser("Request is missing state token")
 
         if state != stored_state:
             raise InvalidUser("State token didn't match")

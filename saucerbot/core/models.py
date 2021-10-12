@@ -35,11 +35,11 @@ class BaseUser(models.Model):
 
     @property
     def groups(self):
-        return self.__class__._groups
+        return self.__class__._groups  # pylint: disable=protected-access
 
     @property
     def user_permissions(self):
-        return self.__class__._user_permissions
+        return self.__class__._user_permissions  # pylint: disable=protected-access
 
     @property
     def is_anonymous(self):

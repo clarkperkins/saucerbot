@@ -6,7 +6,97 @@ from django.http import HttpRequest
 
 
 @pytest.mark.django_db
-def test_login_redirect_no_session():
+def test_discord_login_redirect_no_session():
+    from saucerbot.discord.views import LoginRedirectView
+
+    fake_request = HttpRequest()
+    fake_request.session = SessionStore()
+
+    v = LoginRedirectView()
+    v.setup(fake_request)
+
+    r = v.get(fake_request)
+
+    assert r.status_code == 302
+    assert r.url.startswith("https://discord.com/api/oauth2/authorize")
+
+
+@pytest.mark.django_db
+def test_discord_login_redirect_with_session():
+    from saucerbot.discord.views import SESSION_KEY, LoginRedirectView
+
+    fake_request = HttpRequest()
+    fake_request.session = SessionStore()
+    fake_request.session[SESSION_KEY] = 123
+
+    v = LoginRedirectView()
+    v.setup(fake_request)
+
+    r = v.get(fake_request)
+
+    assert r.status_code == 302
+    assert not r.url.startswith("https://discord.com/api/oauth2/authorize")
+    assert "/api/discord/" in r.url
+
+
+@pytest.mark.django_db
+def test_discord_oauth_missing_state():
+    from saucerbot.core.models import InvalidUser
+    from saucerbot.discord.views import OAuthView
+
+    fake_request = HttpRequest()
+    fake_request.session = SessionStore()
+
+    v = OAuthView()
+    v.setup(fake_request)
+
+    with pytest.raises(InvalidUser):
+        v.get(fake_request)
+
+
+@pytest.mark.django_db
+def test_discord_oauth_missing_token():
+    from saucerbot.core.models import InvalidUser
+    from saucerbot.discord.views import STATE_SESSION_KEY, OAuthView
+
+    fake_request = HttpRequest()
+    fake_request.GET["state"] = "abc123"
+    fake_request.session = SessionStore()
+    fake_request.session[STATE_SESSION_KEY] = "abc123"
+
+    v = OAuthView()
+    v.setup(fake_request)
+
+    with pytest.raises(InvalidUser):
+        v.get(fake_request)
+
+
+# failing for now
+@pytest.mark.skip
+@pytest.mark.django_db
+def test_discord_oauth_with_token():
+    from saucerbot.discord.views import SESSION_KEY, STATE_SESSION_KEY, OAuthView
+
+    fake_request = HttpRequest()
+    fake_request.GET["state"] = "abc123"
+    fake_request.GET["code"] = "abcdef"
+    fake_request.session = SessionStore()
+    fake_request.session[STATE_SESSION_KEY] = "abc123"
+
+    v = OAuthView()
+    v.setup(fake_request)
+
+    r = v.get(fake_request)
+
+    assert r.status_code == 302
+    assert not r.url.startswith("https://discord.com/api/oauth2/authorize")
+    assert "/api/discord/" in r.url
+
+    assert SESSION_KEY in fake_request.session
+
+
+@pytest.mark.django_db
+def test_groupme_login_redirect_no_session():
     from saucerbot.groupme.views import LoginRedirectView
 
     fake_request = HttpRequest()
@@ -22,7 +112,7 @@ def test_login_redirect_no_session():
 
 
 @pytest.mark.django_db
-def test_login_redirect_with_session():
+def test_groupme_login_redirect_with_session():
     from saucerbot.groupme.views import SESSION_KEY, LoginRedirectView
 
     fake_request = HttpRequest()
@@ -40,7 +130,7 @@ def test_login_redirect_with_session():
 
 
 @pytest.mark.django_db
-def test_oauth_missing_token():
+def test_groupme_oauth_missing_token():
     from saucerbot.core.models import InvalidUser
     from saucerbot.groupme.views import OAuthView
 
@@ -55,7 +145,7 @@ def test_oauth_missing_token():
 
 
 @pytest.mark.django_db
-def test_oauth_with_token(gmi):
+def test_groupme_oauth_with_token(gmi):
     u = gmi.user.get()
     u.user_id = "123456"
     u.save()

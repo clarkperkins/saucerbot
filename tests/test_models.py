@@ -83,11 +83,7 @@ def test_new_user_valid(gmi):
 @pytest.mark.django_db
 def test_new_user_invalid(monkeypatch):
     from saucerbot.core.models import InvalidUser
-    from saucerbot.groupme.models import (
-        SESSION_KEY,
-        get_gmi,
-        new_user,
-    )
+    from saucerbot.groupme.models import SESSION_KEY, get_gmi, new_user
 
     gmi = get_gmi("abcdef")
 

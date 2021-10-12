@@ -4,17 +4,7 @@ from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import TypeVar, Union
 
-from discord import (
-    Client,
-    GroupChannel,
-    Guild,
-    Intents,
-    Member,
-    Message,
-    Reaction,
-    TextChannel,
-    User,
-)
+from discord import Client, Guild, Intents, Member, Message, Reaction, TextChannel, User
 from django.utils import timezone
 
 from saucerbot.discord.models import Channel as SChannel
@@ -42,8 +32,9 @@ def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
 class SaucerbotClient(Client):
     # pylint: disable=no-self-use, unused-argument
 
-    def __init__(self):
-        super().__init__(intents=Intents.all())
+    def __init__(self, **kwargs):
+        kwargs.setdefault("intents", Intents.all())
+        super().__init__(**kwargs)
 
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
@@ -92,14 +83,14 @@ class SaucerbotClient(Client):
     async def on_reaction_add(self, reaction: Reaction, user: Union[User, Member]):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)
 
-    async def on_reaction_remove(self, reaction: Reaction, user: Union[User, Member]):
-        pass
-
-    async def on_reaction_clear(self, message: Message, reactions: list[Reaction]):
-        pass
-
-    async def on_reaction_clear_emoji(self, reaction: Reaction):
-        pass
+    # async def on_reaction_remove(self, reaction: Reaction, user: Union[User, Member]):
+    #     pass
+    #
+    # async def on_reaction_clear(self, message: Message, reactions: list[Reaction]):
+    #     pass
+    #
+    # async def on_reaction_clear_emoji(self, reaction: Reaction):
+    #     pass
 
     @make_async
     def store_display_name(self, member: Member):
@@ -113,23 +104,23 @@ class SaucerbotClient(Client):
     async def on_member_join(self, member: Member):
         await self.store_display_name(member)
 
-    async def on_member_remove(self, member: Member):
-        pass
+    # async def on_member_remove(self, member: Member):
+    #     pass
 
     async def on_member_update(self, before: Member, after: Member):
         await self.store_display_name(after)
 
-    async def on_user_update(self, before: User, after: User):
-        pass
-
-    async def on_guild_available(self, guild: Guild):
-        pass
-
-    async def on_guild_unavailable(self, guild: Guild):
-        pass
-
-    async def on_group_join(self, channel: GroupChannel, user: User):
-        pass
-
-    async def on_group_remove(self, channel: GroupChannel, user: User):
-        pass
+    # async def on_user_update(self, before: User, after: User):
+    #     pass
+    #
+    # async def on_guild_available(self, guild: Guild):
+    #     pass
+    #
+    # async def on_guild_unavailable(self, guild: Guild):
+    #     pass
+    #
+    # async def on_group_join(self, channel: GroupChannel, user: User):
+    #     pass
+    #
+    # async def on_group_remove(self, channel: GroupChannel, user: User):
+    #     pass
