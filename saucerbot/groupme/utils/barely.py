@@ -7,10 +7,9 @@ from pathlib import Path
 from typing import Optional, Set, Union
 
 from django.conf import settings
-from lowerpines.endpoints.bot import Bot
-from lowerpines.endpoints.message import Message
-from lowerpines.message import ComplexMessage
-from lowerpines.message import RefAttach
+from lowerpines.message import ComplexMessage, RefAttach
+
+from saucerbot.handlers import BotContext, Message
 
 emojis = [
     "👌",  # ok sign
@@ -48,18 +47,18 @@ def get_er_words() -> Set[str]:
 matching_words = get_er_words()
 
 
-def i_barely_know_her(bot: Bot, message: Message) -> bool:
-    if message.text is not None and random.choice(range(0, 100)) < PERCENT_CHANCE:
+def i_barely_know_her(context: BotContext, message: Message) -> bool:
+    if message.content is not None and random.choice(range(0, 100)) < PERCENT_CHANCE:
         quip = get_quip(message)
         if quip is not None:
-            bot.post(quip)
+            context.post(quip)
             return True
     return False
 
 
 def get_quip(message: Message) -> Optional[Union[ComplexMessage, str]]:
     matches = []
-    for word in re.split(r"[^a-zA-Z]", message.text):
+    for word in re.split(r"[^a-zA-Z]", message.content):
         if word.strip().lower() in matching_words:
             matches.append(word.strip().lower())
     if matches:
@@ -68,7 +67,7 @@ def get_quip(message: Message) -> Optional[Union[ComplexMessage, str]]:
         emoji = random.choice(quips[quip])
         split_quip = quip.format(match=match).split("<person>")
         if len(split_quip) > 1:
-            user_ref = RefAttach(message.user_id, f"@{message.name}")
+            user_ref = RefAttach(message.user_id, f"@{message.user_name}")
             return split_quip[0] + user_ref + split_quip[1] + " " + emoji
         else:
             return split_quip[0] + " " + emoji

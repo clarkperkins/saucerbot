@@ -4,8 +4,8 @@ import pytest
 from django.http import HttpRequest
 from rest_framework.request import Request
 
-from saucerbot.groupme.handlers import registry
 from saucerbot.groupme.serializers import BotSerializer
+from saucerbot.handlers import registry
 
 
 @registry.handler()
@@ -132,7 +132,7 @@ def test_bot_create_empty(bot, gmi):
     assert new_bot.bot_id == gmi_bot.bot_id
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 0
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
 
@@ -182,7 +182,7 @@ def test_bot_create(bot, gmi):
     assert new_bot.bot_id == gmi_bot.bot_id
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 1
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
     data = {
@@ -204,7 +204,7 @@ def test_bot_create(bot, gmi):
     assert new_bot.handlers.count() == 1
     assert (
         gmi_bot.callback_url
-        == "https://localhost/groupme/api/bots/test-bot-43/callback/"
+        == "https://localhost/api/groupme/bots/test-bot-43/callback/"
     )
     assert gmi_bot.name == "Test Bot 43"
 
@@ -240,7 +240,7 @@ def test_bot_update(bot, gmi):
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 2
     assert new_bot_handlers == {"handler_test1", "handler_test2"}
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
     data = {
@@ -269,7 +269,7 @@ def test_bot_update(bot, gmi):
     # The gmi bot got fixed too
     gmi_bot = gmi.bots.get(name="new_test")
     assert (
-        gmi_bot.callback_url == "https://localhost/groupme/api/bots/new_floop/callback/"
+        gmi_bot.callback_url == "https://localhost/api/groupme/bots/new_floop/callback/"
     )
     assert gmi_bot.name == "new_test"
 
@@ -311,7 +311,7 @@ def test_bot_failed_update(bot, gmi):
     assert new_bot.group_id == group.group_id
     assert new_bot.handlers.count() == 2
     assert new_bot_handlers == {"handler_test1", "handler_test2"}
-    assert gmi_bot.callback_url == "https://localhost/groupme/api/bots/floop/callback/"
+    assert gmi_bot.callback_url == "https://localhost/api/groupme/bots/floop/callback/"
     assert gmi_bot.name == "test"
 
     data = {

@@ -11,7 +11,7 @@ import requests
 from django.conf import settings
 from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.image import ImageConvertRequest
-from lowerpines.message import ImageAttach, ComplexMessage
+from lowerpines.message import ComplexMessage, ImageAttach
 
 flickr_url = "https://api.flickr.com/services/rest/"
 logger = logging.getLogger(__name__)

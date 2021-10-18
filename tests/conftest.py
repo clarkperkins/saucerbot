@@ -151,7 +151,8 @@ def setup_bot(db, gmi, monkeypatch):
     monkeypatch.setattr("saucerbot.groupme.models.get_gmi", lambda a: gmi)
 
     from lowerpines.group import Group
-    from saucerbot.groupme.models import User, Bot
+
+    from saucerbot.groupme.models import Bot, User
 
     user = User.objects.create(access_token="123456", user_id="123456")
 

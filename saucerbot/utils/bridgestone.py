@@ -9,8 +9,11 @@ import arrow
 from arrow.parser import ParserError
 from requests.exceptions import RequestException
 
-from saucerbot.utils.parsers import BridgestoneEventTimeParser, HtmlContentProvider
-from saucerbot.utils.parsers import BridgestoneEventsParser
+from saucerbot.utils.parsers import (
+    BridgestoneEventsParser,
+    BridgestoneEventTimeParser,
+    HtmlContentProvider,
+)
 
 logger = logging.getLogger(__name__)
 

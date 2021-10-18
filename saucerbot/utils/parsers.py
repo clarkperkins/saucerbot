@@ -33,7 +33,7 @@ class Parser:
     fields: list[tuple[str, str, Optional[str]]] = []
 
     def __init__(self, provider: HtmlContentProvider) -> None:
-        super(Parser, self).__init__()
+        super().__init__()
         if not provider:
             raise ValueError("Value for provider required.")
 

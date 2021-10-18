@@ -20,6 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Pull a few things from the heroku environment
 HEROKU_APP_NAME: Optional[str] = os.environ.get("HEROKU_APP_NAME")
+DISCORD_BOT_TOKEN: Optional[str] = os.environ.get("DISCORD_BOT_TOKEN")
+DISCORD_CLIENT_ID: Optional[str] = os.environ.get("DISCORD_CLIENT_ID")
+DISCORD_CLIENT_SECRET: Optional[str] = os.environ.get("DISCORD_CLIENT_SECRET")
 GROUPME_CLIENT_ID: Optional[str] = os.environ.get("GROUPME_CLIENT_ID")
 FLICKR_API_KEY: Optional[str] = os.environ.get("FLICKR_API_KEY")
 ELASTICSEARCH_URL: Optional[str] = os.environ.get("BONSAI_URL")
@@ -36,6 +39,8 @@ DEBUG = False
 
 INSTALLED_APPS = [
     "scout_apm.django",
+    "saucerbot.core",
+    "saucerbot.discord",
     "saucerbot.groupme",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -141,18 +146,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 # They will get loaded when the server starts up
 
 HANDLER_MODULES = [
-    "saucerbot.groupme.handlers.general",
-    "saucerbot.groupme.handlers.saucer",
-    "saucerbot.groupme.handlers.vandy",
+    "saucerbot.handlers.general",
+    "saucerbot.handlers.saucer",
+    "saucerbot.handlers.vandy",
+    "saucerbot.groupme.handlers",
 ]
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-        "saucerbot.groupme.authentication.GroupMeUserAuthentication",
-    ],
+    "EXCEPTION_HANDLER": "rollbar.contrib.django_rest_framework.post_exception_handler",
 }
 
 # Scout config

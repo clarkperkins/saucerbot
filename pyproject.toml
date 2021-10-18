@@ -1,2 +1,112 @@
 [tool.black]
-exclude = 'migrations'
+exclude = "migrations"
+
+
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    # Have to re-enable the standard pragma
+    "pragma: no cover",
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+]
+
+ignore_errors = true
+
+omit = [
+    "*/migrations/*",
+    "*/settings/environments/*",
+]
+
+[tool.coverage.html]
+directory = "reports/html"
+title = "saucerbot coverage"
+
+[tool.coverage.xml]
+output = "reports/coverage.xml"
+
+
+
+[tool.django-stubs]
+django_settings_module = "saucerbot.settings"
+
+
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+known_third_party = "discord"
+
+
+
+[tool.mypy]
+plugins = [
+    "mypy_django_plugin.main",
+    "mypy_drf_plugin.main",
+]
+
+[[tool.mypy.overrides]]
+module = "saucerbot.*.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "bs4",
+    "dj_database_url",
+    "rollbar",
+    "scout_apm",
+    "scout_apm.api",
+]
+ignore_missing_imports = true
+
+
+
+[tool.pylint.master]
+ignore = [
+    "CVS",
+    "migrations",
+]
+load-plugins = [
+    "pylint_django",
+]
+django-settings-module = "saucerbot.settings"
+
+[tool.pylint.messages_control]
+disable = [
+    "invalid-name",
+    "missing-docstring",
+    "no-else-return",
+    "too-few-public-methods",
+]
+
+[tool.pylint.import]
+known-third-party = [
+    "discord",
+]
+
+[tool.pylint.design]
+# Maximum number of attributes for a class (see R0902).
+max-attributes = 15
+# Maximum number of parents for a class (see R0901).
+max-parents = 15
+
+
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "saucerbot.settings"
+testpaths = [
+    "tests",
+]
+addopts = "-m 'not integration'"
+markers = "integration"

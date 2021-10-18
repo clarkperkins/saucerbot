@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from django import template
+from django.http import HttpRequest
 from django.urls import NoReverseMatch, reverse
 from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
@@ -8,13 +11,27 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
+def _get_namespace(request: HttpRequest) -> Optional[str]:
+    if request.path.startswith("/api/discord"):
+        return "discord"
+    elif request.path.startswith("/api/groupme"):
+        return "groupme"
+    else:
+        return None
+
+
 @register.simple_tag
-def optional_login(request):
+def optional_login(request: HttpRequest) -> str:
     """
     Include a login snippet if REST framework's login view is in the URL conf.
     """
+    namespace = _get_namespace(request)
+
+    if namespace is None:
+        return ""
+
     try:
-        login_url = reverse("groupme:login")
+        login_url = reverse(f"{namespace}:login")
     except NoReverseMatch:
         return ""
 
@@ -25,12 +42,19 @@ def optional_login(request):
 
 
 @register.simple_tag
-def optional_logout(request, user):
+def optional_logout(request: HttpRequest, user) -> str:
     """
     Include a logout snippet if REST framework's logout view is in the URL conf.
     """
+    namespace = _get_namespace(request)
+
+    if namespace is None:
+        return ""
+
+    snippet: str
+
     try:
-        logout_url = reverse("groupme:logout")
+        logout_url = reverse(f"{namespace}:logout")
     except NoReverseMatch:
         snippet = format_html('<li class="navbar-text">{user}</li>', user=escape(user))
         return mark_safe(snippet)

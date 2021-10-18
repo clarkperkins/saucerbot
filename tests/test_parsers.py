@@ -4,13 +4,13 @@ import arrow
 from bs4 import BeautifulSoup
 
 from saucerbot.utils.base import get_new_arrivals
-from saucerbot.utils.bridgestone import bridgestone_events_url
 from saucerbot.utils.bridgestone import (
-    get_year,
-    get_event_time_helper,
+    bridgestone_events_url,
     get_all_events,
-    get_events_for_date,
     get_event_time,
+    get_event_time_helper,
+    get_events_for_date,
+    get_year,
 )
 from saucerbot.utils.parsers import HtmlContentProvider, NewArrivalsParser
 

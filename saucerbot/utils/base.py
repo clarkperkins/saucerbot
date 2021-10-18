@@ -127,11 +127,11 @@ class BrewsLoaderUtil:
             with template.open("rt", encoding="utf8") as f:
                 template_json = json.load(f)
 
-            self.es.indices.put_template(name, template_json)
+            self.es.indices.put_template(name=name, body=template_json)
 
     def load_all_brews(self) -> None:
         self.update_templates()
-        self.es.indices.create(self.index_name)
+        self.es.indices.create(index=self.index_name)
 
         # Download & load the brews
         brews = self.get_all_brews()
@@ -188,17 +188,17 @@ class BrewsLoaderUtil:
 
         # Perform the update
         try:
-            self.es.indices.update_aliases({"actions": alias_actions})
+            self.es.indices.update_aliases(body={"actions": alias_actions})
         except RequestError:
             logger.warning(
                 "There was an error updating the indices.  "
                 "Will only add the new index & not delete old indices."
             )
-            self.es.indices.put_alias(self.index_name, BREWS_ALIAS_NAME)
+            self.es.indices.put_alias(index=self.index_name, name=BREWS_ALIAS_NAME)
 
     def cleanup_old_indices(self) -> None:
         # Grab all the matching indices
-        old_indices = self.es.indices.get(f"{BREWS_ALIAS_NAME}-*")
+        old_indices = self.es.indices.get(index=f"{BREWS_ALIAS_NAME}-*")
 
         del old_indices[self.index_name]
 
@@ -209,7 +209,7 @@ class BrewsLoaderUtil:
             for old_index in old_indices:
                 logger.info("Deleting %s...", old_index)
                 try:
-                    self.es.indices.delete(old_index)
+                    self.es.indices.delete(index=old_index)
                 except RequestError:
                     logger.info("Error deleting %s.  Leaving it in place.", old_index)
 
@@ -251,7 +251,7 @@ class BrewsSearchUtil:
                     "bool": {
                         "must": [{"match": {"name": search_term}}],
                         "filter": {"term": {"store_id": store_id}},
-                    },
+                    }
                 }
             },
         )
