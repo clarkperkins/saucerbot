@@ -20,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Pull a few things from the heroku environment
 HEROKU_APP_NAME: Optional[str] = os.environ.get("HEROKU_APP_NAME")
+DISCORD_APPLICATION_ID: Optional[str] = os.environ.get("DISCORD_APPLICATION_ID")
 DISCORD_BOT_TOKEN: Optional[str] = os.environ.get("DISCORD_BOT_TOKEN")
 DISCORD_CLIENT_ID: Optional[str] = os.environ.get("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET: Optional[str] = os.environ.get("DISCORD_CLIENT_SECRET")

@@ -5,6 +5,7 @@ exclude = "migrations"
 
 [tool.coverage.run]
 branch = true
+relative_files = true
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -25,8 +26,10 @@ exclude_lines = [
 ignore_errors = true
 
 omit = [
-    "*/migrations/*",
-    "*/settings/environments/*",
+    "saucerbot/*/migrations/*",
+    "saucerbot/discord/main.py",
+    "saucerbot/discord/state.py",
+    "saucerbot/settings/environments/*",
 ]
 
 [tool.coverage.html]
