@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 arrow = "*"
 "beautifulsoup4" = "*"
+click = "*"
 colorlog = "*"
 "discord.py" = "*"
 dj-database-url = "*"

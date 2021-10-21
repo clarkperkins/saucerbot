@@ -1,19 +1,28 @@
 # -*- coding: utf-8 -*-
+import asyncio
 import logging
 from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import TypeVar, Union
 
+import arrow
 from discord import Client, Guild, Intents, Member, Message, Reaction, TextChannel, User
 from django.utils import timezone
 
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
 from saucerbot.discord.models import HistoricalDisplayName
+from saucerbot.discord.state import (
+    Interaction,
+    SaucerbotConnectionState,
+    SaucerbotHTTPClient,
+)
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
+
+CENTRAL_TIME = "US/Central"
 
 
 def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
@@ -32,9 +41,35 @@ def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
 class SaucerbotClient(Client):
     # pylint: disable=no-self-use, unused-argument
 
-    def __init__(self, **kwargs):
-        kwargs.setdefault("intents", Intents.all())
-        super().__init__(**kwargs)
+    def __init__(self, *, loop=None, **options):
+        options.setdefault("intents", Intents.all())
+
+        loop = asyncio.get_event_loop() if loop is None else loop
+
+        connector = options.pop("connector", None)
+        proxy = options.pop("proxy", None)
+        proxy_auth = options.pop("proxy_auth", None)
+        unsync_clock = options.pop("assume_unsync_clock", True)
+        self._http = SaucerbotHTTPClient(
+            connector,
+            proxy=proxy,
+            proxy_auth=proxy_auth,
+            unsync_clock=unsync_clock,
+            loop=loop,
+        )
+        super().__init__(loop=loop, **options)
+        self.http = self._http
+
+    def _get_state(self, **options):
+        return SaucerbotConnectionState(
+            dispatch=self.dispatch,
+            handlers=self._handlers,
+            hooks=self._hooks,
+            syncer=self._syncer,
+            http=self._http,
+            loop=self.loop,
+            **options,
+        )
 
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
@@ -79,6 +114,36 @@ class SaucerbotClient(Client):
                     stored_guild, message.channel
                 )
                 await stored_channel.handle_message(self.loop, message)
+
+    @make_async
+    def get_whoami_response(self, guild_id: str, user_id: str) -> str:
+        response = ""
+
+        display_names = HistoricalDisplayName.objects.filter(
+            guild_id=guild_id,
+            user_id=user_id,
+        ).order_by("-timestamp")
+
+        # We only care about central time!
+        now = arrow.now(CENTRAL_TIME)
+
+        for display_name in display_names:
+            timestamp = arrow.get(display_name.timestamp)
+            next_line = f"{display_name.display_name} {timestamp.humanize(now)}\n"
+            response += next_line
+
+        return response
+
+    async def on_interaction(self, interaction: Interaction):
+        logger.info("Interaction: %s", interaction.data)
+        if interaction.data["name"] == "whoami":
+            response = await self.get_whoami_response(
+                interaction.channel.guild.id, interaction.member.id
+            )
+
+            # make sure to post the rest at the end
+            if response:
+                await interaction.respond(response)
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[User, Member]):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)

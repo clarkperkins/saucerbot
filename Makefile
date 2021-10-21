@@ -11,6 +11,8 @@ build: build/docker
 
 reports:
 	mkdir -p reports
+	mkdir -p reports/coverage
+	mkdir -p reports/tests
 
 format/isort:
 	isort saucerbot tests
@@ -38,7 +40,7 @@ staticfiles:
 	python manage.py collectstatic --noinput
 
 test/pytest/xml: reports staticfiles
-	pytest --cov=saucerbot --cov-report=xml
+	pytest --junit-xml=reports/tests/unit.xml --cov=saucerbot --cov-report=xml
 
 test/pytest/html: reports staticfiles
 	pytest --cov=saucerbot --cov-report=html
@@ -46,10 +48,10 @@ test/pytest/html: reports staticfiles
 test: test/pytest/xml
 
 cov: test/pytest/html
-	open reports/html/index.html
+	open reports/coverage/html/index.html
 
 integration-test/pytest/xml: reports
-	pytest -m integration --cov=saucerbot --cov-report=xml --cov-append
+	pytest -m integration --junit-xml=reports/tests/integration.xml --cov=saucerbot --cov-report=xml --cov-append
 
 integration-test/pytest/html: reports
 	pytest -m integration --cov=saucerbot --cov-report=html --cov-append
