@@ -66,6 +66,12 @@ jobs:
         run: |
           docker-compose down
 
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: reports/tests/*.xml
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v1.6
         env:

@@ -33,11 +33,11 @@ omit = [
 ]
 
 [tool.coverage.html]
-directory = "reports/html"
+directory = "reports/coverage/html"
 title = "saucerbot coverage"
 
 [tool.coverage.xml]
-output = "reports/coverage.xml"
+output = "reports/coverage/coverage.xml"
 
 
 
