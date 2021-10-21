@@ -173,7 +173,9 @@ class SaucerbotClient(Client):
     #     pass
 
     async def on_member_update(self, before: Member, after: Member):
-        await self.store_display_name(after)
+        # Only store the name if it actually changed!
+        if after.display_name and before.display_name != after.display_name:
+            await self.store_display_name(after)
 
     # async def on_user_update(self, before: User, after: User):
     #     pass
