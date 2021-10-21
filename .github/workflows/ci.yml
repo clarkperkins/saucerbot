@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+#    strategy:
+#      max-parallel: 4
+#      matrix:
+#        python-version: [ 3.9 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Spin up Containers
+        run: |
+          touch web.env
+          docker-compose up -d db elasticsearch
+
+      - name: Install Build Dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install --upgrade pipenv
+
+      - name: Install Dependencies
+        run: |
+          pipenv install --system --deploy --dev
+
+      - name: Run Checks
+        run: |
+          make check
+        env:
+          DJANGO_ENV: test
+
+      - name: Run Tests
+        run: |
+          make test
+        env:
+          DJANGO_ENV: test
+          DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/postgres'
+          BONSAI_URL: 'http://localhost:9200'
+
+      - name: Run Integration Tests
+        run: |
+          make integration-test
+        env:
+          DJANGO_ENV: test
+          DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/postgres'
+          BONSAI_URL: 'http://localhost:9200'
+
+      - name: Stop Containers
+        run: |
+          docker-compose down
+
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v1.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
