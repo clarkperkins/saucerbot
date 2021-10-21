@@ -116,7 +116,7 @@ class SaucerbotClient(Client):
                 await stored_channel.handle_message(self.loop, message)
 
     @make_async
-    def get_whoami_response(self, guild_id: str, user_id: str) -> str:
+    def get_whoami_responses(self, guild_id: str, user_id: str) -> list[str]:
         response = ""
 
         display_names = HistoricalDisplayName.objects.filter(
@@ -127,23 +127,40 @@ class SaucerbotClient(Client):
         # We only care about central time!
         now = arrow.now(CENTRAL_TIME)
 
+        responses = []
+
         for display_name in display_names:
             timestamp = arrow.get(display_name.timestamp)
             next_line = f"{display_name.display_name} {timestamp.humanize(now)}\n"
-            response += next_line
+            if len(response) + len(next_line) > 2000:
+                responses.append(response)
+                response = next_line
+            else:
+                response += next_line
 
-        return response
+        if response:
+            responses.append(response)
+
+        return responses
 
     async def on_interaction(self, interaction: Interaction):
         logger.info("Interaction: %s", interaction.data)
         if interaction.data["name"] == "whoami":
-            response = await self.get_whoami_response(
+            responses = await self.get_whoami_responses(
                 interaction.channel.guild.id, interaction.member.id
             )
 
+            logger.info("%s", responses)
+
             # make sure to post the rest at the end
-            if response:
-                await interaction.respond(response)
+            first = True
+
+            for response in responses:
+                if first:
+                    await interaction.respond(response)
+                    first = False
+                else:
+                    await interaction.follow_up(response)
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[User, Member]):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)

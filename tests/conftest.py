@@ -3,6 +3,7 @@
 import uuid
 from collections import defaultdict
 
+import discord.ext.test as dpytest
 import pytest
 
 
@@ -164,3 +165,12 @@ def setup_bot(db, gmi, monkeypatch):
     )
 
     return bot
+
+
+@pytest.fixture(name="discord_client")
+def setup_discord_client(db, event_loop):
+    from saucerbot.discord.client import SaucerbotClient
+
+    client = SaucerbotClient(loop=event_loop)
+    dpytest.configure(client)
+    return client
