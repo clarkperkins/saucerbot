@@ -6,6 +6,7 @@ from discord.abc import GuildChannel
 from discord.http import HTTPClient, Route
 from discord.mixins import Hashable
 from discord.state import ConnectionState
+from django.conf import settings
 
 
 class SaucerbotConnectionState(ConnectionState):
@@ -35,6 +36,9 @@ class Interaction(Hashable):
     async def respond(self, content: str):
         await self._state.http.respond_interaction(self.id, self.token, content)  # type: ignore
 
+    async def follow_up(self, content: str):
+        await self._state.http.follow_up_interaction(self.token, content)  # type: ignore
+
 
 class RouteV8(Route):
     BASE = "https://discord.com/api/v8"
@@ -59,5 +63,19 @@ class SaucerbotHTTPClient(HTTPClient):
             "type": 4,
             "data": data,
         }
+
+        return self.request(r, json=payload)
+
+    def follow_up_interaction(self, interaction_token: str, content: str):
+        r = RouteV8(
+            "POST",
+            "/webhooks/{application_id}/{interaction_token}",
+            application_id=settings.DISCORD_APPLICATION_ID,
+            interaction_token=interaction_token,
+        )
+        payload = {}
+
+        if content:
+            payload["content"] = content
 
         return self.request(r, json=payload)
