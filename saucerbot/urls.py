@@ -17,12 +17,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
 
 urlpatterns = [
     path("", include("saucerbot.core.urls", namespace="core")),
     path("", include("saucerbot.discord.urls", namespace="discord")),
     path("", include("saucerbot.groupme.urls", namespace="groupme")),
     path("admin/", admin.site.urls),
-    path("", RedirectView.as_view(pattern_name="core:api-root")),
 ]
