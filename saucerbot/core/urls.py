@@ -3,7 +3,7 @@
 from django.urls import include, path
 
 from saucerbot.core.routers import PathRouter
-from saucerbot.core.views import HandlerViewSet
+from saucerbot.core.views import HandlerViewSet, HomeView
 
 app_name = "saucerbot"
 
@@ -17,4 +17,5 @@ router.register("handlers", HandlerViewSet, basename="handler")
 
 urlpatterns = [
     path("api/", include(router.urls)),
+    path("", HomeView.as_view(), name="home"),
 ]
