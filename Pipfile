@@ -37,6 +37,7 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-django = "*"
+pytest-mock = "*"
 types-pyyaml = "*"
 types-requests = "*"
 

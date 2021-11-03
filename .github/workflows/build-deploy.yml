@@ -104,11 +104,9 @@ jobs:
         with:
           images: clarkperkins/saucerbot
           tags: |
-            type=edge,branch=main
+            type=edge
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
 
       - name: Docker Build and Push
         id: docker_build
