@@ -28,7 +28,7 @@ ignore_errors = true
 omit = [
     "saucerbot/*/migrations/*",
     "saucerbot/discord/main.py",
-    "saucerbot/discord/state.py",
+    "saucerbot/discord/overrides.py",
     "saucerbot/settings/environments/*",
 ]
 

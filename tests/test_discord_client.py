@@ -111,3 +111,29 @@ async def test_whoami_long(discord_client, event_loop):
             d.delete()
 
     await event_loop.run_in_executor(None, delete_data)
+
+
+@pytest.mark.asyncio
+async def test_invalid_command(discord_client, mocker):
+    interaction = mocker.Mock()
+    interaction.data = {
+        "name": "nope",
+    }
+
+    await discord_client.on_interaction(interaction)
+
+
+@pytest.mark.asyncio
+async def test_whoami_command(discord_client, mocker):
+    interaction = mocker.Mock()
+    interaction.data = {
+        "name": "whoami",
+    }
+    interaction.channel = mocker.Mock()
+    interaction.channel.guild = mocker.Mock()
+    interaction.channel.guild.id = "test"
+
+    interaction.member = mocker.Mock()
+    interaction.member.id = "test"
+
+    await discord_client.on_interaction(interaction)

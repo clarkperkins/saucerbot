@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
-import asyncio
 import logging
 from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import TypeVar, Union
 
 import arrow
-from discord import Client, Guild, Intents, Member, Message, Reaction, TextChannel, User
+from discord import Guild, Intents, Member, Message, Reaction, TextChannel, User
 from django.utils import timezone
 
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
 from saucerbot.discord.models import HistoricalDisplayName
-from saucerbot.discord.state import (
-    Interaction,
-    SaucerbotConnectionState,
-    SaucerbotHTTPClient,
-)
+from saucerbot.discord.overrides import ClientWithInteractions, Interaction
 
 logger = logging.getLogger(__name__)
 
@@ -38,38 +33,12 @@ def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
     return wrapper
 
 
-class SaucerbotClient(Client):
-    # pylint: disable=no-self-use, unused-argument
+class SaucerbotClient(ClientWithInteractions):
+    # pylint: disable=no-self-use
 
-    def __init__(self, *, loop=None, **options):
-        options.setdefault("intents", Intents.all())
-
-        loop = asyncio.get_event_loop() if loop is None else loop
-
-        connector = options.pop("connector", None)
-        proxy = options.pop("proxy", None)
-        proxy_auth = options.pop("proxy_auth", None)
-        unsync_clock = options.pop("assume_unsync_clock", True)
-        self._http = SaucerbotHTTPClient(
-            connector,
-            proxy=proxy,
-            proxy_auth=proxy_auth,
-            unsync_clock=unsync_clock,
-            loop=loop,
-        )
-        super().__init__(loop=loop, **options)
-        self.http = self._http
-
-    def _get_state(self, **options):
-        return SaucerbotConnectionState(
-            dispatch=self.dispatch,
-            handlers=self._handlers,
-            hooks=self._hooks,
-            syncer=self._syncer,
-            http=self._http,
-            loop=self.loop,
-            **options,
-        )
+    def __init__(self, **kwargs):
+        kwargs.setdefault("intents", Intents.all())
+        super().__init__(**kwargs)
 
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
@@ -143,24 +112,32 @@ class SaucerbotClient(Client):
 
         return responses
 
+    async def command_whoami(self, interaction: Interaction):
+        responses = await self.get_whoami_responses(
+            interaction.channel.guild.id, interaction.member.id
+        )
+
+        logger.info("%s", responses)
+
+        # make sure to post the rest at the end
+        first = True
+
+        for response in responses:
+            if first:
+                await interaction.respond(response)
+                first = False
+            else:
+                await interaction.follow_up(response)
+
     async def on_interaction(self, interaction: Interaction):
         logger.info("Interaction: %s", interaction.data)
-        if interaction.data["name"] == "whoami":
-            responses = await self.get_whoami_responses(
-                interaction.channel.guild.id, interaction.member.id
-            )
+        command_name = interaction.data["name"]
 
-            logger.info("%s", responses)
-
-            # make sure to post the rest at the end
-            first = True
-
-            for response in responses:
-                if first:
-                    await interaction.respond(response)
-                    first = False
-                else:
-                    await interaction.follow_up(response)
+        coro = getattr(self, f"command_{command_name}", None)
+        if coro:
+            await coro(interaction)
+        else:
+            logger.error("No command named %s", command_name)
 
     async def on_reaction_add(self, reaction: Reaction, user: Union[User, Member]):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)
