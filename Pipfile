@@ -16,7 +16,7 @@ djangorestframework = "~=3.12.0"
 elasticsearch = "~=7.0"
 gunicorn = "*"
 lowerpines = {git = "https://github.com/bigfootjon/lowerpines.git", ref = "master"}
-"psycopg2-binary" = "*"
+"psycopg2" = "*"
 pyyaml = "*"
 requests = "*"
 rollbar = "*"
