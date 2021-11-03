@@ -1,9 +1,5 @@
 FROM python:3.9-slim
 
-LABEL org.opencontainers.image.title="saucerbot"
-LABEL org.opencontainers.image.description="GroupMe bot for the saucer groupme"
-LABEL org.opencontainers.image.source="https://github.com/clarkperkins/saucerbot"
-
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
 
@@ -28,15 +24,6 @@ COPY --chown=saucerbot:saucerbot saucerbot saucerbot
 # run the final build steps
 RUN sh build.sh
 
-# Put these args here so that changing them doesn't invalidate the build cache
-ARG BUILD_DATE=""
-ARG GIT_COMMIT=""
-
-LABEL org.opencontainers.image.created="$BUILD_DATE"
-LABEL org.opencontainers.image.revision="$GIT_COMMIT"
-
-ENV GIT_COMMIT=$GIT_COMMIT
-
 CMD ["gunicorn", "saucerbot.wsgi"]
 
-HEALTHCHECK --timeout=5s CMD curl -f http://localhost:$PORT/groupme/login/ || exit 1
+HEALTHCHECK --timeout=5s CMD curl -f http://localhost:$PORT || exit 1

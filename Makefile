@@ -1,11 +1,9 @@
-git_commit := $(shell git rev-parse HEAD)
-build_date := $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 
 clean:
 	rm -rf .coverage .mypy_cache .pytest_cache reports staticfiles build dist
 
 build/docker:
-	docker build --pull --build-arg GIT_COMMIT=$(git_commit) --build-arg BUILD_DATE=$(build_date) --tag clarkperkins/saucerbot .
+	docker build --pull --tag clarkperkins/saucerbot .
 
 build: build/docker
 
