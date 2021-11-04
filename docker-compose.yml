@@ -22,7 +22,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
   web:
-    image: clarkperkins/saucerbot
+    image: clarkperkins/saucerbot:main
     ports:
       - "8000:8000"
     environment:
