@@ -104,9 +104,10 @@ jobs:
         with:
           images: clarkperkins/saucerbot
           tags: |
-            type=edge
             type=ref,event=branch
             type=ref,event=pr
+          flavor: |
+            latest=${{ github.ref_name == github.event.repository.default_branch }}
 
       - name: Docker Build and Push
         id: docker_build
