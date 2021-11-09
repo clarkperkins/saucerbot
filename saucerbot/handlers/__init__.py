@@ -52,6 +52,7 @@ class Handler(NamedTuple):
     regexes: Optional[list[re.Pattern[str]]]
     platforms: set[str]
     func: Callable
+    on_by_default: bool
     always_run: bool
 
     @property
@@ -175,6 +176,7 @@ class HandlerRegistry(Sequence[Handler]):
         name: str = None,
         case_sensitive: bool = False,
         platforms: Optional[Iterable[str]] = None,
+        on_by_default: bool = False,
         always_run: bool = False,
     ) -> Callable:
         """
@@ -204,6 +206,7 @@ class HandlerRegistry(Sequence[Handler]):
                     [re.compile(r, flags) for r in regexes],
                     set(platforms or VALID_PLATFORMS),
                     func,
+                    on_by_default,
                     always_run,
                 )
             )

@@ -57,7 +57,7 @@ def user_named_saucerbot(
     return True
 
 
-@registry.handler(r"^info (?P<search_text>.+)$")
+@registry.handler(r"^info (?P<search_text>.+)$", on_by_default=True)
 def search_brews(context: BotContext, match) -> None:
     """
     Search for beers from various saucers
@@ -67,7 +67,8 @@ def search_brews(context: BotContext, match) -> None:
 
 
 @registry.handler(
-    [r"new beers( (?P<location>[a-z ]+))?", r"new arrivals( (?P<location>[a-z ]+))?"]
+    [r"new beers( (?P<location>[a-z ]+))?", r"new arrivals( (?P<location>[a-z ]+))?"],
+    on_by_default=True,
 )
 def new_arrivals(context: BotContext, match) -> None:
     """
