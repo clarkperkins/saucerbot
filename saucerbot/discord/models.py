@@ -181,7 +181,7 @@ class Channel(models.Model):
 
     def add_defaults(self):
         default_handlers = [
-            Handler(channel=self, handler_name=h.handler_name)
+            Handler(channel=self, handler_name=h.name)
             for h in registry
             if h.on_by_default
         ]
