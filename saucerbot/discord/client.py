@@ -55,13 +55,15 @@ class SaucerbotClient(ClientWithInteractions):
 
     @make_async
     def lookup_channel(self, guild: SGuild, channel: TextChannel) -> SChannel:
-        s_channel, _ = SChannel.objects.get_or_create(
+        s_channel, created = SChannel.objects.get_or_create(
             guild=guild,
             channel_id=channel.id,
             defaults={
                 "name": channel.name,
             },
         )
+        if created:
+            s_channel.add_defaults()
         return s_channel
 
     async def on_message(self, message: Message):

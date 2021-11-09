@@ -8,7 +8,7 @@ from saucerbot.utils import did_the_dores_win
 logger = logging.getLogger(__name__)
 
 
-@registry.handler([r"ohhh+", r"go dores"])
+@registry.handler([r"ohhh+", r"go dores"], on_by_default=True)
 def go_dores(context: BotContext) -> None:
     """
     Posts anchor down ⚓️
@@ -16,7 +16,7 @@ def go_dores(context: BotContext) -> None:
     context.post("ANCHOR DOWN ⚓️")
 
 
-@registry.handler(r"anchor down")
+@registry.handler(r"anchor down", on_by_default=True)
 def anchor_down(context: BotContext) -> None:
     """
     Posts go dores!
@@ -24,7 +24,7 @@ def anchor_down(context: BotContext) -> None:
     context.post("GO DORES")
 
 
-@registry.handler(r"black")
+@registry.handler(r"black", on_by_default=True)
 def black(context: BotContext) -> None:
     """
     BLACK GOLD
@@ -32,7 +32,7 @@ def black(context: BotContext) -> None:
     context.post("GOLD")
 
 
-@registry.handler(r"gold")
+@registry.handler(r"gold", on_by_default=True)
 def gold(context: BotContext) -> None:
     """
     GOLD BLACK
@@ -40,7 +40,7 @@ def gold(context: BotContext) -> None:
     context.post("BLACK")
 
 
-@registry.handler([r"did the dores win", r"did vandy win"])
+@registry.handler([r"did the dores win", r"did vandy win"], on_by_default=True)
 def dores_win(context: BotContext) -> None:
     """
     The 'dores never win RIP

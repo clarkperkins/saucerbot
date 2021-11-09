@@ -46,7 +46,7 @@ def lit(context: BotContext) -> None:
     context.post("You're not lit, I'm lit")
 
 
-@registry.handler(r"@saucerbot", case_sensitive=True)
+@registry.handler(r"@saucerbot", case_sensitive=True, on_by_default=True)
 def dont_at_me(context: BotContext) -> None:
     """
     @saucerbot - Don't @ me 🙄
@@ -54,7 +54,7 @@ def dont_at_me(context: BotContext) -> None:
     context.post("don't @ me 🙄")
 
 
-@registry.handler([r"@saucerbot", r"@ saucerbot"])
+@registry.handler([r"@saucerbot", r"@ saucerbot"], on_by_default=True)
 def sneaky(context: BotContext) -> None:
     """
     Handle other @saucerbot variants
@@ -87,7 +87,7 @@ def handle_barely_know_her(context: BotContext, message: Message) -> bool:
     return i_barely_know_her(context, message)
 
 
-@registry.handler([r"69", r"sixty-nine", r"sixty nine"])
+@registry.handler([r"69", r"sixty-nine", r"sixty nine"], on_by_default=True)
 def teenage_saucerbot(context: BotContext) -> None:
     """
     69
