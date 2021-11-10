@@ -18,8 +18,6 @@ def _token_request(**kwargs) -> dict[str, Any]:
     data["client_id"] = settings.DISCORD_CLIENT_ID
     data["client_secret"] = settings.DISCORD_CLIENT_SECRET
 
-    print(data)
-
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     r = requests.post(f"{API_ENDPOINT}/oauth2/token", data=data, headers=headers)
     r.raise_for_status()

@@ -19,8 +19,8 @@ class ChannelHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
         self, obj: Channel, view_name: str, request: Request, format: str
     ):
         url_kwargs = {
-            "guild_name": obj.guild.name,
-            "name": obj.name,
+            "guild_slug": obj.guild.slug,
+            "slug": obj.slug,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
@@ -28,8 +28,8 @@ class ChannelHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     # Se when we add type hints mypy fails.
     def get_object(self, view_name, view_args, view_kwargs):
         lookup_kwargs = {
-            "guild__name": view_kwargs["guild_name"],
-            "name": view_kwargs["name"],
+            "guild__slug": view_kwargs["guild_slug"],
+            "slug": view_kwargs["slug"],
         }
         return self.get_queryset().get(**lookup_kwargs)
 
@@ -37,23 +37,23 @@ class ChannelHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
 class GuildSerializer(serializers.HyperlinkedModelSerializer):
     channels = serializers.HyperlinkedIdentityField(
         view_name="discord:channel-list",
-        lookup_field="name",
-        lookup_url_kwarg="guild_name",
+        lookup_field="slug",
+        lookup_url_kwarg="guild_slug",
         read_only=True,
     )
 
     class Meta:
         model = Guild
-        fields = ["url", "guild_id", "name", "channels"]
+        fields = ["url", "slug", "guild_id", "name", "channels"]
         extra_kwargs = {
-            "url": {"view_name": "discord:guild-detail", "lookup_field": "name"},
+            "url": {"view_name": "discord:guild-detail", "lookup_field": "slug"},
         }
 
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
     url = ChannelHyperlinkedIdentityField(view_name="discord:channel-detail")
     guild = serializers.HyperlinkedIdentityField(
-        view_name="discord:guild-detail", lookup_field="name", read_only=True
+        view_name="discord:guild-detail", lookup_field="slug", read_only=True
     )
     handlers = HandlerRelatedField(
         platform="discord", many=True, required=False, default=[]
@@ -61,8 +61,9 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Channel
-        fields = ["url", "guild", "channel_id", "name", "handlers"]
+        fields = ["url", "slug", "guild", "channel_id", "name", "handlers"]
         extra_kwargs = {
+            "slug": {"read_only": True},
             "channel_id": {"read_only": True},
             "name": {"read_only": True},
         }
