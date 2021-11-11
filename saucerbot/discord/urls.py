@@ -18,7 +18,7 @@ router = PathRouter(
     api_root_name="Discord", api_root_authentication_class=DiscordUserAuthentication
 )
 router.register("guilds", GuildViewSet, basename="guild")
-router.register("guilds/<slug:guild_slug>/channels", ChannelViewSet, basename="channel")
+router.register("guilds/<str:guild_id>/channels", ChannelViewSet, basename="channel")
 
 urlpatterns = [
     path("discord/login/", LoginRedirectView.as_view(), name="login"),

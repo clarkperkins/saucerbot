@@ -7,7 +7,6 @@ from typing import TypeVar, Union
 import arrow
 from discord import Guild, Intents, Member, Message, Reaction, TextChannel, User
 from django.utils import timezone
-from django.utils.text import slugify
 
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
@@ -50,7 +49,6 @@ class SaucerbotClient(ClientWithInteractions):
             guild_id=guild.id,
             defaults={
                 "name": guild.name,
-                "slug": slugify(guild.name),
             },
         )
         return s_guild
@@ -62,7 +60,6 @@ class SaucerbotClient(ClientWithInteractions):
             channel_id=channel.id,
             defaults={
                 "name": channel.name,
-                "slug": slugify(channel.name),
             },
         )
         if created:
