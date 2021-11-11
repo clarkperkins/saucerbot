@@ -75,8 +75,8 @@ class OAuthView(RedirectView):
 
 class GuildViewSet(ReadOnlyModelViewSet):
     serializer_class = GuildSerializer
-    lookup_field = "slug"
-    lookup_value_type = "slug"
+    lookup_field = "guild_id"
+    lookup_value_type = "str"
     authentication_classes = [DiscordUserAuthentication]
     permission_classes = [HasDiscordUser]
 
@@ -88,8 +88,8 @@ class GuildViewSet(ReadOnlyModelViewSet):
 
 class ChannelViewSet(ReadOnlyModelViewSet, UpdateModelMixin):
     serializer_class = ChannelSerializer
-    lookup_field = "slug"
-    lookup_value_type = "slug"
+    lookup_field = "channel_id"
+    lookup_value_type = "str"
     authentication_classes = [DiscordUserAuthentication]
     permission_classes = [HasDiscordUser]
 
@@ -98,7 +98,7 @@ class ChannelViewSet(ReadOnlyModelViewSet, UpdateModelMixin):
         guild_ids = user.guild_ids
 
         guild = get_object_or_404(
-            Guild, slug=self.kwargs["guild_slug"], guild_id__in=guild_ids
+            Guild, guild_id=self.kwargs["guild_id"], guild_id__in=guild_ids
         )
 
         return guild.channels.all().prefetch_related("handlers")

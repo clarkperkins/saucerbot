@@ -158,14 +158,12 @@ def new_user(
 class Guild(models.Model):
     guild_id = models.CharField(max_length=64, unique=True)
     name = models.CharField(max_length=128)
-    slug = models.SlugField(max_length=128, db_index=True)
 
 
 class Channel(models.Model):
     guild = models.ForeignKey(Guild, models.CASCADE, related_name="channels")
     channel_id = models.CharField(max_length=64, unique=True)
     name = models.CharField(max_length=64)
-    slug = models.SlugField(max_length=64, db_index=True)
 
     async def handle_message(
         self, loop: asyncio.AbstractEventLoop, message: DMessage
