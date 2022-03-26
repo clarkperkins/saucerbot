@@ -56,7 +56,7 @@ known_third_party = "discord"
 [tool.mypy]
 plugins = [
     "mypy_django_plugin.main",
-    "mypy_drf_plugin.main",
+#    "mypy_drf_plugin.main",
 ]
 
 [[tool.mypy.overrides]]
