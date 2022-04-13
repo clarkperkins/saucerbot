@@ -78,7 +78,7 @@ jobs:
   deploy:
     name: Docker Build & Deploy
 
-    runs-on: ubuntu-latest
+    runs-on: [saucerbot-arm64]
 
     steps:
       - name: Checkout
