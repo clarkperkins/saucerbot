@@ -11,19 +11,17 @@ from django.conf import settings
 
 
 @click.group()
-def main():
+def discord():
     """
     Main discord worker entrypoint
     """
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "saucerbot.settings")
-    os.environ.setdefault("DJANGO_ENV", "production")
-
-    django.setup()
 
 
-@main.command()
+@discord.command()
 def run():
     # pylint: disable=import-outside-toplevel
+
+    django.setup()
 
     rollbar_access_token = os.environ.get("ROLLBAR_ACCESS_TOKEN")
 
@@ -40,7 +38,7 @@ def run():
     client.run(settings.DISCORD_BOT_TOKEN)
 
 
-@main.command()
+@discord.command()
 @click.argument("guild_id", required=False)
 def create_commands(guild_id: Optional[str]):
     base_url = (
@@ -61,7 +59,7 @@ def create_commands(guild_id: Optional[str]):
 
     headers = {"Authorization": f"Bot {settings.DISCORD_BOT_TOKEN}"}
 
-    r = requests.post(url, headers=headers, json=json)
+    r = requests.post(url, headers=headers, json=json, timeout=60)
 
     r.raise_for_status()
 

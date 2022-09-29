@@ -1,3 +1,58 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "saucerbot"
+version = "0.1.0"
+description = "bot for the saucer groupme"
+authors = ["Clark Perkins <r.clark.perkins@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+arrow = "*"
+beautifulsoup4 = "*"
+click = "*"
+colorlog = "*"
+"discord.py" = "<2"
+dj-database-url = "*"
+django = "~=4.1.0"
+django-split-settings = "*"
+djangorestframework = "~=3.14.0"
+elasticsearch = "~=7.0"
+gunicorn = "*"
+lowerpines = { git = "https://github.com/bigfootjon/lowerpines.git", branch = "main" }
+psycopg2 = "*"
+pyyaml = "*"
+requests = "*"
+rollbar = "*"
+scout-apm = "*"
+whitenoise = "*"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+"discord.py-stubs" = "*"
+django-stubs = "*"
+djangorestframework-stubs = "*"
+dpytest = "*"
+isort = "*"
+mypy = "*"
+pylint = "*"
+pylint-django = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+pytest-django = "*"
+pytest-mock = "*"
+types-pyyaml = "*"
+types-requests = "*"
+
+[tool.poetry.scripts]
+saucerbot = 'saucerbot.cli:main'
+
+
 [tool.black]
 exclude = "migrations"
 
