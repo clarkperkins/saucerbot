@@ -3,8 +3,8 @@
 import os
 import random
 import re
+from collections.abc import Set
 from pathlib import Path
-from typing import Optional, Set, Union
 
 from django.conf import settings
 from lowerpines.message import ComplexMessage, RefAttach
@@ -56,7 +56,7 @@ def i_barely_know_her(context: BotContext, message: Message) -> bool:
     return False
 
 
-def get_quip(message: Message) -> Optional[Union[ComplexMessage, str]]:
+def get_quip(message: Message) -> ComplexMessage | str | None:
     matches = []
     for word in re.split(r"[^a-zA-Z]", message.content):
         if word.strip().lower() in matching_words:

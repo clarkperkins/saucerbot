@@ -18,61 +18,52 @@ async def test_basic_message(discord_client):
     assert dpytest.verify().message().nothing()
 
 
-@pytest.mark.asyncio
-async def test_whoami(discord_client, event_loop):
+def test_whoami(db):
+    from saucerbot.discord.client import get_whoami_responses
     from saucerbot.discord.models import HistoricalDisplayName
 
     fake_guild_id = "abcdef"
     fake_user_id = "123456"
 
-    def create_data():
-        HistoricalDisplayName.objects.create(
-            guild_id=fake_guild_id,
-            user_id=fake_user_id,
-            display_name="abc123",
-            timestamp=arrow.utcnow().datetime - timedelta(1),
-        )
-        HistoricalDisplayName.objects.create(
-            guild_id=fake_guild_id,
-            user_id=fake_user_id,
-            display_name="def456",
-            timestamp=arrow.utcnow().datetime - timedelta(2),
-        )
+    HistoricalDisplayName.objects.create(
+        guild_id=fake_guild_id,
+        user_id=fake_user_id,
+        display_name="abc123",
+        timestamp=arrow.utcnow().datetime - timedelta(1),
+    )
+    HistoricalDisplayName.objects.create(
+        guild_id=fake_guild_id,
+        user_id=fake_user_id,
+        display_name="def456",
+        timestamp=arrow.utcnow().datetime - timedelta(2),
+    )
 
-    await event_loop.run_in_executor(None, create_data)
-
-    responses = await discord_client.get_whoami_responses(fake_guild_id, fake_user_id)
+    responses = get_whoami_responses(fake_guild_id, fake_user_id)
 
     assert len(responses) == 1
     assert responses[0] == "abc123 a day ago\ndef456 2 days ago\n"
 
-    def delete_data():
-        for d in HistoricalDisplayName.objects.all():
-            d.delete()
-
-    await event_loop.run_in_executor(None, delete_data)
+    for d in HistoricalDisplayName.objects.all():
+        d.delete()
 
 
-@pytest.mark.asyncio
-async def test_whoami_long(discord_client, event_loop):
+def test_whoami_long(db):
+    from saucerbot.discord.client import get_whoami_responses
     from saucerbot.discord.models import HistoricalDisplayName
 
     long_display_name = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     fake_guild_id = "abcdef"
     fake_user_id = "123456"
 
-    def create_data():
-        for i in range(1, 41):
-            HistoricalDisplayName.objects.create(
-                guild_id=fake_guild_id,
-                user_id=fake_user_id,
-                display_name=f"{long_display_name} {i}",
-                timestamp=arrow.utcnow().datetime - timedelta(i),
-            )
+    for i in range(1, 41):
+        HistoricalDisplayName.objects.create(
+            guild_id=fake_guild_id,
+            user_id=fake_user_id,
+            display_name=f"{long_display_name} {i}",
+            timestamp=arrow.utcnow().datetime - timedelta(i),
+        )
 
-    await event_loop.run_in_executor(None, create_data)
-
-    responses = await discord_client.get_whoami_responses(fake_guild_id, fake_user_id)
+    responses = get_whoami_responses(fake_guild_id, fake_user_id)
 
     assert len(responses) == 2
 
@@ -106,34 +97,5 @@ async def test_whoami_long(discord_client, event_loop):
     assert second_message.startswith(second_expected_start)
     assert second_message.endswith(second_expected_end)
 
-    def delete_data():
-        for d in HistoricalDisplayName.objects.all():
-            d.delete()
-
-    await event_loop.run_in_executor(None, delete_data)
-
-
-@pytest.mark.asyncio
-async def test_invalid_command(discord_client, mocker):
-    interaction = mocker.Mock()
-    interaction.data = {
-        "name": "nope",
-    }
-
-    await discord_client.on_interaction(interaction)
-
-
-@pytest.mark.asyncio
-async def test_whoami_command(discord_client, mocker):
-    interaction = mocker.Mock()
-    interaction.data = {
-        "name": "whoami",
-    }
-    interaction.channel = mocker.Mock()
-    interaction.channel.guild = mocker.Mock()
-    interaction.channel.guild.id = "test"
-
-    interaction.member = mocker.Mock()
-    interaction.member.id = "test"
-
-    await discord_client.on_interaction(interaction)
+    for d in HistoricalDisplayName.objects.all():
+        d.delete()

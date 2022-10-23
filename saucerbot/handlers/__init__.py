@@ -4,9 +4,9 @@ import inspect
 import logging
 import re
 from abc import ABCMeta, abstractmethod
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from importlib import import_module
-from typing import Any, Iterable, NamedTuple, Optional, Union
+from typing import Any, NamedTuple
 
 from arrow import Arrow
 from scout_apm.api import instrument
@@ -49,7 +49,7 @@ class Message(metaclass=ABCMeta):
 
 class Handler(NamedTuple):
     name: str
-    regexes: Optional[list[re.Pattern[str]]]
+    regexes: list[re.Pattern[str]] | None
     platforms: set[str]
     func: Callable
     on_by_default: bool
@@ -156,7 +156,7 @@ class HandlerRegistry(Sequence[Handler]):
         return HandlerRegistry(filtered, self._loaded_modules)
 
     # get() method to make this look like a django queryset
-    def get(self, **kwargs) -> Optional[Handler]:
+    def get(self, **kwargs) -> Handler | None:
         for handler in self.handlers:
             match = True
             for k, v in kwargs.items():
@@ -171,11 +171,11 @@ class HandlerRegistry(Sequence[Handler]):
 
     def handler(
         self,
-        regex: Union[str, list[str]] = None,
+        regex: str | list[str] | None = None,
         *,
         name: str = None,
         case_sensitive: bool = False,
-        platforms: Optional[Iterable[str]] = None,
+        platforms: Iterable[str] | None = None,
         on_by_default: bool = False,
         always_run: bool = False,
     ) -> Callable:

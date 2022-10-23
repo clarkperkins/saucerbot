@@ -2,16 +2,27 @@
 import logging
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import TypeVar, Union
+from typing import TypeVar
 
 import arrow
-from discord import Guild, Intents, Member, Message, Reaction, TextChannel, User
+from discord import (
+    Client,
+    Guild,
+    Intents,
+    Interaction,
+    Member,
+    Message,
+    Object,
+    Reaction,
+    TextChannel,
+    User,
+)
+from discord.app_commands import CommandTree
 from django.utils import timezone
 
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
 from saucerbot.discord.models import HistoricalDisplayName
-from saucerbot.discord.overrides import ClientWithInteractions, Interaction
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +44,22 @@ def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
     return wrapper
 
 
-class SaucerbotClient(ClientWithInteractions):
+class SaucerbotClient(Client):
     # pylint: disable=no-self-use
 
     def __init__(self, **kwargs):
         kwargs.setdefault("intents", Intents.all())
         super().__init__(**kwargs)
+        self.tree = CommandTree(self)
+        self.dev_guild_id: str | None = kwargs.pop("dev_guild_id", None)
+
+    async def setup_hook(self):
+        if self.dev_guild_id:
+            guild = Object(id=self.dev_guild_id)
+
+            logger.info("Setting up commands")
+            self.tree.copy_global_to(guild=guild)
+            await self.tree.sync(guild=guild)
 
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
@@ -86,65 +107,10 @@ class SaucerbotClient(ClientWithInteractions):
                 )
                 await stored_channel.handle_message(self.loop, message)
 
-    @make_async
-    def get_whoami_responses(self, guild_id: str, user_id: str) -> list[str]:
-        response = ""
-
-        display_names = HistoricalDisplayName.objects.filter(
-            guild_id=guild_id,
-            user_id=user_id,
-        ).order_by("-timestamp")
-
-        # We only care about central time!
-        now = arrow.now(CENTRAL_TIME)
-
-        responses = []
-
-        for display_name in display_names:
-            timestamp = arrow.get(display_name.timestamp)
-            next_line = f"{display_name.display_name} {timestamp.humanize(now)}\n"
-            if len(response) + len(next_line) > 2000:
-                responses.append(response)
-                response = next_line
-            else:
-                response += next_line
-
-        if response:
-            responses.append(response)
-
-        return responses
-
-    async def command_whoami(self, interaction: Interaction):
-        responses = await self.get_whoami_responses(
-            interaction.channel.guild.id, interaction.member.id
-        )
-
-        logger.info("%s", responses)
-
-        # make sure to post the rest at the end
-        first = True
-
-        for response in responses:
-            if first:
-                await interaction.respond(response)
-                first = False
-            else:
-                await interaction.follow_up(response)
-
-    async def on_interaction(self, interaction: Interaction):
-        logger.info("Interaction: %s", interaction.data)
-        command_name = interaction.data["name"]
-
-        coro = getattr(self, f"command_{command_name}", None)
-        if coro:
-            await coro(interaction)
-        else:
-            logger.error("No command named %s", command_name)
-
-    async def on_reaction_add(self, reaction: Reaction, user: Union[User, Member]):
+    async def on_reaction_add(self, reaction: Reaction, user: User | Member):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)
 
-    # async def on_reaction_remove(self, reaction: Reaction, user: Union[User, Member]):
+    # async def on_reaction_remove(self, reaction: Reaction, user: User | Member):
     #     pass
     #
     # async def on_reaction_clear(self, message: Message, reactions: list[Reaction]):
@@ -187,3 +153,58 @@ class SaucerbotClient(ClientWithInteractions):
     #
     # async def on_group_remove(self, channel: GroupChannel, user: User):
     #     pass
+
+
+client = SaucerbotClient()
+
+
+def get_whoami_responses(guild_id: str, user_id: str) -> list[str]:
+    response = ""
+
+    display_names = HistoricalDisplayName.objects.filter(
+        guild_id=guild_id,
+        user_id=user_id,
+    ).order_by("-timestamp")
+
+    # We only care about central time!
+    now = arrow.now(CENTRAL_TIME)
+
+    responses = []
+
+    for display_name in display_names:
+        timestamp = arrow.get(display_name.timestamp)
+        next_line = f"{display_name.display_name} {timestamp.humanize(now)}\n"
+        if len(response) + len(next_line) > 2000:
+            responses.append(response)
+            response = next_line
+        else:
+            response += next_line
+
+    if response:
+        responses.append(response)
+
+    return responses
+
+
+@client.tree.command()
+async def whoami(interaction: Interaction):
+    if not interaction.channel or not interaction.channel.guild:
+        logger.warning("Interaction missing channel or guild: %s", interaction)
+        return
+
+    loop = interaction.client.loop
+    responses = await loop.run_in_executor(
+        None, get_whoami_responses, interaction.channel.guild.id, interaction.user.id
+    )
+
+    logger.info("whoami responses (%d): %s", len(responses), responses)
+
+    # make sure to post the rest at the end
+    first = True
+
+    for response in responses:
+        if first:
+            await interaction.response.send_message(response)
+            first = False
+        else:
+            await interaction.followup.send(response)

@@ -2,7 +2,7 @@
 
 import logging
 from functools import lru_cache
-from typing import Any, Optional, Union
+from typing import Any
 
 import arrow
 from django.conf import settings
@@ -90,7 +90,7 @@ get_user = get_user_builder(User, SESSION_KEY)
 
 def new_user(request, access_token: str):
     try:
-        user: Optional[User] = User.objects.get(access_token=access_token)
+        user: User | None = User.objects.get(access_token=access_token)
     except User.DoesNotExist:
         user = None
 
@@ -160,7 +160,7 @@ class Bot(models.Model):
             group_id=self.group_id
         )  # pylint: disable=no-member
 
-    def post_message(self, message: Union[ComplexMessage, str]) -> None:
+    def post_message(self, message: ComplexMessage | str) -> None:
         self.bot.post(message)
 
     def handle_message(self, message: LPMessage) -> list[str]:
@@ -184,7 +184,7 @@ class Bot(models.Model):
 
         return matched_handlers
 
-    def update_bot(self, avatar_url: Optional[str]) -> None:
+    def update_bot(self, avatar_url: str | None) -> None:
         self.bot.name = self.name
         self.bot.callback_url = _callback_url(self.slug)
         self.bot.avatar_url = avatar_url

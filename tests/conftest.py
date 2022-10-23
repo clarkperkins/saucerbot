@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import asyncio
 import uuid
 from collections import defaultdict
 
@@ -168,9 +168,11 @@ def setup_bot(db, gmi, monkeypatch):
 
 
 @pytest.fixture(name="discord_client")
-def setup_discord_client(db, event_loop):
+def setup_discord_client(event_loop):
     from saucerbot.discord.client import SaucerbotClient
 
-    client = SaucerbotClient(loop=event_loop)
+    client = SaucerbotClient()
+    client.loop = event_loop
+
     dpytest.configure(client)
     return client

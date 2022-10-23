@@ -5,7 +5,6 @@ import logging
 import math
 import random
 import sys
-from typing import Optional
 
 import arrow
 import requests
@@ -37,7 +36,7 @@ IN_PROGRESS_MESSAGES = [
 ]
 
 
-def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
+def get_football_results(desired_date: arrow.Arrow) -> dict | None:
     logger.debug("Getting the football results")
     if (
         1 < desired_date.month < 8
@@ -69,7 +68,7 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
         return None
 
 
-def __get_the_dores_game(scores: dict) -> Optional[dict]:
+def __get_the_dores_game(scores: dict) -> dict | None:
     for ev in scores["events"]:
         teams = ev["competitions"][0]["competitors"]
         for team in teams:
@@ -114,7 +113,7 @@ def did_the_dores_win(
     print_in_progress: bool = False,
     print_loss: bool = False,
     desired_date: arrow.Arrow = None,
-) -> Optional[str]:
+) -> str | None:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,
     or a loss with the first argument set to true. Right now it only does football, but basketball
@@ -157,7 +156,7 @@ def did_the_dores_win(
 
 # Good for testing the feature
 if __name__ == "__main__":
-    date: Optional[arrow.Arrow]
+    date: arrow.Arrow | None
     if len(sys.argv) > 1:
         date = arrow.get(sys.argv[1], "MM-DD-YYYY")
     else:

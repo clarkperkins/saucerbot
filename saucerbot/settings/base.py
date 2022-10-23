@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
-from typing import Optional
 
 import dj_database_url
 
@@ -19,15 +18,15 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Pull a few things from the heroku environment
-HEROKU_APP_NAME: Optional[str] = os.environ.get("HEROKU_APP_NAME")
-DISCORD_APPLICATION_ID: Optional[str] = os.environ.get("DISCORD_APPLICATION_ID")
-DISCORD_BOT_TOKEN: Optional[str] = os.environ.get("DISCORD_BOT_TOKEN")
-DISCORD_CLIENT_ID: Optional[str] = os.environ.get("DISCORD_CLIENT_ID")
-DISCORD_CLIENT_SECRET: Optional[str] = os.environ.get("DISCORD_CLIENT_SECRET")
-GROUPME_CLIENT_ID: Optional[str] = os.environ.get("GROUPME_CLIENT_ID")
-FLICKR_API_KEY: Optional[str] = os.environ.get("FLICKR_API_KEY")
-ELASTICSEARCH_URL: Optional[str] = os.environ.get("BONSAI_URL")
-HEROKU_APP_DOMAIN: Optional[str] = (
+HEROKU_APP_NAME: str | None = os.environ.get("HEROKU_APP_NAME")
+DISCORD_APPLICATION_ID: str | None = os.environ.get("DISCORD_APPLICATION_ID")
+DISCORD_BOT_TOKEN: str | None = os.environ.get("DISCORD_BOT_TOKEN")
+DISCORD_CLIENT_ID: str | None = os.environ.get("DISCORD_CLIENT_ID")
+DISCORD_CLIENT_SECRET: str | None = os.environ.get("DISCORD_CLIENT_SECRET")
+GROUPME_CLIENT_ID: str | None = os.environ.get("GROUPME_CLIENT_ID")
+FLICKR_API_KEY: str | None = os.environ.get("FLICKR_API_KEY")
+ELASTICSEARCH_URL: str | None = os.environ.get("BONSAI_URL")
+HEROKU_APP_DOMAIN: str | None = (
     f"{HEROKU_APP_NAME}.herokuapp.com" if HEROKU_APP_NAME else None
 )
 
