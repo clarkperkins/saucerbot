@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from abc import abstractmethod
-from typing import Callable, Optional, Type
+from collections.abc import Callable
+from typing import Type
 
 from django.contrib.auth import models as auth_models
 from django.core.exceptions import SuspiciousOperation
@@ -56,8 +57,8 @@ class InvalidUser(SuspiciousOperation):
 
 def get_user_builder(
     model_class: Type[models.Model], session_key: str
-) -> Callable[[HttpRequest], Optional[BaseUser]]:
-    def get_user(request: HttpRequest) -> Optional[BaseUser]:
+) -> Callable[[HttpRequest], BaseUser | None]:
+    def get_user(request: HttpRequest) -> BaseUser | None:
         try:
             user_pk = model_class._meta.pk.to_python(  # type: ignore[union-attr]
                 request.session[session_key]

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Optional, Union
 
 import arrow
 from django.core.management.base import BaseCommand, CommandParser
@@ -21,7 +20,7 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._bot: Optional[Bot] = None
+        self._bot: Bot | None = None
 
     def add_arguments(self, parser: CommandParser):
         parser.add_argument("bot", help="The name of the bot to post as")
@@ -109,7 +108,7 @@ class Command(BaseCommand):
                 attachments.append(RefAttach(user_id, f"@{user_id_map[user_id]}"))
 
         if attachments:
-            mes: Union[str, ComplexMessage] = "Save seats for:"
+            mes: str | ComplexMessage = "Save seats for:"
             for att in attachments:
                 mes = mes + "\n  " + att
             self.bot.post_message(mes)

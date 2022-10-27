@@ -6,7 +6,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import arrow
 import requests
@@ -57,14 +57,14 @@ class Brew:
     name: str
     store_id: str
     brewer: str
-    city: Optional[str]
-    country: Optional[str]
+    city: str | None
+    country: str | None
     container: str
     style: str
     description: str
     stars: int
     reviews: int
-    abv: Optional[float] = field(default=None)
+    abv: float | None = field(default=None)
 
     def __post_init__(self):
         if isinstance(self.stars, str):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Union, cast
+from typing import cast
 
 from django.db.models import QuerySet
 from rest_framework import serializers
@@ -53,7 +53,7 @@ class HandlerRelatedField(serializers.RelatedField):
             )
         return handler
 
-    def to_representation(self, value: Union[Handler, RHandler]) -> str:
+    def to_representation(self, value: Handler | RHandler) -> str:
         """
         Can deal with both registry handlers and handler model objects
         """

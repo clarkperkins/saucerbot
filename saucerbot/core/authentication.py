@@ -2,7 +2,7 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.request import Request
@@ -15,9 +15,7 @@ class SaucerbotUserAuthentication(SessionAuthentication, metaclass=ABCMeta):
     def get_user(self, request: Request):
         raise NotImplementedError()
 
-    def authenticate(
-        self, request: Request
-    ) -> Optional[tuple[Optional[Any], Optional[Any]]]:
+    def authenticate(self, request: Request) -> tuple[Any | None, Any | None] | None:
         user = self.get_user(request)
 
         if not user:

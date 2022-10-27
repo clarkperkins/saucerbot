@@ -2,7 +2,6 @@
 
 import logging
 import random
-from typing import Union
 
 from lowerpines.endpoints.bot import Bot as LPBot
 from lowerpines.message import ComplexMessage, RefAttach
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 CLARK_USER_ID = "6499167"
 SHAINA_USER_ID = "6830949"
 
-SAUCERBOT_MESSAGE_LIST: list[Union[ComplexMessage, str]] = [
+SAUCERBOT_MESSAGE_LIST: list[ComplexMessage | str] = [
     "Shut up, ",
     "Go away, ",
     "Go find your own name, ",
@@ -109,7 +108,7 @@ def troll(context: GroupMeBotContext) -> None:
     LOL Shaina is the troll
     """
     shaina = get_member(context.bot, SHAINA_USER_ID)
-    pre_message: Union[RefAttach, str]
+    pre_message: RefAttach | str
 
     if shaina:
         pre_message = shaina
@@ -119,7 +118,7 @@ def troll(context: GroupMeBotContext) -> None:
     context.post(pre_message + " is the troll")
 
 
-def get_member(bot: LPBot, member_id: str) -> Union[RefAttach, None]:
+def get_member(bot: LPBot, member_id: str) -> RefAttach | None:
     for member in bot.group.members:
         if member.user_id == member_id:
             return RefAttach(member_id, f"@{member.nickname}")

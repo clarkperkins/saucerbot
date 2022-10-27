@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from typing import Optional
-
 from django import template
 from django.http import HttpRequest
 from django.urls import NoReverseMatch, reverse
@@ -11,7 +9,7 @@ from django.utils.safestring import mark_safe
 register = template.Library()
 
 
-def _get_namespace(request: HttpRequest) -> Optional[str]:
+def _get_namespace(request: HttpRequest) -> str | None:
     if request.path.startswith("/api/discord"):
         return "discord"
     elif request.path.startswith("/api/groupme"):

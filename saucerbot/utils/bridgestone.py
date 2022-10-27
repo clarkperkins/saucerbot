@@ -3,7 +3,7 @@
 import logging
 import random
 import re
-from typing import Any, Optional
+from typing import Any
 
 import arrow
 from arrow.parser import ParserError
@@ -100,18 +100,16 @@ def create_message(event: dict[str, Any]) -> str:
     return template.format(event=event_string, time=time_string)
 
 
-def get_event_time(event: dict[str, Any]) -> Optional[str]:
+def get_event_time(event: dict[str, Any]) -> str | None:
     provider = BridgestoneEventTimeParser.create_event_time_provider(event)
     return get_event_time_helper(provider, event["name"])
 
 
-def get_event_time_helper(
-    provider: HtmlContentProvider, event_name: str
-) -> Optional[str]:
+def get_event_time_helper(provider: HtmlContentProvider, event_name: str) -> str | None:
     try:
         parser = BridgestoneEventTimeParser(provider)
         times = list(t for t in parser.parse())
-        raw_time_str: Optional[str] = None
+        raw_time_str: str | None = None
         if times:
             raw_time_str = times[0]["time"]
         else:

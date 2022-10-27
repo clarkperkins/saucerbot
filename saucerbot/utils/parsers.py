@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections.abc import Iterable, Iterator
-from typing import Any, Optional
+from typing import Any
 
 import requests
 from bs4 import BeautifulSoup
@@ -30,7 +30,7 @@ class HtmlContentProvider:
 
 class Parser:
     base = ""
-    fields: list[tuple[str, str, Optional[str]]] = []
+    fields: list[tuple[str, str, str | None]] = []
 
     def __init__(self, provider: HtmlContentProvider) -> None:
         super().__init__()

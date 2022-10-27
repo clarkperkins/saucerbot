@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from datetime import timedelta
-from typing import Any, Union
+from typing import Any
 
 import arrow
 from asgiref.sync import async_to_sync, sync_to_async
@@ -13,6 +13,7 @@ from discord import User as DUser
 from discord.abc import Messageable
 from discord.errors import HTTPException
 from discord.http import HTTPClient
+from discord.types import user
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -49,7 +50,7 @@ class DiscordMessage(Message):
         self.discord_message = discord_message
 
     @property
-    def author(self) -> Union[DUser, DMember]:
+    def author(self) -> DUser | DMember:
         return self.discord_message.author
 
     @property
@@ -97,14 +98,14 @@ class User(BaseUser):
 
     async def _new_client(self):
         await sync_to_async(self._check_expired)()
-        client = HTTPClient()
+        client = HTTPClient(asyncio.get_running_loop())
         self._user_info = await client.static_login(
-            f"{self.token_type} {self.access_token}", bot=False
+            f"{self.token_type} {self.access_token}"
         )
         return client
 
     @property
-    def user_info(self) -> dict[str, Any]:
+    def user_info(self) -> user.User:
         if self._user_info is None:
             self._check_expired()
             self._user_info = lookup_user_info(self.access_token, self.token_type)
@@ -112,7 +113,7 @@ class User(BaseUser):
 
     @property
     def username(self):
-        return self.user_info.get("username")
+        return self.user_info.username
 
     @cached_property
     @async_to_sync
@@ -127,9 +128,9 @@ get_user = get_user_builder(User, SESSION_KEY)
 
 
 @async_to_sync
-async def lookup_user_info(access_token: str, token_type: str) -> dict[str, Any]:
-    client = HTTPClient()
-    user_info = await client.static_login(f"{token_type} {access_token}", bot=False)
+async def lookup_user_info(access_token: str, token_type: str) -> user.User:
+    client = HTTPClient(asyncio.get_running_loop())
+    user_info = await client.static_login(f"{token_type} {access_token}")
     await client.close()
     return user_info
 
@@ -139,7 +140,7 @@ def new_user(
 ):
     try:
         user_data = lookup_user_info(access_token, token_type)
-        user_id = str(user_data["id"])
+        user_id = str(user_data.id)
     except HTTPException as e:
         raise InvalidUser("Invalid access token") from e
 

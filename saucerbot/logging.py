@@ -2,7 +2,6 @@
 
 from datetime import datetime
 from logging import LogRecord
-from typing import Optional
 
 from colorlog import ColoredFormatter
 
@@ -10,7 +9,7 @@ _MSEC_FORMAT = "%s,%03d"
 
 
 class HighlightingFormatter(ColoredFormatter):
-    def formatTime(self, record: LogRecord, datefmt: Optional[str] = None) -> str:
+    def formatTime(self, record: LogRecord, datefmt: str | None = None) -> str:
         dt = datetime.fromtimestamp(record.created).astimezone()
         if datefmt:
             s = dt.strftime(datefmt)

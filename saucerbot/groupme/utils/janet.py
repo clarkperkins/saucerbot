@@ -5,7 +5,6 @@ import logging
 import random
 import re
 from pathlib import Path
-from typing import Optional
 
 import requests
 from django.conf import settings
@@ -31,7 +30,7 @@ def unwrap_flickr_response(text: str) -> str:
     return text
 
 
-def search_flickr(terms: list[str]) -> Optional[list]:
+def search_flickr(terms: list[str]) -> list | None:
     args = {
         "api_key": settings.FLICKR_API_KEY,
         "method": "flickr.photos.search",
