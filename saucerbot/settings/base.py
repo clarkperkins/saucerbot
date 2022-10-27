@@ -37,7 +37,6 @@ DEBUG = False
 # Application definition
 
 INSTALLED_APPS = [
-    "scout_apm.django",
     "saucerbot.core",
     "saucerbot.discord",
     "saucerbot.groupme",
@@ -153,9 +152,6 @@ HANDLER_MODULES = [
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "rollbar.contrib.django_rest_framework.post_exception_handler",
 }
-
-# Scout config
-SCOUT_NAME = HEROKU_APP_NAME
 
 # Rollbar config
 ROLLBAR = {

@@ -1,8 +1,5 @@
 FROM python:3.10-slim AS build
 
-# required for the scout agent to work
-ENV SCOUT_CORE_AGENT_DIR /app/scout_apm_core
-
 WORKDIR /app
 
 COPY docker/install_build.sh /app/
@@ -28,24 +25,17 @@ RUN poetry install --sync --without=dev
 RUN python -m compileall saucerbot
 
 # Need these for collectstatic to work
-ENV SCOUT_MONITOR true
 ENV DJANGO_ENV build
 ENV HEROKU_APP_NAME build
 
 # Generate static files
 RUN python manage.py collectstatic --noinput
 
-# collectstatic ends up installing the scout agent, so remove the tarball
-RUN rm -f $SCOUT_CORE_AGENT_DIR/scout_apm_core-*-*/scout_apm_core-*-*.tgz
-
 
 FROM python:3.10-slim AS saucerbot
 
 ENV PYTHONUNBUFFERED 1
 ENV PIP_NO_CACHE_DIR off
-
-# required for the scout agent to work
-ENV SCOUT_CORE_AGENT_DIR /app/scout_apm_core
 
 # Passing the -d /app will set that as the home dir & chown it
 RUN useradd -r -U -m -d /app saucerbot

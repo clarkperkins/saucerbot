@@ -27,7 +27,6 @@ psycopg2 = "*"
 pyyaml = "*"
 requests = "*"
 rollbar = "*"
-scout-apm = "*"
 whitenoise = "*"
 
 [tool.poetry.group.dev.dependencies]
@@ -121,8 +120,6 @@ module = [
     "bs4",
     "dj_database_url",
     "rollbar",
-    "scout_apm",
-    "scout_apm.api",
 ]
 ignore_missing_imports = true
 

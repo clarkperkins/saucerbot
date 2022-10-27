@@ -9,7 +9,6 @@ from importlib import import_module
 from typing import Any, NamedTuple
 
 from arrow import Arrow
-from scout_apm.api import instrument
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +69,7 @@ class Handler(NamedTuple):
         self, context: BotContext, message: Message, regexes: list[re.Pattern]
     ) -> bool:
         for regex in regexes:
-            with instrument("Regex", tags={"regex": regex.pattern}):
-                match = regex.search(message.content)
+            match = regex.search(message.content)
             if match:
                 # We matched!  Now call our handler and break out of the loop
 
@@ -84,8 +82,7 @@ class Handler(NamedTuple):
                 if "match" in sig.parameters:
                     kwargs["match"] = match
 
-                with instrument("Handler", tags={"name": self.name}):
-                    self.func(context, **kwargs)
+                self.func(context, **kwargs)
                 return True
 
         # Nothing matched
@@ -98,8 +95,7 @@ class Handler(NamedTuple):
         else:
             # Just a plain handler.
             # If it returns something truthy, it matched, so it means we should stop
-            with instrument("Handler", tags={"name": self.name}):
-                return self.func(context, message)
+            return self.func(context, message)
 
 
 class HandlerRegistry(Sequence[Handler]):
