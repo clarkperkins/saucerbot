@@ -21,7 +21,6 @@ from scout_apm.api import Context
 
 from saucerbot.core.models import BaseUser, InvalidUser, get_user_builder
 from saucerbot.handlers import BotContext, Message, registry
-from saucerbot.utils import get_tasted_brews
 
 logger = logging.getLogger(__name__)
 
@@ -211,9 +210,6 @@ class SaucerUser(models.Model):
 
     def __repr__(self):
         return f"SaucerUser({self.groupme_id}, {self.saucer_id})"
-
-    def get_brews(self):
-        return get_tasted_brews(self.saucer_id)
 
 
 class HistoricalNickname(models.Model):

@@ -8,7 +8,7 @@ from lowerpines.message import ComplexMessage, RefAttach
 
 from saucerbot.groupme.models import GroupMeBotContext
 from saucerbot.handlers import BotContext, Message, registry
-from saucerbot.utils import brew_searcher, get_insult, get_new_arrivals
+from saucerbot.utils import get_insult
 
 logger = logging.getLogger(__name__)
 
@@ -54,28 +54,6 @@ def user_named_saucerbot(
     context.post(msg)
 
     return True
-
-
-@registry.handler(r"^info (?P<search_text>.+)$", on_by_default=True)
-def search_brews(context: BotContext, match) -> None:
-    """
-    Search for beers from various saucers
-    """
-    search_text = match.group("search_text").strip()
-    context.post(brew_searcher.brew_info(search_text))
-
-
-@registry.handler(
-    [r"new beers( (?P<location>[a-z ]+))?", r"new arrivals( (?P<location>[a-z ]+))?"],
-    on_by_default=True,
-)
-def new_arrivals(context: BotContext, match) -> None:
-    """
-    Gets all the new arrivals
-    """
-    location = match.group("location") or "Nashville"
-
-    context.post(get_new_arrivals(location.strip()))
 
 
 @registry.handler([r"deep dish", r"thin crust"])

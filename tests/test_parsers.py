@@ -3,7 +3,6 @@ from typing import Any
 import arrow
 from bs4 import BeautifulSoup
 
-from saucerbot.utils.base import get_new_arrivals
 from saucerbot.utils.bridgestone import (
     bridgestone_events_url,
     get_all_events,
@@ -12,7 +11,7 @@ from saucerbot.utils.bridgestone import (
     get_events_for_date,
     get_year,
 )
-from saucerbot.utils.parsers import HtmlContentProvider, NewArrivalsParser
+from saucerbot.utils.parsers import HtmlContentProvider
 
 
 class LocalFileContentProvider(HtmlContentProvider):
@@ -92,33 +91,3 @@ def test_bridgestone_site_structure():
     selected_event = all_events[0]
     retrieved_time = get_event_time(selected_event)
     assert retrieved_time
-
-
-expected_beers = [
-    "North Coast Cranberry Quince Berliner Weisse (BTL)",
-    "Yazoo 16th Anniversary Lager",
-    "Rhinegeist Dad",
-    "Diskin Bourbon Tart Cherry",
-    "Terrapin Moo Hoo Milk Stout",
-    "NOLA Sauvage",
-    "Perennial Fantastic Voyage",
-    "Boulevard Plaid Habit",
-    "Radeberger Pilsner",
-    "Untitled Art / Equilibrium Espresso Marshmellow Stout",
-]
-
-
-def test_new_arrival_parser():
-    provider = LocalFileContentProvider("test_resources/new-arrivals.html")
-    parser = NewArrivalsParser(provider)
-    beers = [b["name"] for b in parser.parse()]
-    assert beers == expected_beers
-
-
-def test_saucer_site_structure():
-    """
-    Tests to make sure Saucer didn't change their site
-    """
-    arrivals = get_new_arrivals("raleigh").split("\n")  # to M & M
-    assert len(arrivals) > 0
-    assert all(arrivals)

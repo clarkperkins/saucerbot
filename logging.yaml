@@ -39,9 +39,6 @@ loggers:
   saucerbot:
     level: INFO
 
-  elasticsearch:
-    level: INFO
-
   django:
     level: INFO
     handlers:
@@ -56,7 +53,3 @@ loggers:
   django.server:
     level: CRITICAL
     propagate: true
-
-  scout_apm.instruments.elasticsearch:
-    level: ERROR
-

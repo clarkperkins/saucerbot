@@ -48,15 +48,7 @@ test: test/pytest/xml
 cov: test/pytest/html
 	open reports/coverage/html/index.html
 
-integration-test/pytest/xml: reports
-	poetry run pytest -m integration --junit-xml=reports/tests/integration.xml --cov=saucerbot --cov-report=xml --cov-append
-
-integration-test/pytest/html: reports
-	poetry run pytest -m integration --cov=saucerbot --cov-report=html --cov-append
-
-integration-test: integration-test/pytest/xml
-
-sonar: check/pylint test/pytest/xml integration-test/pytest/xml
+sonar: check/pylint test/pytest/xml
 	sonar-scanner
 
-ci: check test integration-test sonar
+ci: check test sonar

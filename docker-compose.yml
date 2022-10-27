@@ -1,18 +1,5 @@
 version: '3.7'
 services:
-  elasticsearch:
-    image: elastic/elasticsearch:7.15.1
-    environment:
-      discovery.type: single-node
-      cluster.name: saucerbot
-      node.name: saucerbot
-    ports:
-      - "9200:9200"
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
-    healthcheck:
-      test: curl -f http://localhost:9200 || exit 1
-      timeout: 5s
   db:
     image: postgres:14
     ports:
@@ -27,17 +14,14 @@ services:
       - "8000:8000"
     environment:
       PORT: 8000
-      BONSAI_URL: http://elasticsearch:9200
       DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
     command: python manage.py runserver 0.0.0.0:8000
     env_file:
       - web.env
     depends_on:
-      - elasticsearch
       - db
     volumes:
       - .:/app
 
 volumes:
-  esdata:
   dbdata:
