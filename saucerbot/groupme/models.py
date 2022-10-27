@@ -17,7 +17,6 @@ from lowerpines.endpoints.user import User as LPUser
 from lowerpines.exceptions import UnauthorizedException
 from lowerpines.gmi import GMI
 from lowerpines.message import ComplexMessage
-from scout_apm.api import Context
 
 from saucerbot.core.models import BaseUser, InvalidUser, get_user_builder
 from saucerbot.handlers import BotContext, Message, registry
@@ -177,9 +176,6 @@ class Bot(models.Model):
             GroupMeBotContext(self.bot),
             GroupMeMessage(message),
         )
-
-        if matched_handlers:
-            Context.add("handlers", matched_handlers)
 
         return matched_handlers
 
