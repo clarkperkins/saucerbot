@@ -13,10 +13,8 @@ from saucerbot.groupme.models import (
     GroupMeBotContext,
     GroupMeMessage,
     HistoricalNickname,
-    SaucerUser,
 )
 from saucerbot.handlers import BotContext, Message, registry
-from saucerbot.utils import get_tasted_brews
 
 logger = logging.getLogger(__name__)
 
@@ -156,30 +154,3 @@ def mars(
             return True
 
     return False
-
-
-@registry.handler(
-    r"my saucer id is (?P<saucer_id>[0-9]+)", always_run=True, platforms=["groupme"]
-)
-def save_saucer_id(context: BotContext, message: Message, match) -> None:
-    """
-    Save a person's saucer ID, so we can lookup tasted beers later
-    """
-    saucer_id = match.group("saucer_id")
-
-    tasted_beers = get_tasted_brews(saucer_id)
-
-    if not tasted_beers:
-        context.post(f"Hmmm, it looks like {saucer_id} isn't a valid Saucer ID.")
-        return
-
-    # Otherwise it's valid.  Just update or create
-    _, created = SaucerUser.objects.update_or_create(
-        groupme_id=message.user_id, defaults={"saucer_id": saucer_id}
-    )
-
-    user_attach = RefAttach(message.user_id, f"@{message.user_name}")
-
-    action = "saved" if created else "updated"
-
-    context.post("Thanks, " + user_attach + f"!  I {action} your Saucer ID.")

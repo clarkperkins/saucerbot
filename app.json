@@ -20,7 +20,6 @@
     }
   },
   "addons": [
-    "bonsai",
     "heroku-postgresql"
   ]
 }

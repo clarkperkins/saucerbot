@@ -39,7 +39,7 @@ jobs:
       - name: Spin up Containers
         run: |
           touch web.env
-          docker-compose up -d db elasticsearch
+          docker-compose up -d db
 
       - name: Install Build Dependencies
         run: |
@@ -61,15 +61,6 @@ jobs:
         env:
           DJANGO_ENV: test
           DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/postgres'
-          BONSAI_URL: 'http://localhost:9200'
-
-      - name: Run Integration Tests
-        run: |
-          make integration-test
-        env:
-          DJANGO_ENV: test
-          DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/postgres'
-          BONSAI_URL: 'http://localhost:9200'
 
       - name: Stop Containers
         run: |

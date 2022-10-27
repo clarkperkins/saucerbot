@@ -25,7 +25,6 @@ DISCORD_CLIENT_ID: str | None = os.environ.get("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET: str | None = os.environ.get("DISCORD_CLIENT_SECRET")
 GROUPME_CLIENT_ID: str | None = os.environ.get("GROUPME_CLIENT_ID")
 FLICKR_API_KEY: str | None = os.environ.get("FLICKR_API_KEY")
-ELASTICSEARCH_URL: str | None = os.environ.get("BONSAI_URL")
 HEROKU_APP_DOMAIN: str | None = (
     f"{HEROKU_APP_NAME}.herokuapp.com" if HEROKU_APP_NAME else None
 )

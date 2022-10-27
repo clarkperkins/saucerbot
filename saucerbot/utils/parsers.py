@@ -115,25 +115,6 @@ class Parser:
         return row
 
 
-class NewArrivalsParser(Parser):
-    url = "https://www.beerknurd.com/locations/{}-flying-saucer"
-    base = "div.view-new-arrivals-block > div > table > tbody > tr"
-    fields = [
-        ("name", "td.views-field-title", None),
-        ("date", "td.views-field-created-1", None),
-    ]
-
-    def post_process(self, row):
-        row["name"] = row["name"].strip()
-        row["date"] = row["date"].strip()
-
-        return row
-
-    @staticmethod
-    def create_new_arrivals_provider(*args: Any) -> HtmlContentProvider:
-        return HtmlContentProvider(NewArrivalsParser.url.format(*args))
-
-
 class BridgestoneEventsParser(Parser):
     base = "div#list > div > div.info.clearfix"
     fields = [
