@@ -118,6 +118,7 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = [
     "bs4",
+    "discord.ext.commands",
     "dj_database_url",
     "rollbar",
 ]

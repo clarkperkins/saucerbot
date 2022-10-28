@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache Poetry cache
+      - name: Poetry cache
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry

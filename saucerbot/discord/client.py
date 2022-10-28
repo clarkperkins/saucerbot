@@ -31,19 +31,6 @@ T = TypeVar("T")
 CENTRAL_TIME = "US/Central"
 
 
-def make_async(func: Callable[..., T]) -> Callable[..., Awaitable[T]]:
-    """
-    Decorator to make a method of SaucerbotClient async.
-    Should only decorate methods within the SaucerbotClient class.
-    """
-
-    @wraps(func)
-    def wrapper(self, *args) -> Awaitable[T]:
-        return self.loop.run_in_executor(None, func, self, *args)
-
-    return wrapper
-
-
 class SaucerbotClient(Client):
     # pylint: disable=no-self-use
 
@@ -64,9 +51,8 @@ class SaucerbotClient(Client):
     async def on_ready(self):
         logger.info("Logged in as %s", self.user)
 
-    @make_async
-    def lookup_guild(self, guild: Guild) -> SGuild:
-        s_guild, _ = SGuild.objects.get_or_create(
+    async def lookup_guild(self, guild: Guild) -> SGuild:
+        s_guild, _ = await SGuild.objects.aget_or_create(  # type: ignore
             guild_id=guild.id,
             defaults={
                 "name": guild.name,
@@ -74,9 +60,8 @@ class SaucerbotClient(Client):
         )
         return s_guild
 
-    @make_async
-    def lookup_channel(self, guild: SGuild, channel: TextChannel) -> SChannel:
-        s_channel, created = SChannel.objects.get_or_create(
+    async def lookup_channel(self, guild: SGuild, channel: TextChannel) -> SChannel:
+        s_channel, created = await SChannel.objects.aget_or_create(  # type: ignore
             guild=guild,
             channel_id=channel.id,
             defaults={
@@ -84,7 +69,7 @@ class SaucerbotClient(Client):
             },
         )
         if created:
-            s_channel.add_defaults()
+            await s_channel.add_defaults()
         return s_channel
 
     async def on_message(self, message: Message):
@@ -119,9 +104,8 @@ class SaucerbotClient(Client):
     # async def on_reaction_clear_emoji(self, reaction: Reaction):
     #     pass
 
-    @make_async
-    def store_display_name(self, member: Member):
-        HistoricalDisplayName.objects.create(
+    async def store_display_name(self, member: Member):
+        await HistoricalDisplayName.objects.acreate(  # type: ignore
             guild_id=str(member.guild.id),
             user_id=str(member.id),
             timestamp=timezone.now(),
@@ -158,7 +142,7 @@ class SaucerbotClient(Client):
 client = SaucerbotClient()
 
 
-def get_whoami_responses(guild_id: str, user_id: str) -> list[str]:
+async def get_whoami_responses(guild_id: str, user_id: str) -> list[str]:
     response = ""
 
     display_names = HistoricalDisplayName.objects.filter(
@@ -171,7 +155,7 @@ def get_whoami_responses(guild_id: str, user_id: str) -> list[str]:
 
     responses = []
 
-    for display_name in display_names:
+    async for display_name in display_names:  # type: ignore
         timestamp = arrow.get(display_name.timestamp)
         next_line = f"{display_name.display_name} {timestamp.humanize(now)}\n"
         if len(response) + len(next_line) > 2000:
@@ -192,9 +176,8 @@ async def whoami(interaction: Interaction):
         logger.warning("Interaction missing channel or guild: %s", interaction)
         return
 
-    loop = interaction.client.loop
-    responses = await loop.run_in_executor(
-        None, get_whoami_responses, interaction.channel.guild.id, interaction.user.id
+    responses = await get_whoami_responses(
+        str(interaction.channel.guild.id), str(interaction.user.id)
     )
 
     logger.info("whoami responses (%d): %s", len(responses), responses)

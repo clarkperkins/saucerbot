@@ -180,13 +180,13 @@ class Channel(models.Model):
             DiscordMessage(message),
         )
 
-    def add_defaults(self):
+    async def add_defaults(self):
         default_handlers = [
             Handler(channel=self, handler_name=h.name)
             for h in registry
             if h.on_by_default
         ]
-        self.handlers.bulk_create(default_handlers)
+        self.handlers.abulk_create(default_handlers)
 
 
 class Handler(models.Model):

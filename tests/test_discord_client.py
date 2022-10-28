@@ -18,36 +18,37 @@ async def test_basic_message(discord_client):
     assert dpytest.verify().message().nothing()
 
 
-def test_whoami(db):
+@pytest.mark.asyncio
+async def test_whoami(db):
     from saucerbot.discord.client import get_whoami_responses
     from saucerbot.discord.models import HistoricalDisplayName
 
     fake_guild_id = "abcdef"
     fake_user_id = "123456"
 
-    HistoricalDisplayName.objects.create(
+    await HistoricalDisplayName.objects.acreate(
         guild_id=fake_guild_id,
         user_id=fake_user_id,
         display_name="abc123",
         timestamp=arrow.utcnow().datetime - timedelta(1),
     )
-    HistoricalDisplayName.objects.create(
+    await HistoricalDisplayName.objects.acreate(
         guild_id=fake_guild_id,
         user_id=fake_user_id,
         display_name="def456",
         timestamp=arrow.utcnow().datetime - timedelta(2),
     )
 
-    responses = get_whoami_responses(fake_guild_id, fake_user_id)
+    responses = await get_whoami_responses(fake_guild_id, fake_user_id)
 
     assert len(responses) == 1
     assert responses[0] == "abc123 a day ago\ndef456 2 days ago\n"
 
-    for d in HistoricalDisplayName.objects.all():
-        d.delete()
+    await HistoricalDisplayName.objects.all().adelete()
 
 
-def test_whoami_long(db):
+@pytest.mark.asyncio
+async def test_whoami_long(db):
     from saucerbot.discord.client import get_whoami_responses
     from saucerbot.discord.models import HistoricalDisplayName
 
@@ -56,14 +57,14 @@ def test_whoami_long(db):
     fake_user_id = "123456"
 
     for i in range(1, 41):
-        HistoricalDisplayName.objects.create(
+        await HistoricalDisplayName.objects.acreate(
             guild_id=fake_guild_id,
             user_id=fake_user_id,
             display_name=f"{long_display_name} {i}",
             timestamp=arrow.utcnow().datetime - timedelta(i),
         )
 
-    responses = get_whoami_responses(fake_guild_id, fake_user_id)
+    responses = await get_whoami_responses(fake_guild_id, fake_user_id)
 
     assert len(responses) == 2
 
@@ -97,5 +98,4 @@ def test_whoami_long(db):
     assert second_message.startswith(second_expected_start)
     assert second_message.endswith(second_expected_end)
 
-    for d in HistoricalDisplayName.objects.all():
-        d.delete()
+    await HistoricalDisplayName.objects.all().adelete()
