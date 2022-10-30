@@ -17,17 +17,13 @@ import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Pull a few things from the heroku environment
-HEROKU_APP_NAME: str | None = os.environ.get("HEROKU_APP_NAME")
+# Pull a few things from the environment
 DISCORD_APPLICATION_ID: str | None = os.environ.get("DISCORD_APPLICATION_ID")
 DISCORD_BOT_TOKEN: str | None = os.environ.get("DISCORD_BOT_TOKEN")
 DISCORD_CLIENT_ID: str | None = os.environ.get("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET: str | None = os.environ.get("DISCORD_CLIENT_SECRET")
 GROUPME_CLIENT_ID: str | None = os.environ.get("GROUPME_CLIENT_ID")
 FLICKR_API_KEY: str | None = os.environ.get("FLICKR_API_KEY")
-HEROKU_APP_DOMAIN: str | None = (
-    f"{HEROKU_APP_NAME}.herokuapp.com" if HEROKU_APP_NAME else None
-)
 
 
 # SECURITY WARNING: don't run with debug turned on in production!

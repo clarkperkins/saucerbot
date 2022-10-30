@@ -26,7 +26,6 @@ RUN python -m compileall saucerbot
 
 # Need these for collectstatic to work
 ENV DJANGO_ENV build
-ENV HEROKU_APP_NAME build
 
 # Generate static files
 RUN python manage.py collectstatic --noinput
@@ -51,7 +50,3 @@ ENV VIRTUAL_ENV /app/venv
 ENV PATH $VIRTUAL_ENV/bin:$PATH
 
 USER saucerbot
-
-CMD ["gunicorn", "saucerbot.wsgi"]
-
-HEALTHCHECK --timeout=5s CMD curl -f http://localhost:$PORT || exit 1
