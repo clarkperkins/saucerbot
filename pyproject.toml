@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "saucerbot"
-version = "0.1.0"
+version = "0.0.0"
 description = "bot for the saucer groupme"
 authors = ["Clark Perkins <r.clark.perkins@gmail.com>"]
 
