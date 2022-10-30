@@ -8,7 +8,6 @@ on:
 
 env:
   PYTHON_VERSION: "3.10"
-  POETRY_VERSION: "1.2.1"
 
 jobs:
   build:
@@ -26,10 +25,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry
-          key: poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}-${{ hashFiles('**/poetry.lock') }}
+          key: poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
-            poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-${{ env.POETRY_VERSION }}-
-            poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}-
+            poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -43,7 +41,11 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          python -m pip install --upgrade pip setuptools poetry==${{ env.POETRY_VERSION }}
+          python -m pip install --upgrade pip setuptools poetry
+
+      - name: Set poetry version
+        run: |
+          poetry version $(date +"%Y.%m.%d")
 
       - name: Install Dependencies
         run: |
@@ -89,6 +91,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: Install Poetry
+        run: |
+          python -m pip install poetry
+
+      - name: Set poetry version
+        run: |
+          poetry version $(date +"%Y.%m.%d")
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -122,34 +137,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=clarkperkins/saucerbot:latest
           cache-to: type=inline
-
-  helm:
-    name: Helm Release
-
-    permissions:
-      contents: write
-
-    runs-on: ubuntu-latest
-
-    if: github.ref_name == github.event.repository.default_branch
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-      - name: Install Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: v3.10.1
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

@@ -1,4 +1,0 @@
-
-# Put our Pipfile back
-mv Pipfile.bak Pipfile
-mv Pipfile.lock.bak Pipfile.lock
