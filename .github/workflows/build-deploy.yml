@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  deploy:
+  docker:
     name: Docker Build & Deploy
 
     runs-on: ubuntu-latest
@@ -107,10 +107,9 @@ jobs:
         with:
           images: clarkperkins/saucerbot
           tags: |
-            type=ref,event=branch
             type=ref,event=pr
-          flavor: |
-            latest=${{ github.ref_name == github.event.repository.default_branch }}
+            type=raw,enable={{is_default_branch}},value=latest
+            type=raw,enable={{is_default_branch}},value={{date 'YYYYMMDD-HHmmss'}}-{{sha}}
 
       - name: Docker Build and Push
         id: docker_build
@@ -123,3 +122,34 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=clarkperkins/saucerbot:latest
           cache-to: type=inline
+
+  helm:
+    name: Helm Release
+
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+
+    if: github.ref_name == github.event.repository.default_branch
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.1
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

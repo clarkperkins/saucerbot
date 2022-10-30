@@ -1,0 +1,11 @@
+apiVersion: v2
+name: saucerbot
+description: saucerbot
+type: application
+version: 0.1.0
+appVersion: "latest"
+
+dependencies:
+  - name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 11.*
