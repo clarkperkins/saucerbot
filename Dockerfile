@@ -5,10 +5,6 @@ WORKDIR /app
 COPY docker/install_build.sh /app/
 RUN sh install_build.sh
 
-COPY pyproject.toml poetry.lock manage.py logging.yaml gunicorn.conf.py /app/
-
-COPY saucerbot saucerbot
-
 # Install poetry
 RUN python -m pip install poetry virtualenv
 
@@ -18,7 +14,13 @@ ENV VIRTUAL_ENV /app/venv
 RUN virtualenv $VIRTUAL_ENV
 ENV PATH $VIRTUAL_ENV/bin:$PATH
 
-# Install python dependencies
+# Install python dependencies (but not self)
+COPY pyproject.toml poetry.lock manage.py logging.yaml gunicorn.conf.py /app/
+RUN poetry install --sync --without=dev --no-root
+
+# Copy self, set the version & install
+COPY saucerbot saucerbot
+RUN poetry version $(date +"%Y.%m.%d")
 RUN poetry install --sync --without=dev
 
 # Precompile the sources
