@@ -3,6 +3,20 @@ entries:
   saucerbot:
   - apiVersion: v2
     appVersion: latest
+    created: "2022-11-01T03:11:03.193272294Z"
+    dependencies:
+    - name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.*
+    description: saucerbot
+    digest: 0c437f06c074907850bccd640ebe67b6ddf4205a73b18df12588dd963dbb4cd3
+    name: saucerbot
+    type: application
+    urls:
+    - https://github.com/clarkperkins/saucerbot/releases/download/saucerbot-0.1.1/saucerbot-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: latest
     created: "2022-10-30T04:56:11.154212973Z"
     dependencies:
     - name: postgresql
@@ -15,4 +29,4 @@ entries:
     urls:
     - https://github.com/clarkperkins/saucerbot/releases/download/saucerbot-0.1.0/saucerbot-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-30T04:56:11.154241373Z"
+generated: "2022-11-01T03:11:03.193294794Z"
