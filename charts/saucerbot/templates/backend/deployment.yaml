@@ -48,7 +48,7 @@ spec:
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.backend.port | quote }}
+              containerPort: {{ .Values.backend.port }}
               protocol: TCP
           # TODO add back in later
           #livenessProbe:

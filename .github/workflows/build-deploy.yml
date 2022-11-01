@@ -126,14 +126,12 @@ jobs:
           cache-to: type=registry,ref=clarkperkins/saucerbot:buildcache,mode=max
 
   helm:
-    name: Helm Release
+    name: Helm Chart
 
     permissions:
       contents: write
 
     runs-on: ubuntu-latest
-
-    if: github.ref_name == github.event.repository.default_branch
 
     steps:
       - name: Checkout
@@ -141,17 +139,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
           version: v3.10.1
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2
+
+      - name: List changed charts
+        run: ct list-changed --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Lint charts
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+
+      - name: Configure Git
+        if: github.ref_name == github.event.repository.default_branch
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
       - name: Run chart-releaser
+        if: github.ref_name == github.event.repository.default_branch
         uses: helm/chart-releaser-action@v1
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
