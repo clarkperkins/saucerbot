@@ -36,23 +36,29 @@ spec:
           command:
             - gunicorn
           args:
-            - saucerbot.wsgi
+            - "saucerbot.wsgi"
+            - "--access-logfile"
+            - "-"
+          env:
+            - name: PORT
+              value: {{ .Values.backend.port | quote }}
           {{- with .Values.backend.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: 8000
+              containerPort: {{ .Values.backend.port | quote }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          # TODO add back in later
+          #livenessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          #readinessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
       {{- with .Values.backend.nodeSelector }}

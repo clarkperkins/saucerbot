@@ -12,5 +12,8 @@ SERVER_DOMAIN = "saucerbot.clarkperkins.com"
 
 ALLOWED_HOSTS = [SERVER_DOMAIN]
 
+if "EXTRA_HOSTS" in os.environ:
+    ALLOWED_HOSTS.extend(os.environ.get("EXTRA_HOSTS", "").split(","))
+
 SECURE_SSL_REDIRECT = True
 SECURE_SSL_HOST = SERVER_DOMAIN
