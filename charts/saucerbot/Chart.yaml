@@ -2,8 +2,11 @@ apiVersion: v2
 name: saucerbot
 description: saucerbot
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: "latest"
+
+maintainers:
+  - name: clarkperkins
 
 dependencies:
   - name: postgresql
