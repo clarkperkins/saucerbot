@@ -122,8 +122,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=clarkperkins/saucerbot:latest
-          cache-to: type=inline
+          cache-from: type=registry,ref=clarkperkins/saucerbot:buildcache
+          cache-to: type=registry,ref=clarkperkins/saucerbot:buildcache,mode=max
 
   helm:
     name: Helm Release
