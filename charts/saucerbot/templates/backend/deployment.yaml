@@ -37,11 +37,10 @@ spec:
             - gunicorn
           args:
             - "saucerbot.wsgi"
+            - "--bind"
+            - "[::]:{{ .Values.backend.port }}"
             - "--access-logfile"
             - "-"
-          env:
-            - name: PORT
-              value: {{ .Values.backend.port | quote }}
           {{- with .Values.backend.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}
