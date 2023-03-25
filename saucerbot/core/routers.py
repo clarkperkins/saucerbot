@@ -127,7 +127,6 @@ class PathRouter(DefaultRouter):
             routes = self.get_routes(viewset)
 
             for route in routes:
-
                 # Only actions which actually exist on the viewset will be bound
                 mapping = self.get_method_map(viewset, route.mapping)
                 if not mapping:
