@@ -5,10 +5,10 @@ on:
     branches: [ testme ]
 
 jobs:
-  build:
-    name: Test
+  test1:
+    name: Test 1
 
-    runs-on: ubuntu-latest
+    runs-on: saucerbot
 
     steps:
       - name: Checkout
@@ -17,5 +17,35 @@ jobs:
           fetch-depth: 0
 
       - name: Hello
-        run: "echo Hello World"
+        run: "echo Hello World 1"
+
+
+  test2:
+    name: Test 2
+
+    runs-on: saucerbot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Hello
+        run: "echo Hello World 2"
+
+
+  test3:
+    name: Test 3
+
+    runs-on: saucerbot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Hello
+        run: "echo Hello World 3"
 
