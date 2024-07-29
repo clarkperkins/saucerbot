@@ -8,7 +8,7 @@ jobs:
   build:
     name: Test
 
-    runs-on: saucerbot
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
