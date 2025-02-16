@@ -6,9 +6,12 @@ import arrow
 from enum import Enum
 import requests
 
+from saucerbot.utils.sports.models import VandyResult
+
 logger = logging.getLogger(__name__)
 
-# different strategy here, just gonna pull the whole schedule and read the page config
+# different strategy here, just gonna pull the whole schedule and read the page config rather than try to get it by date
+# probably could do the scoreboard way, but football has its whole week calculation nonsense; this seemed easier
 ESPN_MENS_BASKETBALL_URL = "https://www.espn.com/mens-college-basketball/team/schedule/_/id/238/vanderbilt-commodores"
 ESPN_WOMENS_BASKETBALL_URL = "https://www.espn.com/womens-college-basketball/team/schedule/_/id/238"
 BASKETBALL_DATA_START_MARKER = "window['__espnfitt__']"
@@ -35,7 +38,7 @@ def get_basketball_results(team: BasketballTeam, desired_date: arrow.Arrow) -> d
             logger.info(f"Found most recent event with date {str(most_recent['date'])}")
         else:
             logger.info("No recent events found")
-        return most_recent
+        return __get_vandy_result(most_recent)
     except Exception as e:
         logger.error("Failed to read basketball data", exc_info=e)
         return None
@@ -80,7 +83,7 @@ def __read_events(season: dict) -> List[dict]:
             "opponent": event["opponent"],
             "date": arrow.get(event["date"]["date"]).date(),
             "result": event["result"],
-            "status": event["status"]["state"]
+            "status": event["status"]
         }
 
     event_map = season['events']
@@ -101,3 +104,16 @@ def __retrieve_basketball_json(response_text: str) -> dict | None:
 
     logger.debug(f"Thinking we have the start of basketball data at {true_start} and the end at {true_end}")
     return json.loads(response_text[true_start:true_end + 1])
+
+
+def __get_vandy_result(event: dict) -> VandyResult | None:
+    if event is None:
+        return None
+
+    return VandyResult(
+        date=event['date'],
+        opponent_name=event['opponent']['displayName'],
+        opponent_score=event['result'].get('opponentTeamScore'),
+        vandy_score=event['result'].get('currentTeamScore'),  # no guarantee that there are scores
+        is_finished=event['status']['isCompleted']
+    )
