@@ -63,10 +63,10 @@ def get_user_builder(
             user_pk = model_class._meta.pk.to_python(  # type: ignore[union-attr]
                 request.session[session_key]
             )
-            return model_class.objects.get(pk=user_pk)
+            return model_class.objects.get(pk=user_pk)  # type: ignore
         except KeyError:
             pass
-        except model_class.DoesNotExist:
+        except model_class.DoesNotExist:  # type: ignore
             pass
         return None
 

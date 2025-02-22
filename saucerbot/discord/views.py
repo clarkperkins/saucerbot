@@ -5,6 +5,7 @@ import uuid
 from urllib.parse import quote
 
 from django.conf import settings
+from django.db.models import QuerySet
 from django.http.response import HttpResponseBase
 from django.urls import reverse
 from django.views.generic import RedirectView
@@ -14,7 +15,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from saucerbot.core.models import InvalidUser
 from saucerbot.discord.authentication import DiscordUserAuthentication
-from saucerbot.discord.models import SESSION_KEY, Guild, User, new_user
+from saucerbot.discord.models import SESSION_KEY, Channel, Guild, User, new_user
 from saucerbot.discord.permissions import HasDiscordUser
 from saucerbot.discord.serializers import ChannelSerializer, GuildSerializer
 from saucerbot.discord.utils import exchange_code, get_redirect_uri
@@ -80,8 +81,8 @@ class GuildViewSet(ReadOnlyModelViewSet):
     authentication_classes = [DiscordUserAuthentication]
     permission_classes = [HasDiscordUser]
 
-    def get_queryset(self):
-        user: User = self.request.user
+    def get_queryset(self) -> QuerySet[Guild]:
+        user: User = self.request.user  # type: ignore
         guild_ids = user.guild_ids
         return Guild.objects.filter(guild_id__in=guild_ids)
 
@@ -93,8 +94,8 @@ class ChannelViewSet(ReadOnlyModelViewSet, UpdateModelMixin):
     authentication_classes = [DiscordUserAuthentication]
     permission_classes = [HasDiscordUser]
 
-    def get_queryset(self):
-        user: User = self.request.user
+    def get_queryset(self) -> QuerySet[Channel]:
+        user: User = self.request.user  # type: ignore
         guild_ids = user.guild_ids
 
         guild = get_object_or_404(

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from collections.abc import Awaitable, Callable
-from functools import wraps
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import arrow
 from discord import (
@@ -34,11 +32,10 @@ CENTRAL_TIME = "US/Central"
 class SaucerbotClient(Client):
     # pylint: disable=no-self-use
 
-    def __init__(self, **kwargs):
-        kwargs.setdefault("intents", Intents.all())
-        super().__init__(**kwargs)
+    def __init__(self, *, intents: Intents = Intents.all(), **options: Any) -> None:
+        super().__init__(intents=intents, **options)
         self.tree = CommandTree(self)
-        self.dev_guild_id: str | None = kwargs.pop("dev_guild_id", None)
+        self.dev_guild_id: str | None = options.pop("dev_guild_id", None)
 
     async def setup_hook(self):
         if self.dev_guild_id:

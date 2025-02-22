@@ -10,7 +10,7 @@ API_ENDPOINT = "https://discord.com/api/v8"
 
 
 def get_redirect_uri() -> str:
-    return f"https://{settings.SERVER_DOMAIN}{reverse('discord:oauth')}"
+    return f"http://localhost:8000{reverse('discord:oauth')}"  # f"https://{settings.SERVER_DOMAIN}{reverse('discord:oauth')}"
 
 
 def _token_request(**kwargs) -> dict[str, Any]:

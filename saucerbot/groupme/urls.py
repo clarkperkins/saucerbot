@@ -18,7 +18,7 @@ router = PathRouter(
     api_root_name="GroupMe", api_root_authentication_class=GroupMeUserAuthentication
 )
 router.register("bots", BotViewSet, basename="bot")
-router.register("bots", BotActionsViewSet, basename="bot")
+router.register("bots", BotActionsViewSet, basename="bot-action")
 
 urlpatterns = [
     path("groupme/login/", LoginRedirectView.as_view(), name="login"),

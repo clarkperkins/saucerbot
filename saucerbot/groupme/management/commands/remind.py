@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from typing import TextIO
 
 import arrow
 from django.core.management.base import BaseCommand, CommandParser
@@ -18,8 +19,16 @@ LIKE_IF_POST = "Saucer tonight! Time TBD. Like if."
 class Command(BaseCommand):
     help = "Commands for sending reminders"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
+        no_color: bool = False,
+        force_color: bool = False,
+    ) -> None:
+        super().__init__(
+            stdout=stdout, stderr=stderr, no_color=no_color, force_color=force_color
+        )
         self._bot: Bot | None = None
 
     def add_arguments(self, parser: CommandParser):
