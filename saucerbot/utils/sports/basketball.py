@@ -24,7 +24,9 @@ class MensBasketball(Team):
         return _get_vandy_result_from_schedule_event(self.name, result)
 
     def has_match_in_message(self, message: str) -> bool:
-        return False
+        if "women" in message:  # lol english
+            return False
+        return any(match in message for match in ["mbb", "basketball", " men"])
 
 
 class WomensBasketball(Team):
@@ -40,7 +42,7 @@ class WomensBasketball(Team):
         return _get_vandy_result_from_schedule_event(self.name, result)
 
     def has_match_in_message(self, message: str) -> bool:
-        return False
+        return any(match in message for match in ["wbb", "basketball", "women"])
 
 
 def _get_vandy_result_from_schedule_event(team_name: str, event: dict) -> VandyResult | None:

@@ -65,7 +65,7 @@ def did_the_dores_win(
     if desired_date is None:
         desired_date = arrow.now("US/Central")
 
-    teams = determine_teams_for_lookup(message, desired_date)
+    teams = determine_teams_for_lookup(message.content, desired_date)
     team_results = [team.get_latest_result(desired_date) for team in teams]
 
     if len(team_results) == 0:
@@ -76,11 +76,12 @@ def did_the_dores_win(
     return build_message_response(team_results)
 
 
-def determine_teams_for_lookup(message: Message, desired_date: arrow.Arrow):
+def determine_teams_for_lookup(message: str, desired_date: arrow.Arrow):
     if message:
         # if someone asks for them, we report
-        matches = [team for team in VANDY_TEAMS if team.has_match_in_message(message.content)]
+        matches = [team for team in VANDY_TEAMS if team.has_match_in_message(message.lower())]
         if len(matches) > 0:
+            logger.debug(f"Found matches in {message} for some specific teams")
             return matches
 
     # if no one's asked for, then we'll report whoever's in season

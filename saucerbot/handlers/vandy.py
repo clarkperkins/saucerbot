@@ -2,7 +2,7 @@
 
 import logging
 
-from saucerbot.handlers import BotContext, registry
+from saucerbot.handlers import BotContext, registry, Message
 from saucerbot.utils import did_the_dores_win
 
 logger = logging.getLogger(__name__)
@@ -40,12 +40,12 @@ def gold(context: BotContext) -> None:
     context.post("BLACK")
 
 
-@registry.handler([r"did the dores win", r"did vandy win"], on_by_default=True)
-def dores_win(context: BotContext) -> None:
+@registry.handler([r"did the dores win", r"did .* vandy.* win"], on_by_default=True)
+def dores_win(context: BotContext, message: Message) -> None:
     """
-    The 'dores never win RIP
+    GFD
     """
-    result = did_the_dores_win()
+    result = did_the_dores_win(message)
     if result is None:
         context.post("I couldn't find the Vandy game 😢")
     else:
