@@ -105,12 +105,3 @@ class BotActionsViewSet(GenericViewSet):
         }
 
         return Response(response)
-
-    @action(methods=["POST"], detail=True, url_path="dores-win")
-    def dores_win(self, request: Request, *args, **kwargs) -> Response:
-        bot = self.get_object()
-        result = did_the_dores_win(False, False)
-        if result:
-            bot.post_message(result)
-        response = {"ok": True, "win": result is not None, "result": result}
-        return Response(response)

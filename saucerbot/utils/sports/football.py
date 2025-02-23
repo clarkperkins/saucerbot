@@ -6,7 +6,7 @@ from typing import Optional
 import arrow
 import requests
 
-from saucerbot.utils.sports.models import VandyResult
+from saucerbot.utils.sports.models import VandyResult, Team
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,47 @@ ESPN_FOOTBALL_URL = (
 )
 
 
-def get_football_results(desired_date: arrow.Arrow) -> Optional[VandyResult]:
+class VandyFootball(Team):
+
+    def __init__(self):
+        super().__init__('Vandy Football')
+
+    def is_in_season(self, desired_date: arrow.Arrow):
+        return desired_date.month >= 8 or desired_date.month <= 2
+
+    def get_latest_result(self, desired_date: arrow.Arrow):
+        game_info = get_football_results(desired_date)
+        if game_info is None:
+            return None
+        vandy, opponent = self.__get_teams(game_info)
+        return VandyResult(
+            date=arrow.get(game_info['date']).date(),
+            opponent_name=opponent["team"]["displayName"],
+            opponent_score=opponent["score"],
+            vandy_team=self.name,
+            vandy_score=vandy["score"],
+            is_finished=game_info["status"]["type"]["completed"]
+        )
+
+    def has_match_in_message(self, message: str) -> bool:
+        return False
+
+    @staticmethod
+    def __get_teams(game: dict) -> tuple[dict, dict]:
+        """
+        Extracts the teams from the game. Vandy will be returned first
+        :param game: the game information
+        :return: both teams, vandy first
+        """
+        team1 = game["competitions"][0]["competitors"][0]
+        team2 = game["competitions"][0]["competitors"][1]
+        if team1["team"]["location"] == "Vanderbilt":
+            return team1, team2
+        else:
+            return team2, team1
+
+
+def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
     logger.debug("Getting the football results")
     if (
         1 < desired_date.month < 8
@@ -40,7 +80,7 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[VandyResult]:
     if 200 <= response.status_code < 300:
         scores = response.json()
         game = __get_the_dores_game(scores)
-        return __get_vandy_result(game)
+        return game
     else:
         logger.warning(
             "Received non-success response code: %i -- %s",
@@ -48,19 +88,6 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[VandyResult]:
             response.text,
         )
         return None
-
-
-def __get_vandy_result(game_info: Optional[dict]) -> Optional[VandyResult]:
-    if game_info is None:
-        return None
-    vandy, opponent = __get_teams(game_info)
-    return VandyResult(
-        date=arrow.get(game_info['date']).date(),
-        opponent_name=opponent["team"]["displayName"],
-        opponent_score=opponent["score"],
-        vandy_score=vandy["score"],
-        is_finished=game_info["status"]["type"]["completed"]
-    )
 
 
 def __get_the_dores_game(scores: dict) -> dict | None:
@@ -71,20 +98,6 @@ def __get_the_dores_game(scores: dict) -> dict | None:
                 return ev
     logger.info("Looked through all the events, couldn't find the Vandy game")
     return None
-
-
-def __get_teams(game: dict) -> tuple[dict, dict]:
-    """
-    Extracts the teams from the game. Vandy will be returned first
-    :param game: the game information
-    :return: both teams, vandy first
-    """
-    team1 = game["competitions"][0]["competitors"][0]
-    team2 = game["competitions"][0]["competitors"][1]
-    if team1["team"]["location"] == "Vanderbilt":
-        return team1, team2
-    else:
-        return team2, team1
 
 
 def __get_week(desired_date: arrow.Arrow) -> int:
