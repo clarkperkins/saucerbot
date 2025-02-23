@@ -107,7 +107,7 @@ def new_user(request, access_token: str):
 
 
 def _callback_url(slug: str) -> str:
-    path = reverse("groupme:bot-callback", kwargs={"slug": slug})
+    path = reverse("groupme:bot-action-callback", kwargs={"slug": slug})
     return f"https://{settings.SERVER_DOMAIN}{path}"
 
 

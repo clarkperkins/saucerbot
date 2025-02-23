@@ -112,7 +112,7 @@ def __get_week(desired_date: arrow.Arrow) -> int:
 def did_the_dores_win(
     print_in_progress: bool = False,
     print_loss: bool = False,
-    desired_date: arrow.Arrow = None,
+    desired_date: arrow.Arrow | None = None,
 ) -> str | None:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,

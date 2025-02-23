@@ -105,10 +105,10 @@ def too_early_for_thai(context: BotContext, message: Message) -> bool:
 
     hour = timestamp.time().hour
 
-    with Path(tempfile.gettempdir(), "thai_lock") as lockfile:
-        if 3 <= hour < 8 and not lockfile.exists():
-            context.post("It's too early for thai")
-            lockfile.touch()
-            return True
-        else:
-            return False
+    lockfile = Path(tempfile.gettempdir(), "thai_lock")
+    if 3 <= hour < 8 and not lockfile.exists():
+        context.post("It's too early for thai")
+        lockfile.touch()
+        return True
+    else:
+        return False

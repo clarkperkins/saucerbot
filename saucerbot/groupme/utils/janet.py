@@ -70,7 +70,7 @@ def select_terms_from_message(message: str) -> list[str]:
     if len(words) <= 3:
         return list(words)
     else:
-        return random.sample(words, 3)
+        return random.sample(list(words), 3)
 
 
 def add_to_groupme_img_service(bot: Bot, image_url: str) -> str:

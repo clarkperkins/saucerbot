@@ -99,7 +99,11 @@ class Handler(NamedTuple):
 
 
 class HandlerRegistry(Sequence[Handler]):
-    def __init__(self, handlers: list[Handler] = None, loaded_modules: set[str] = None):
+    def __init__(
+        self,
+        handlers: list[Handler] | None = None,
+        loaded_modules: set[str] | None = None,
+    ):
         self.handlers: list[Handler] = handlers or []
         self._loaded_modules: set[str] = loaded_modules or set()
 
@@ -169,7 +173,7 @@ class HandlerRegistry(Sequence[Handler]):
         self,
         regex: str | list[str] | None = None,
         *,
-        name: str = None,
+        name: str | None = None,
         case_sensitive: bool = False,
         platforms: Iterable[str] | None = None,
         on_by_default: bool = False,

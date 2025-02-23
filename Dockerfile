@@ -1,4 +1,4 @@
-FROM python:3.10-slim AS build
+FROM python:3.13-slim AS build
 
 WORKDIR /app
 
@@ -8,35 +8,35 @@ RUN sh install_build.sh
 # Install poetry
 RUN python -m pip install poetry virtualenv
 
-ENV VIRTUAL_ENV /app/venv
+ENV VIRTUAL_ENV=/app/venv
 
 # Create & activate virtualenv
 RUN virtualenv $VIRTUAL_ENV
-ENV PATH $VIRTUAL_ENV/bin:$PATH
+ENV PATH=$VIRTUAL_ENV/bin:$PATH
 
 # Install python dependencies (but not self)
-COPY pyproject.toml poetry.lock manage.py logging.yaml gunicorn.conf.py /app/
-RUN poetry install --sync --without=dev --no-root
+COPY pyproject.toml poetry.lock manage.py logging.yaml gunicorn.conf.py README.rst /app/
+RUN poetry sync --without=dev --no-root
 
 # Copy self, set the version & install
 COPY saucerbot saucerbot
 RUN poetry version $(date +"%Y.%m.%d")
-RUN poetry install --sync --without=dev
+RUN poetry sync --without=dev
 
 # Precompile the sources
 RUN python -m compileall saucerbot
 
 # Need these for collectstatic to work
-ENV DJANGO_ENV build
+ENV DJANGO_ENV=build
 
 # Generate static files
 RUN python manage.py collectstatic --noinput
 
 
-FROM python:3.10-slim AS saucerbot
+FROM python:3.13-slim AS saucerbot
 
-ENV PYTHONUNBUFFERED 1
-ENV PIP_NO_CACHE_DIR off
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=off
 
 # Passing the -d /app will set that as the home dir & chown it
 RUN useradd -r -U -m -d /app saucerbot
@@ -48,7 +48,7 @@ RUN sh install_runtime.sh
 
 COPY --chown=saucerbot:saucerbot --from=build /app /app
 
-ENV VIRTUAL_ENV /app/venv
-ENV PATH $VIRTUAL_ENV/bin:$PATH
+ENV VIRTUAL_ENV=/app/venv
+ENV PATH=$VIRTUAL_ENV/bin:$PATH
 
 USER saucerbot

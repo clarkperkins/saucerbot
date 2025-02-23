@@ -12,13 +12,13 @@ from discord import Message as DMessage
 from discord import User as DUser
 from discord.abc import Messageable
 from discord.errors import HTTPException
-from discord.http import HTTPClient
 from discord.types import user
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from saucerbot.core.models import BaseUser, InvalidUser, get_user_builder
+from saucerbot.discord.http import SaucerbotDiscordHTTPClient
 from saucerbot.discord.utils import get_new_token
 from saucerbot.handlers import BotContext, Message, registry
 
@@ -98,10 +98,8 @@ class User(BaseUser):
 
     async def _new_client(self):
         await sync_to_async(self._check_expired)()
-        client = HTTPClient(asyncio.get_running_loop())
-        self._user_info = await client.static_login(
-            f"{self.token_type} {self.access_token}"
-        )
+        client = SaucerbotDiscordHTTPClient(asyncio.get_running_loop())
+        self._user_info = await client.user_login(self.token_type, self.access_token)
         return client
 
     @property
@@ -112,8 +110,8 @@ class User(BaseUser):
         return self._user_info
 
     @property
-    def username(self):
-        return self.user_info.username
+    def username(self) -> str:
+        return self.user_info["username"]
 
     @cached_property
     @async_to_sync
@@ -129,8 +127,8 @@ get_user = get_user_builder(User, SESSION_KEY)
 
 @async_to_sync
 async def lookup_user_info(access_token: str, token_type: str) -> user.User:
-    client = HTTPClient(asyncio.get_running_loop())
-    user_info = await client.static_login(f"{token_type} {access_token}")
+    client = SaucerbotDiscordHTTPClient(asyncio.get_running_loop())
+    user_info = await client.user_login(token_type, access_token)
     await client.close()
     return user_info
 
@@ -140,7 +138,7 @@ def new_user(
 ):
     try:
         user_data = lookup_user_info(access_token, token_type)
-        user_id = str(user_data.id)
+        user_id = str(user_data["id"])
     except HTTPException as e:
         raise InvalidUser("Invalid access token") from e
 

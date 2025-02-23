@@ -18,7 +18,7 @@ class MissingBaseError(Exception):
 class HtmlContentProvider:
     def __init__(self, url: str, *args: Any) -> None:
         self.url = url.format(*args)
-        self.soup = None
+        self.soup: BeautifulSoup | None = None
 
     def get_content(self) -> BeautifulSoup:
         if not self.soup:

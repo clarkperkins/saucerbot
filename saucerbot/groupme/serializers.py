@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class GroupRelatedField(serializers.RelatedField):
     def get_queryset(self):
-        user: User = self.context["request"].user
+        user = self.context["request"].user
         return user.gmi.groups
 
     def to_internal_value(self, data: str) -> Group:
