@@ -3,7 +3,6 @@ import logging
 from typing import List, Optional
 
 import arrow
-from enum import Enum
 import requests
 
 from saucerbot.utils.sports.models import VandyResult
@@ -12,35 +11,24 @@ logger = logging.getLogger(__name__)
 
 # different strategy here, just gonna pull the whole schedule and read the page config rather than try to get it by date
 # probably could do the scoreboard way, but football has its whole week calculation nonsense; this seemed easier
-ESPN_MENS_BASKETBALL_URL = "https://www.espn.com/mens-college-basketball/team/schedule/_/id/238/vanderbilt-commodores"
-ESPN_WOMENS_BASKETBALL_URL = "https://www.espn.com/womens-college-basketball/team/schedule/_/id/238"
-BASKETBALL_DATA_START_MARKER = "window['__espnfitt__']"
+SCHEDULE_PAGE_START_MARKER = "window['__espnfitt__']"
 
 # It checks for a User-Agent, so whatever, I'll lie to ESPN
 HEADERS_FOR_ESPN = {'Accept': "*/*", "User-Agent": "curl/8.7.1"}
 
 
-class BasketballTeam(Enum):
-    MEN = ESPN_MENS_BASKETBALL_URL
-    WOMEN = ESPN_WOMENS_BASKETBALL_URL
-
-    @property
-    def url(self):
-        return self.value
-
-
-def get_basketball_results(team: BasketballTeam, desired_date: arrow.Arrow) -> dict | None:
+def get_schedule_page_results(url: str, desired_date: arrow.Arrow) -> dict | None:
     try:
-        logger.info(f"Retrieving latest event for {team.name}'s basketball")
-        schedule = read_schedule_events(request_schedule_page(team.url))
+        logger.info(f"Retrieving latest event from schedule page: {url}")
+        schedule = read_schedule_events(request_schedule_page(url))
         most_recent = find_most_recent_event(schedule, desired_date)
         if most_recent:
             logger.info(f"Found most recent event with date {str(most_recent['date'])}")
         else:
             logger.info("No recent events found")
-        return __get_vandy_result(most_recent)
+        return most_recent
     except Exception as e:
-        logger.error("Failed to read basketball data", exc_info=e)
+        logger.error("Failed to read schedule page data", exc_info=e)
         return None
 
 
@@ -97,23 +85,10 @@ def __read_events(season: dict) -> List[dict]:
 
 # yeah it's not as elegant as consuming an API but whatever I'm lazy
 def __retrieve_basketball_json(response_text: str) -> dict | None:
-    start = response_text.index(BASKETBALL_DATA_START_MARKER)
+    start = response_text.index(SCHEDULE_PAGE_START_MARKER)
     true_start = response_text.index('{', start)
     end = response_text.index('</script>', start)
     true_end = response_text.rindex('}', start, end)
 
     logger.debug(f"Thinking we have the start of basketball data at {true_start} and the end at {true_end}")
     return json.loads(response_text[true_start:true_end + 1])
-
-
-def __get_vandy_result(event: dict) -> VandyResult | None:
-    if event is None:
-        return None
-
-    return VandyResult(
-        date=event['date'],
-        opponent_name=event['opponent']['displayName'],
-        opponent_score=event['result'].get('opponentTeamScore'),
-        vandy_score=event['result'].get('currentTeamScore'),  # no guarantee that there are scores
-        is_finished=event['status']['isCompleted']
-    )

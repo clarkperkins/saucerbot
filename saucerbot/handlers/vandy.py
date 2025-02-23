@@ -45,7 +45,7 @@ def dores_win(context: BotContext) -> None:
     """
     The 'dores never win RIP
     """
-    result = did_the_dores_win(True, True)
+    result = did_the_dores_win()
     if result is None:
         context.post("I couldn't find the Vandy game 😢")
     else:
