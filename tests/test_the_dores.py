@@ -57,10 +57,16 @@ def test_determine_teams_for_lookup(message, expected_teams):
     ], ["LSU", "Alabama", "Georgia"]),
     # Prioritizing wins over losses over in-progress games
     ([
-        VandyResult(arrow.get("2024-09-11").date(), True, "Vandy Football", 30, "Alabama", 27),
         VandyResult(arrow.get("2024-09-11").date(), True, "Vandy Football", 21, "Georgia", 35),
+        VandyResult(arrow.get("2024-09-11").date(), True, "Vandy Football", 30, "Alabama", 27),
         VandyResult(arrow.get("2024-09-11").date(), False, "Vandy Football", 14, "Florida", 14)
     ], ["Alabama", "Georgia", "Florida"]),
+    # Prioritizing wins, then date
+    ([
+        VandyResult(arrow.get("2024-09-10").date(), True, "Vandy Football", 21, "Missouri", 35),
+        VandyResult(arrow.get("2024-09-11").date(), False, "Vandy Football", 14, "Texas", 14),
+        VandyResult(arrow.get("2024-09-09").date(), True, "Vandy Football", 30, "Alabama", 27),
+    ], ["Alabama", "Texas", "Missouri"]),
     # Future event handling
     ([
         VandyResult(arrow.get("2024-09-10").date(), True, "Vandy Football", 30, "Alabama", 27),
