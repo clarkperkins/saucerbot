@@ -6,8 +6,6 @@ import sys
 from typing import List, Tuple
 
 import arrow
-
-from saucerbot.handlers import Message
 from saucerbot.utils.sports.basketball import MensBasketball, WomensBasketball
 from saucerbot.utils.sports.football import VandyFootball
 from saucerbot.utils.sports.models import VandyResult
@@ -30,9 +28,9 @@ LOSING_FORMATS = [
 ]
 
 IN_PROGRESS_FORMATS = [
-    "Time will tell...",
-    "Waiting on the result!",
-    "I don't know yet, but go dores!",
+    "For {vandy_name} vs {opponent_name}? Time will tell...",
+    "Waiting on the {vandy_name}/{opponent_name} result!",
+    "Like {vandy_name}/{opponent_name}? I don't know yet, but go dores!",
 ]
 
 IN_PROGRESS_FOLLOW_UPS = [
@@ -44,13 +42,13 @@ WINNING_INTERJECTIONS = ["ATFD!", "Hell yeah!", "Kachow!", "You know it!"]
 WINNING_CONJUNCTIONS = ["But that's not all!", "Also!", "Keep the party rolling!"]
 LOSING_INTERJECTIONS = ["No :(", "Not this time...", "Welllllll..."]
 LOSS_AFTER_WIN_CONJUNCTIONS = ["Buuut,", "Unfortunately though,"]
-LOSS_AFTER_LOSS_CONJUNCTIONS = ["And unfortunately", "Ugh! And,"]
+LOSS_AFTER_LOSS_CONJUNCTIONS = ["And unfortunately,", "Ugh! And,"]
 
 VANDY_TEAMS = [VandyFootball(), MensBasketball(), WomensBasketball()]
 
 
 def did_the_dores_win(
-    message: Message = None,
+    message: str = None,
     desired_date: arrow.Arrow = None,
 ) -> str | None:
     """
@@ -65,8 +63,9 @@ def did_the_dores_win(
     if desired_date is None:
         desired_date = arrow.now("US/Central")
 
-    teams = determine_teams_for_lookup(message.content, desired_date)
+    teams = determine_teams_for_lookup(message, desired_date)
     team_results = [team.get_latest_result(desired_date) for team in teams]
+    team_results = [result for result in team_results if result is not None]
 
     if len(team_results) == 0:
         logger.debug("No game found")
@@ -93,7 +92,7 @@ def sort_team_results(results: List[VandyResult], desired_date: arrow.Arrow):
     # Is still In Progress (or is later today), is in the Future
     def sort_key(result: VandyResult) -> Tuple:
         result_not_in_future = result.date <= desired_date.date()
-        return (result_not_in_future, result.date, result.is_win(), result.is_finished)
+        return (result_not_in_future, result.is_win(), result.date, result.is_finished)
 
     return sorted(results, key=sort_key, reverse=True)
 
@@ -102,7 +101,7 @@ def build_message_response(results: List[VandyResult]) -> str:
     response = __build_single_result_response(results[0], len(results) == 1)
     last_result = results[0]
     for result in results[1:]:
-        response += "\n" + __build_follow_up_response(result, last_result)
+        response += "\n\n" + __build_follow_up_response(result, last_result)
         last_result = result
 
     return response
@@ -135,9 +134,10 @@ def __build_follow_up_response(result: VandyResult, last_result: VandyResult) ->
 
 # Good for testing the feature
 if __name__ == "__main__":
-    date: arrow.Arrow | None
+    message = None
+    date = None
     if len(sys.argv) > 1:
-        date = arrow.get(sys.argv[1], "MM-DD-YYYY")
-    else:
-        date = None
-    print(did_the_dores_win(date))
+        message = sys.argv[1]
+    if len(sys.argv) > 2:
+        date = arrow.get(sys.argv[2], "YYYY-MM-DD")
+    print(did_the_dores_win(message, date))
