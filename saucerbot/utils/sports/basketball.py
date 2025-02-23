@@ -52,8 +52,8 @@ def _get_vandy_result_from_schedule_event(team_name: str, event: dict) -> VandyR
     return VandyResult(
         date=event['date'],
         opponent_name=event['opponent']['displayName'],
-        opponent_score=event['result'].get('opponentTeamScore'),
+        opponent_score=int(event['result'].get('opponentTeamScore', -1)),
         vandy_team=team_name,
-        vandy_score=event['result'].get('currentTeamScore'),  # no guarantee that there are scores
-        is_finished=event['status']['isCompleted']
+        vandy_score=int(event['result'].get('currentTeamScore', -1)),  # no guarantee that there are scores
+        is_finished=event['status']['completed']
     )

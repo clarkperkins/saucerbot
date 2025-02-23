@@ -45,7 +45,7 @@ def dores_win(context: BotContext, message: Message) -> None:
     """
     GFD
     """
-    result = did_the_dores_win(message)
+    result = did_the_dores_win(message.content)
     if result is None:
         context.post("I couldn't find the Vandy game 😢")
     else:
