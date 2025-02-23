@@ -33,6 +33,21 @@ def test_determine_teams_for_lookup(date, expected_teams):
     assert {type(team) for team in teams} == set(expected_teams)
 
 
+# testing for messages explicitly asking for teams
+@pytest.mark.parametrize("message,expected_teams", [
+    ("did vandy win", []),  # no teams called out
+    ("did vandy mbb win", [MensBasketball]),
+    ("did the vandy men win", [MensBasketball]),
+    ("wbb did vandy win", [WomensBasketball]),
+    ("did vandy's women win", [WomensBasketball]),
+    ("did vandy win at football", [VandyFootball]),
+    ("did vandy win their basketball game", [MensBasketball, WomensBasketball])
+])
+def test_determine_teams_for_lookup(message, expected_teams):
+    teams = determine_teams_for_lookup(message, arrow.get("2024-07-01"))
+    assert {type(team) for team in teams} == set(expected_teams)
+
+
 @pytest.mark.parametrize("results,expected_order", [
     # Sorting by date
     ([

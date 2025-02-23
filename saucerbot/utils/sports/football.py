@@ -41,7 +41,7 @@ class VandyFootball(Team):
         )
 
     def has_match_in_message(self, message: str) -> bool:
-        return False
+        return 'football' in message
 
     @staticmethod
     def __get_teams(game: dict) -> tuple[dict, dict]:
