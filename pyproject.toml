@@ -1,12 +1,13 @@
 [project]
 name = "saucerbot"
-version = "0.0.0"
+version = "1.0.0"
 description = "bot for the saucer groupme"
 authors = [
-    {name = "Clark Perkins",email = "clarkperkins@users.noreply.github.com"}
+    {name = "Clark Perkins",email = "clarkperkins@users.noreply.github.com"},
+    {name = "Chris Reynolds",email = "christianbreynolds@users.noreply.github.com"}
 ]
 readme = "README.rst"
-requires-python = ">=3.13,<4.0"
+requires-python = ">=3.11,<4.0"
 dependencies = [
     "arrow",
     "beautifulsoup4",
