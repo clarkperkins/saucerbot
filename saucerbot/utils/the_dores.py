@@ -6,20 +6,21 @@ import sys
 from typing import List, Tuple
 
 import arrow
+
 from saucerbot.utils.sports.basketball import MensBasketball, WomensBasketball
 from saucerbot.utils.sports.football import VandyFootball
 from saucerbot.utils.sports.models import VandyResult
 
 logger = logging.getLogger(__name__)
 
-GENERIC_VANDY_NAMES = ['The Dores', 'Vandy', 'The Commodores', 'Vanderbilt']
+GENERIC_VANDY_NAMES = ["The Dores", "Vandy", "The Commodores", "Vanderbilt"]
 
 WINNING_FORMATS = [
     "{vandy_name} took down the {opponent_name} {vandy_score}-{opponent_score}",
     "{vandy_name} rolled past the {opponent_name} {vandy_score}-{opponent_score}",
     "The {opponent_name} stood no chance! {vandy_name} wins {vandy_score}-{opponent_score}",
     "{vandy_name} conquered the {opponent_name}, prevailing with a score of {vandy_score}-{opponent_score}",
-    "{vandy_name} beat {opponent_name} {vandy_score}-{opponent_score}. Vandy, we're fuckin turnt!"
+    "{vandy_name} beat {opponent_name} {vandy_score}-{opponent_score}. Vandy, we're fuckin turnt!",
 ]
 
 LOSING_FORMATS = [
@@ -78,7 +79,9 @@ def did_the_dores_win(
 def determine_teams_for_lookup(message: str, desired_date: arrow.Arrow):
     if message:
         # if someone asks for them, we report
-        matches = [team for team in VANDY_TEAMS if team.has_match_in_message(message.lower())]
+        matches = [
+            team for team in VANDY_TEAMS if team.has_match_in_message(message.lower())
+        ]
         if len(matches) > 0:
             logger.debug(f"Found matches in {message} for some specific teams")
             return matches
@@ -112,24 +115,44 @@ def __build_single_result_response(result: VandyResult, is_only_result: bool) ->
         logger.debug("Game is either later today or still in progress")
         format_string = random.choice(IN_PROGRESS_FORMATS)
     elif result.is_win():
-        format_string = random.choice(WINNING_INTERJECTIONS) + " " + random.choice(WINNING_FORMATS)
+        format_string = (
+            random.choice(WINNING_INTERJECTIONS) + " " + random.choice(WINNING_FORMATS)
+        )
     else:
-        format_string = random.choice(LOSING_INTERJECTIONS) + " " + random.choice(LOSING_FORMATS)
+        format_string = (
+            random.choice(LOSING_INTERJECTIONS) + " " + random.choice(LOSING_FORMATS)
+        )
 
-    vandy_team_name = 'Vandy' if is_only_result else result.vandy_team
-    return format_string.format(vandy_name=vandy_team_name, vandy_score=result.vandy_score, opponent_name=result.opponent, opponent_score=result.opponent_score)
+    vandy_team_name = "Vandy" if is_only_result else result.vandy_team
+    return format_string.format(
+        vandy_name=vandy_team_name,
+        vandy_score=result.vandy_score,
+        opponent_name=result.opponent,
+        opponent_score=result.opponent_score,
+    )
 
 
 def __build_follow_up_response(result: VandyResult, last_result: VandyResult) -> str:
     if not result.is_finished:
         format_string = random.choice(IN_PROGRESS_FOLLOW_UPS)
     elif result.is_win():
-        format_string = random.choice(WINNING_CONJUNCTIONS) + " " + random.choice(WINNING_FORMATS)
+        format_string = (
+            random.choice(WINNING_CONJUNCTIONS) + " " + random.choice(WINNING_FORMATS)
+        )
     else:
-        conjunction = random.choice(LOSS_AFTER_WIN_CONJUNCTIONS) if last_result.is_win() else random.choice(LOSS_AFTER_LOSS_CONJUNCTIONS)
+        conjunction = (
+            random.choice(LOSS_AFTER_WIN_CONJUNCTIONS)
+            if last_result.is_win()
+            else random.choice(LOSS_AFTER_LOSS_CONJUNCTIONS)
+        )
         format_string = conjunction + " " + random.choice(LOSING_FORMATS)
 
-    return format_string.format(vandy_name=result.vandy_team, vandy_score=result.vandy_score, opponent_name=result.opponent, opponent_score=result.opponent_score)
+    return format_string.format(
+        vandy_name=result.vandy_team,
+        vandy_score=result.vandy_score,
+        opponent_name=result.opponent,
+        opponent_score=result.opponent_score,
+    )
 
 
 # Good for testing the feature

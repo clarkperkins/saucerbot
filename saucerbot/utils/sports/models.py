@@ -7,7 +7,15 @@ import arrow
 
 class VandyResult:
 
-    def __init__(self, date: datetime.date, is_finished: bool, vandy_team: str, vandy_score: Optional[int], opponent_name: str, opponent_score: Optional[int]):
+    def __init__(
+        self,
+        date: datetime.date,
+        is_finished: bool,
+        vandy_team: str,
+        vandy_score: Optional[int],
+        opponent_name: str,
+        opponent_score: Optional[int],
+    ):
         self.date = date
         self.is_finished = is_finished
         self.vandy_team = vandy_team

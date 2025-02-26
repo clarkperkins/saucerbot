@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 SCHEDULE_PAGE_START_MARKER = "window['__espnfitt__']"
 
 # It checks for a User-Agent, so whatever, I'll lie to ESPN
-HEADERS_FOR_ESPN = {'Accept': "*/*", "User-Agent": "curl/8.7.1"}
+HEADERS_FOR_ESPN = {"Accept": "*/*", "User-Agent": "curl/8.7.1"}
 
 
 def get_schedule_page_results(url: str, desired_date: arrow.Arrow) -> dict | None:
@@ -40,19 +40,25 @@ def request_schedule_page(url: str) -> Optional[str]:
             response.status_code,
             response.text,
         )
-        raise Exception(f"Failed to request basketball data from ESPN: {response.status_code}")
+        raise Exception(
+            f"Failed to request basketball data from ESPN: {response.status_code}"
+        )
     return response.text
 
 
-def find_most_recent_event(events: List[dict], desired_date: arrow.Arrow) -> Optional[dict]:
-    desired_date = desired_date.date()  # make the types match, and just get the date info
-    sorted_events = sorted(events, key=lambda x: x['date'])
-    if desired_date < sorted_events[0]['date']:
+def find_most_recent_event(
+    events: List[dict], desired_date: arrow.Arrow
+) -> Optional[dict]:
+    desired_date = (
+        desired_date.date()
+    )  # make the types match, and just get the date info
+    sorted_events = sorted(events, key=lambda x: x["date"])
+    if desired_date < sorted_events[0]["date"]:
         return None
     latest_match = sorted_events[0]
     # binary search is for nerds
     for event in sorted_events[1:]:
-        if event['date'] > desired_date:
+        if event["date"] > desired_date:
             return latest_match
         else:
             latest_match = event
@@ -71,10 +77,10 @@ def __read_events(season: dict) -> List[dict]:
             "opponent": event["opponent"],
             "date": arrow.get(event["date"]["date"]).date(),
             "result": event["result"],
-            "status": event["status"]
+            "status": event["status"],
         }
 
-    event_map = season['events']
+    event_map = season["events"]
     event_list = []
     for key, values in event_map.items():
         event_list.extend([parse_event(event) for event in values])
@@ -86,9 +92,11 @@ def __read_events(season: dict) -> List[dict]:
 # yeah it's not as elegant as consuming an API but whatever I'm lazy
 def __retrieve_basketball_json(response_text: str) -> dict | None:
     start = response_text.index(SCHEDULE_PAGE_START_MARKER)
-    true_start = response_text.index('{', start)
-    end = response_text.index('</script>', start)
-    true_end = response_text.rindex('}', start, end)
+    true_start = response_text.index("{", start)
+    end = response_text.index("</script>", start)
+    true_end = response_text.rindex("}", start, end)
 
-    logger.debug(f"Thinking we have the start of basketball data at {true_start} and the end at {true_end}")
-    return json.loads(response_text[true_start:true_end + 1])
+    logger.debug(
+        f"Thinking we have the start of basketball data at {true_start} and the end at {true_end}"
+    )
+    return json.loads(response_text[true_start : true_end + 1])
