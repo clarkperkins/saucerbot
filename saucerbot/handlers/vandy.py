@@ -2,7 +2,7 @@
 
 import logging
 
-from saucerbot.handlers import BotContext, registry, Message
+from saucerbot.handlers import BotContext, Message, registry
 from saucerbot.utils import did_the_dores_win
 
 logger = logging.getLogger(__name__)

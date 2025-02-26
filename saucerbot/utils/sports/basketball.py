@@ -6,7 +6,9 @@ from saucerbot.utils.sports.models import Team, VandyResult
 from saucerbot.utils.sports.schedule_page_utils import get_schedule_page_results
 
 ESPN_MENS_BASKETBALL_URL = "https://www.espn.com/mens-college-basketball/team/schedule/_/id/238/vanderbilt-commodores"
-ESPN_WOMENS_BASKETBALL_URL = "https://www.espn.com/womens-college-basketball/team/schedule/_/id/238"
+ESPN_WOMENS_BASKETBALL_URL = (
+    "https://www.espn.com/womens-college-basketball/team/schedule/_/id/238"
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,15 +47,19 @@ class WomensBasketball(Team):
         return any(match in message for match in ["wbb", "basketball", "women"])
 
 
-def _get_vandy_result_from_schedule_event(team_name: str, event: dict) -> VandyResult | None:
+def _get_vandy_result_from_schedule_event(
+    team_name: str, event: dict
+) -> VandyResult | None:
     if event is None:
         return None
 
     return VandyResult(
-        date=event['date'],
-        opponent_name=event['opponent']['displayName'],
-        opponent_score=int(event['result'].get('opponentTeamScore', -1)),
+        date=event["date"],
+        opponent_name=event["opponent"]["displayName"],
+        opponent_score=int(event["result"].get("opponentTeamScore", -1)),
         vandy_team=team_name,
-        vandy_score=int(event['result'].get('currentTeamScore', -1)),  # no guarantee that there are scores
-        is_finished=event['status']['completed']
+        vandy_score=int(
+            event["result"].get("currentTeamScore", -1)
+        ),  # no guarantee that there are scores
+        is_finished=event["status"]["completed"],
     )
