@@ -6,7 +6,7 @@ from typing import Optional
 import arrow
 import requests
 
-from saucerbot.utils.sports.models import VandyResult, Team
+from saucerbot.utils.sports.models import Team, VandyResult
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ ESPN_FOOTBALL_URL = (
 class VandyFootball(Team):
 
     def __init__(self):
-        super().__init__('Vandy Football')
+        super().__init__("Vandy Football")
 
     def is_in_season(self, desired_date: arrow.Arrow):
         return desired_date.month >= 8 or desired_date.month <= 2
@@ -32,16 +32,16 @@ class VandyFootball(Team):
             return None
         vandy, opponent = self.__get_teams(game_info)
         return VandyResult(
-            date=arrow.get(game_info['date']).date(),
+            date=arrow.get(game_info["date"]).date(),
             opponent_name=opponent["team"]["displayName"],
             opponent_score=opponent["score"],
             vandy_team=self.name,
             vandy_score=vandy["score"],
-            is_finished=game_info["status"]["type"]["completed"]
+            is_finished=game_info["status"]["type"]["completed"],
         )
 
     def has_match_in_message(self, message: str) -> bool:
-        return 'football' in message
+        return "football" in message
 
     @staticmethod
     def __get_teams(game: dict) -> tuple[dict, dict]:
