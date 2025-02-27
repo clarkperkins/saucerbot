@@ -9,7 +9,7 @@ import arrow
 
 from saucerbot.utils.sports.basketball import MensBasketball, WomensBasketball
 from saucerbot.utils.sports.football import VandyFootball
-from saucerbot.utils.sports.models import VandyResult
+from saucerbot.utils.sports.models import Team, VandyResult
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +49,8 @@ VANDY_TEAMS = [VandyFootball(), MensBasketball(), WomensBasketball()]
 
 
 def did_the_dores_win(
-    message: str = None,
-    desired_date: arrow.Arrow = None,
+    message: str | None = None,
+    desired_date: arrow.Arrow | None = None,
 ) -> str | None:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,
@@ -66,17 +66,19 @@ def did_the_dores_win(
 
     teams = determine_teams_for_lookup(message, desired_date)
     team_results = [team.get_latest_result(desired_date) for team in teams]
-    team_results = [result for result in team_results if result is not None]
+    filtered_team_results = filter_team_results(team_results, desired_date)
 
     if len(team_results) == 0:
         logger.debug("No game found")
         return None
 
-    team_results = sort_team_results(team_results, desired_date)
-    return build_message_response(team_results)
+    sorted_team_results = sort_team_results(filtered_team_results, desired_date)
+    return build_message_response(sorted_team_results)
 
 
-def determine_teams_for_lookup(message: str, desired_date: arrow.Arrow):
+def determine_teams_for_lookup(
+    message: str | None, desired_date: arrow.Arrow
+) -> list[Team]:
     if message:
         # if someone asks for them, we report
         matches = [
@@ -88,6 +90,14 @@ def determine_teams_for_lookup(message: str, desired_date: arrow.Arrow):
 
     # if no one's asked for, then we'll report whoever's in season
     return [team for team in VANDY_TEAMS if team.is_in_season(desired_date)]
+
+
+def filter_team_results(
+    results: List[VandyResult | None], desired_date: arrow.Arrow
+) -> List[VandyResult]:
+    date_limit = desired_date.shift(days=-3).date()
+    null_filtered = [x for x in results if x is not None]
+    return [result for result in null_filtered if result.date > date_limit]
 
 
 def sort_team_results(results: List[VandyResult], desired_date: arrow.Arrow):
