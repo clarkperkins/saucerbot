@@ -1,164 +1,176 @@
 # -*- coding: utf-8 -*-
 
-import datetime
 import logging
-import math
 import random
 import sys
+from typing import List, Tuple
 
 import arrow
-import requests
+
+from saucerbot.utils.sports.basketball import MensBasketball, WomensBasketball
+from saucerbot.utils.sports.football import VandyFootball
+from saucerbot.utils.sports.models import Team, VandyResult
 
 logger = logging.getLogger(__name__)
 
-ESPN_FOOTBALL_URL = (
-    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
-    "?lang=en&region=us&calendartype=blacklist&limit=300&dates={year}"
-    "&seasontype={season}&week={week}&groups=80"
-)
+GENERIC_VANDY_NAMES = ["The Dores", "Vandy", "The Commodores", "Vanderbilt"]
 
 WINNING_FORMATS = [
-    "Hell yeah! The 'Dores took down the {team} {vandy_score}-{other_score}",
-    "ATFD! Vandy rolled past the {team} {vandy_score}-{other_score}",
-    "The {team} stood no chance! Vandy wins {vandy_score}-{other_score}",
-    "Vandy conquered the {team}, prevailing with a score of {vandy_score}-{other_score}",
+    "{vandy_name} took down the {opponent_name} {vandy_score}-{opponent_score}",
+    "{vandy_name} rolled past the {opponent_name} {vandy_score}-{opponent_score}",
+    "The {opponent_name} stood no chance! {vandy_name} wins {vandy_score}-{opponent_score}",
+    "{vandy_name} conquered the {opponent_name}, prevailing with a score of {vandy_score}-{opponent_score}",
+    "{vandy_name} beat {opponent_name} {vandy_score}-{opponent_score}. Vandy, we're fuckin turnt!",
 ]
 
 LOSING_FORMATS = [
-    "Not this time... the {team} overcame Vandy {other_score}-{vandy_score}",
-    "No :( We lost {other_score}-{vandy_score} to the {team}",
+    "The {opponent_name} overcame {vandy_name} {opponent_score}-{vandy_score}",
+    "{vandy_name} lost {opponent_score}-{vandy_score} to the {opponent_name}",
 ]
 
-IN_PROGRESS_MESSAGES = [
-    "Time will tell...",
-    "Waiting on the result!",
-    "I don't know yet, but go dores!",
+IN_PROGRESS_FORMATS = [
+    "For {vandy_name} vs {opponent_name}? Time will tell...",
+    "Waiting on the {vandy_name}/{opponent_name} result!",
+    "Like {vandy_name}/{opponent_name}? I don't know yet, but go dores!",
 ]
 
+IN_PROGRESS_FOLLOW_UPS = [
+    "Still waiting to find out about {vandy_name} in their game vs {opponent_name}",
+    "Stay tuned to find out what happens as {vandy_name} takes on {opponent_name}",
+]
 
-def get_football_results(desired_date: arrow.Arrow) -> dict | None:
-    logger.debug("Getting the football results")
-    if (
-        1 < desired_date.month < 8
-    ):  # don't really care to do football if it's February-July
-        return None
-    if (desired_date.month == 12 and desired_date.day > 11) or desired_date.month == 1:
-        # if it's after Dec. 11, then it's a bowl game
-        season_type = 3  # code for bowl season
-        week = 1
-    else:
-        season_type = 2  # code for regular season
-        week = __get_week(desired_date)
-        logger.debug("It's week %i", week)
-    url = ESPN_FOOTBALL_URL.format(
-        year=desired_date.year, week=week, season=season_type
-    )
-    logger.debug("Requesting URL '%s'", url)
-    response = requests.get(url)
-    if 200 <= response.status_code < 300:
-        scores = response.json()
-        game = __get_the_dores_game(scores)
-        return game
-    else:
-        logger.warning(
-            "Received non-success response code: %i -- %s",
-            response.status_code,
-            response.text,
-        )
-        return None
+WINNING_INTERJECTIONS = ["ATFD!", "Hell yeah!", "Kachow!", "You know it!"]
+WINNING_CONJUNCTIONS = ["But that's not all!", "Also!", "Keep the party rolling!"]
+LOSING_INTERJECTIONS = ["No :(", "Not this time...", "Welllllll..."]
+LOSS_AFTER_WIN_CONJUNCTIONS = ["Buuut,", "Unfortunately though,"]
+LOSS_AFTER_LOSS_CONJUNCTIONS = ["And unfortunately,", "Ugh! And,"]
 
-
-def __get_the_dores_game(scores: dict) -> dict | None:
-    for ev in scores["events"]:
-        teams = ev["competitions"][0]["competitors"]
-        for team in teams:
-            if team["team"]["location"] == "Vanderbilt":
-                return ev
-    logger.info("Looked through all the events, couldn't find the Vandy game")
-    return None
-
-
-def __get_teams(game: dict) -> tuple[dict, dict]:
-    """
-    Extracts the teams from the game. Vandy will be returned first
-    :param game: the game information
-    :return: both teams, vandy first
-    """
-    team1 = game["competitions"][0]["competitors"][0]
-    team2 = game["competitions"][0]["competitors"][1]
-    if team1["team"]["location"] == "Vanderbilt":
-        return team1, team2
-    else:
-        return team2, team1
-
-
-def __get_week(desired_date: arrow.Arrow) -> int:
-    """
-    We're gonna assume that week 1 is always Labor Day  (which, in older seasons before
-    like 2007 wasn't the case, so we may need a better method for this in the future)
-    :param desired_date: the date we're checking the week from
-    :return: the week number
-    """
-    labor_day = arrow.get(datetime.datetime(desired_date.year, 9, 1), "US/Central")
-    while labor_day.weekday() != 0:
-        labor_day = labor_day.shift(days=+1)
-    # we'll say Thursday is the one we want to calculate from
-    week_1 = labor_day.shift(days=-4)
-    diff = desired_date - week_1
-    week = int(math.floor(diff.days / 7)) + 1
-    return week
+VANDY_TEAMS = [VandyFootball(), MensBasketball(), WomensBasketball()]
 
 
 def did_the_dores_win(
-    print_in_progress: bool = False,
-    print_loss: bool = False,
+    message: str | None = None,
     desired_date: arrow.Arrow | None = None,
 ) -> str | None:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,
     or a loss with the first argument set to true. Right now it only does football, but basketball
     should be pretty easy to incorporate
-    :param print_in_progress:
-    :param print_loss: if True, will return a message in the event of a loss. If false, None will
-        be returned for a loss
+    :param message: the trigger message from the chat
     :param desired_date: the date to check the score from
     :return: A String message if Vandy won, then either None or a losing message if we lost,
         depending on the parameter
     """
     if desired_date is None:
         desired_date = arrow.now("US/Central")
-    game = get_football_results(desired_date)
-    if game is None:
+
+    teams = determine_teams_for_lookup(message, desired_date)
+    team_results = [team.get_latest_result(desired_date) for team in teams]
+    filtered_team_results = filter_team_results(team_results, desired_date)
+
+    if len(team_results) == 0:
         logger.debug("No game found")
         return None
-    else:
-        vandy, opponent = __get_teams(game)
-        if game["status"]["type"]["completed"] is False:
-            logger.debug("Game still in progress")
-            if print_in_progress:
-                return random.choice(IN_PROGRESS_MESSAGES)
-            else:
-                return None
-        elif vandy["winner"] is True:
-            response = random.choice(WINNING_FORMATS)
-        else:
-            if print_loss:
-                response = random.choice(LOSING_FORMATS)
-            else:
-                logger.debug("Vandy lost, but no printing is enabled")
-                return None
-        return response.format(
-            team=opponent["team"]["displayName"],
-            vandy_score=vandy["score"],
-            other_score=opponent["score"],
+
+    sorted_team_results = sort_team_results(filtered_team_results, desired_date)
+    return build_message_response(sorted_team_results)
+
+
+def determine_teams_for_lookup(
+    message: str | None, desired_date: arrow.Arrow
+) -> list[Team]:
+    if message:
+        # if someone asks for them, we report
+        matches = [
+            team for team in VANDY_TEAMS if team.has_match_in_message(message.lower())
+        ]
+        if len(matches) > 0:
+            logger.debug(f"Found matches in {message} for some specific teams")
+            return matches
+
+    # if no one's asked for, then we'll report whoever's in season
+    return [team for team in VANDY_TEAMS if team.is_in_season(desired_date)]
+
+
+def filter_team_results(
+    results: List[VandyResult | None], desired_date: arrow.Arrow
+) -> List[VandyResult]:
+    date_limit = desired_date.shift(days=-3).date()
+    null_filtered = [x for x in results if x is not None]
+    return [result for result in null_filtered if result.date > date_limit]
+
+
+def sort_team_results(results: List[VandyResult], desired_date: arrow.Arrow):
+    # Priority: Date is on or before today, Is a Win, Is Loss,
+    # Is still In Progress (or is later today), is in the Future
+    def sort_key(result: VandyResult) -> Tuple:
+        result_not_in_future = result.date <= desired_date.date()
+        return (result_not_in_future, result.is_win(), result.date, result.is_finished)
+
+    return sorted(results, key=sort_key, reverse=True)
+
+
+def build_message_response(results: List[VandyResult]) -> str:
+    response = __build_single_result_response(results[0], len(results) == 1)
+    last_result = results[0]
+    for result in results[1:]:
+        response += "\n\n" + __build_follow_up_response(result, last_result)
+        last_result = result
+
+    return response
+
+
+def __build_single_result_response(result: VandyResult, is_only_result: bool) -> str:
+    if not result.is_finished:
+        logger.debug("Game is either later today or still in progress")
+        format_string = random.choice(IN_PROGRESS_FORMATS)
+    elif result.is_win():
+        format_string = (
+            random.choice(WINNING_INTERJECTIONS) + " " + random.choice(WINNING_FORMATS)
         )
+    else:
+        format_string = (
+            random.choice(LOSING_INTERJECTIONS) + " " + random.choice(LOSING_FORMATS)
+        )
+
+    vandy_team_name = "Vandy" if is_only_result else result.vandy_team
+    return format_string.format(
+        vandy_name=vandy_team_name,
+        vandy_score=result.vandy_score,
+        opponent_name=result.opponent,
+        opponent_score=result.opponent_score,
+    )
+
+
+def __build_follow_up_response(result: VandyResult, last_result: VandyResult) -> str:
+    if not result.is_finished:
+        format_string = random.choice(IN_PROGRESS_FOLLOW_UPS)
+    elif result.is_win():
+        format_string = (
+            random.choice(WINNING_CONJUNCTIONS) + " " + random.choice(WINNING_FORMATS)
+        )
+    else:
+        conjunction = (
+            random.choice(LOSS_AFTER_WIN_CONJUNCTIONS)
+            if last_result.is_win()
+            else random.choice(LOSS_AFTER_LOSS_CONJUNCTIONS)
+        )
+        format_string = conjunction + " " + random.choice(LOSING_FORMATS)
+
+    return format_string.format(
+        vandy_name=result.vandy_team,
+        vandy_score=result.vandy_score,
+        opponent_name=result.opponent,
+        opponent_score=result.opponent_score,
+    )
 
 
 # Good for testing the feature
 if __name__ == "__main__":
-    date: arrow.Arrow | None
+    message = None
+    date = None
     if len(sys.argv) > 1:
-        date = arrow.get(sys.argv[1], "MM-DD-YYYY")
-    else:
-        date = None
-    print(did_the_dores_win(True, True, date))
+        message = sys.argv[1]
+    if len(sys.argv) > 2:
+        date = arrow.get(sys.argv[2], "YYYY-MM-DD")
+    print(did_the_dores_win(message, date))
