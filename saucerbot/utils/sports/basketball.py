@@ -48,7 +48,7 @@ class WomensBasketball(Team):
 
 
 def _get_vandy_result_from_schedule_event(
-    team_name: str, event: dict
+    team_name: str, event: dict | None
 ) -> VandyResult | None:
     if event is None:
         return None

@@ -39,7 +39,7 @@ class Team(metaclass=ABCMeta):
     def is_in_season(self, desired_date: arrow.Arrow) -> bool:
         raise NotImplementedError()
 
-    def get_latest_result(self, desired_date: arrow.Arrow) -> Optional[VandyResult]:
+    def get_latest_result(self, desired_date: arrow.Arrow) -> VandyResult | None:
         raise NotImplementedError()
 
     def has_match_in_message(self, message: str) -> bool:
