@@ -184,7 +184,7 @@ class Channel(models.Model):
             for h in registry
             if h.on_by_default
         ]
-        self.handlers.abulk_create(default_handlers)
+        await self.handlers.abulk_create(default_handlers)
 
 
 class Handler(models.Model):
