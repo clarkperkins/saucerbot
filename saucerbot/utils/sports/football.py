@@ -70,7 +70,7 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
         week = 1
     else:
         season_type = 2  # code for regular season
-        week = __get_week(desired_date)
+        week = get_week(desired_date)
         logger.debug("It's week %i", week)
     url = ESPN_FOOTBALL_URL.format(
         year=desired_date.year, week=week, season=season_type
@@ -100,7 +100,7 @@ def __get_the_dores_game(scores: dict) -> dict | None:
     return None
 
 
-def __get_week(desired_date: arrow.Arrow) -> int:
+def get_week(desired_date: arrow.Arrow) -> int:
     """
     We're gonna assume that week 1 is always Labor Day  (which, in older seasons before
     like 2007 wasn't the case, so we may need a better method for this in the future)
