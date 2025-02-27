@@ -32,7 +32,7 @@ def get_schedule_page_results(url: str, desired_date: arrow.Arrow) -> dict | Non
         return None
 
 
-def request_schedule_page(url: str) -> Optional[str]:
+def request_schedule_page(url: str) -> str:
     response = requests.get(url, headers=HEADERS_FOR_ESPN)
     if not (200 <= response.status_code < 300):
         logger.warning(
@@ -49,16 +49,16 @@ def request_schedule_page(url: str) -> Optional[str]:
 def find_most_recent_event(
     events: List[dict], desired_date: arrow.Arrow
 ) -> Optional[dict]:
-    desired_date = (
+    desired_date_casted = (
         desired_date.date()
     )  # make the types match, and just get the date info
     sorted_events = sorted(events, key=lambda x: x["date"])
-    if desired_date < sorted_events[0]["date"]:
+    if desired_date_casted < sorted_events[0]["date"]:
         return None
     latest_match = sorted_events[0]
     # binary search is for nerds
     for event in sorted_events[1:]:
-        if event["date"] > desired_date:
+        if event["date"] > desired_date_casted:
             return latest_match
         else:
             latest_match = event
@@ -90,7 +90,7 @@ def __read_events(season: dict) -> List[dict]:
 
 
 # yeah it's not as elegant as consuming an API but whatever I'm lazy
-def __retrieve_basketball_json(response_text: str) -> dict | None:
+def __retrieve_basketball_json(response_text: str) -> dict:
     start = response_text.index(SCHEDULE_PAGE_START_MARKER)
     true_start = response_text.index("{", start)
     end = response_text.index("</script>", start)
