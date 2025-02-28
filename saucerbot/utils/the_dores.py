@@ -68,7 +68,7 @@ def did_the_dores_win(
     team_results = [team.get_latest_result(desired_date) for team in teams]
     filtered_team_results = filter_team_results(team_results, desired_date)
 
-    if len(team_results) == 0:
+    if len(filtered_team_results) == 0:
         logger.debug("No game found")
         return None
 
