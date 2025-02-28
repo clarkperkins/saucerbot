@@ -7,6 +7,7 @@ import arrow
 import requests
 
 from saucerbot.utils.sports.models import Team, VandyResult
+from saucerbot.utils.time_utils import get_date_from_string
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class VandyFootball(Team):
         super().__init__("Vandy Football")
 
     def is_in_season(self, desired_date: arrow.Arrow):
-        return desired_date.month >= 8 or desired_date.month <= 2
+        return desired_date.month >= 8 or desired_date.month < 2
 
     def get_latest_result(self, desired_date: arrow.Arrow):
         game_info = get_football_results(desired_date)
@@ -32,7 +33,7 @@ class VandyFootball(Team):
             return None
         vandy, opponent = self.__get_teams(game_info)
         return VandyResult(
-            date=arrow.get(game_info["date"]).date(),
+            date=get_date_from_string(game_info["date"]),
             opponent_name=opponent["team"]["displayName"],
             opponent_score=opponent["score"],
             vandy_team=self.name,

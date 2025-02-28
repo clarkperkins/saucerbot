@@ -5,7 +5,7 @@ from typing import List, Optional
 import arrow
 import requests
 
-from saucerbot.utils.sports.models import VandyResult
+from saucerbot.utils.time_utils import get_date_from_string
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +75,7 @@ def __read_events(season: dict) -> List[dict]:
     def parse_event(event: dict) -> dict:
         return {
             "opponent": event["opponent"],
-            "date": arrow.get(event["date"]["date"]).date(),
+            "date": get_date_from_string(event["date"]["date"]),
             "result": event["result"],
             "status": event["status"],
         }
