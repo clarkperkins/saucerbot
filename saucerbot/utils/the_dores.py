@@ -20,7 +20,7 @@ WINNING_FORMATS = [
     "{vandy_name} rolled past the {opponent_name} {vandy_score}-{opponent_score}",
     "The {opponent_name} stood no chance! {vandy_name} wins {vandy_score}-{opponent_score}",
     "{vandy_name} conquered the {opponent_name}, prevailing with a score of {vandy_score}-{opponent_score}",
-    "{vandy_name} beat {opponent_name} {vandy_score}-{opponent_score}. Vandy, we're fuckin turnt!",
+    "{vandy_name} beat the {opponent_name} {vandy_score}-{opponent_score}. Vandy, we're fuckin turnt!",
 ]
 
 LOSING_FORMATS = [
@@ -29,14 +29,14 @@ LOSING_FORMATS = [
 ]
 
 IN_PROGRESS_FORMATS = [
-    "For {vandy_name} vs {opponent_name}? Time will tell...",
+    "For {vandy_name} vs the {opponent_name}? Time will tell...",
     "Waiting on the {vandy_name}/{opponent_name} result!",
     "Like {vandy_name}/{opponent_name}? I don't know yet, but go dores!",
 ]
 
 IN_PROGRESS_FOLLOW_UPS = [
-    "Still waiting to find out about {vandy_name} in their game vs {opponent_name}",
-    "Stay tuned to find out what happens as {vandy_name} takes on {opponent_name}",
+    "Still waiting to find out about {vandy_name} in their game vs the {opponent_name}",
+    "Stay tuned to find out what happens as {vandy_name} takes on the {opponent_name}",
 ]
 
 WINNING_INTERJECTIONS = ["ATFD!", "Hell yeah!", "Kachow!", "You know it!"]
