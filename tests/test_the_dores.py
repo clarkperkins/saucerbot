@@ -1,9 +1,12 @@
+from unittest.mock import Mock
+
 import arrow
 import pytest
 
+from saucerbot.utils import did_the_dores_win
 from saucerbot.utils.sports.basketball import MensBasketball, WomensBasketball
 from saucerbot.utils.sports.football import VandyFootball
-from saucerbot.utils.sports.models import VandyResult
+from saucerbot.utils.sports.models import Team, VandyResult
 from saucerbot.utils.the_dores import (
     build_message_response,
     determine_teams_for_lookup,
@@ -11,7 +14,7 @@ from saucerbot.utils.the_dores import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def replace_options_for_text(monkeypatch):
     monkeypatch.setattr(
         "saucerbot.utils.the_dores.WINNING_FORMATS", ["{vandy_name} win"]
@@ -39,6 +42,54 @@ def replace_options_for_text(monkeypatch):
     monkeypatch.setattr(
         "saucerbot.utils.the_dores.LOSS_AFTER_LOSS_CONJUNCTIONS", ["loss_after_loss"]
     )
+
+
+@pytest.fixture()
+def mock_team_1():
+    team_1 = Mock(Team)
+    team_1.name = "Team1"
+    team_1.is_in_season.return_value = True
+    team_1.has_match_in_message.return_value = True
+    team_1.get_latest_result.return_value = VandyResult(
+        arrow.get("2021-01-01").date(), True, "Team1", 30, "Opp", 27
+    )
+    return team_1
+
+
+@pytest.fixture()
+def mock_team_2():
+    team_2 = Mock(Team)
+    team_2.name = "Team2"
+    team_2.is_in_season.return_value = True
+    team_2.has_match_in_message.return_value = False
+    team_2.get_latest_result.return_value = VandyResult(
+        arrow.get("2021-01-02").date(), True, "Team2", 30, "Opp", 50
+    )
+    return team_2
+
+
+@pytest.fixture()
+def mock_team_3():  # never returns results
+    team_3 = Mock(Team)
+    team_3.name = "Team2"
+    team_3.is_in_season.return_value = True
+    team_3.has_match_in_message.return_value = False
+    team_3.get_latest_result.return_value = None
+    return team_3
+
+
+@pytest.fixture()
+def mocked_teams(mock_team_1, mock_team_2, mock_team_3, monkeypatch):
+    teams_list = [mock_team_1, mock_team_2, mock_team_3]
+    monkeypatch.setattr("saucerbot.utils.the_dores.VANDY_TEAMS", teams_list)
+    return teams_list
+
+
+@pytest.fixture()
+def mock_teams_no_message_match(mock_team_2, monkeypatch):
+    teams_list = [mock_team_2]
+    monkeypatch.setattr("saucerbot.utils.the_dores.VANDY_TEAMS", teams_list)
+    return teams_list
 
 
 # testing by season inclusion
@@ -206,7 +257,7 @@ def test_sort_team_results(results, expected_order):
     assert [result.opponent for result in sorted_results] == expected_order
 
 
-def test_build_message_response_one_result(replace_options_for_text):
+def test_build_message_response_one_result():
     results = [
         VandyResult(arrow.now().date(), True, "Vandy Football", 30, "Alabama", 27)
     ]
@@ -214,7 +265,7 @@ def test_build_message_response_one_result(replace_options_for_text):
     assert "win_inter Vandy win" in result
 
 
-def test_build_message_response_two_wins(replace_options_for_text):
+def test_build_message_response_two_wins():
     results = [
         VandyResult(
             arrow.get("2024-09-01").date(), True, "Vandy Football", 30, "Alabama", 27
@@ -228,7 +279,7 @@ def test_build_message_response_two_wins(replace_options_for_text):
     assert "win_conj Vandy Basketball win" in result
 
 
-def test_build_message_response_win_loss(replace_options_for_text):
+def test_build_message_response_win_loss():
     results = [
         VandyResult(
             arrow.get("2024-09-01").date(), True, "Vandy Football", 55, "Alabama", 35
@@ -242,7 +293,7 @@ def test_build_message_response_win_loss(replace_options_for_text):
     assert "loss_after_win Vandy Basketball loss" in result
 
 
-def test_build_message_response_two_losses(replace_options_for_text):
+def test_build_message_response_two_losses():
     results = [
         VandyResult(
             arrow.get("2024-09-01").date(), True, "Vandy Football", 14, "Alabama", 35
@@ -256,7 +307,7 @@ def test_build_message_response_two_losses(replace_options_for_text):
     assert "loss_after_loss Vandy Basketball loss" in result
 
 
-def test_build_message_response_one_win_one_in_progress(replace_options_for_text):
+def test_build_message_response_one_win_one_in_progress():
     results = [
         VandyResult(
             arrow.get("2024-09-01").date(), True, "Vandy Football", 30, "Alabama", 27
@@ -270,7 +321,7 @@ def test_build_message_response_one_win_one_in_progress(replace_options_for_text
     assert "Vandy Basketball in_prog_follow" in result
 
 
-def test_build_message_response_two_in_progress(replace_options_for_text):
+def test_build_message_response_two_in_progress():
     results = [
         VandyResult(
             arrow.get("2024-09-01").date(), False, "Vandy Football", 0, "Alabama", 0
@@ -282,3 +333,40 @@ def test_build_message_response_two_in_progress(replace_options_for_text):
     result = build_message_response(results)
     assert "Vandy Football in_prog" in result
     assert "Vandy Basketball in_prog_follow" in result
+
+
+@pytest.mark.parametrize(
+    "message,desired_date,result_text",
+    [
+        (
+            None,
+            arrow.get("2021-01-03"),
+            "win_inter Team1 win\n\nloss_after_win Team2 loss",
+        ),
+        (
+            None,
+            arrow.get("2021-01-04"),
+            "loss_inter Vandy loss",
+        ),  # within 3 days for team 2
+        (
+            "Message",
+            arrow.get("2021-01-03"),
+            "win_inter Vandy win",
+        ),  # has message match for team 1
+        (
+            "Message",
+            arrow.get("2021-01-06"),
+            None,
+        ),  # message match, but beyond acceptable date
+        (None, arrow.get("2021-01-10"), None),  # no matches at all
+    ],
+)
+def test_the_whole_thing_no_message(mocked_teams, message, desired_date, result_text):
+    actual_value = did_the_dores_win(message, desired_date)
+    assert actual_value == result_text
+
+
+# gotta make sure if there's no match, we still run
+def test_the_whole_thing_no_message_match(mock_teams_no_message_match):
+    actual_value = did_the_dores_win("Message provided", arrow.get("2021-01-03"))
+    assert actual_value == "loss_inter Vandy loss"

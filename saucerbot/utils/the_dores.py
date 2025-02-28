@@ -10,6 +10,7 @@ import arrow
 from saucerbot.utils.sports.basketball import MensBasketball, WomensBasketball
 from saucerbot.utils.sports.football import VandyFootball
 from saucerbot.utils.sports.models import Team, VandyResult
+from saucerbot.utils.time_utils import CENTRAL_TIME
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,11 @@ IN_PROGRESS_FOLLOW_UPS = [
 ]
 
 WINNING_INTERJECTIONS = ["ATFD!", "Hell yeah!", "Kachow!", "You know it!"]
-WINNING_CONJUNCTIONS = ["But that's not all!", "Also!", "Keep the party rolling!"]
+WINNING_CONJUNCTIONS = [
+    "But that's not all!",
+    "Also!",
+    "And let's keep the party rolling!",
+]
 LOSING_INTERJECTIONS = ["No :(", "Not this time...", "Welllllll..."]
 LOSS_AFTER_WIN_CONJUNCTIONS = ["Buuut,", "Unfortunately though,"]
 LOSS_AFTER_LOSS_CONJUNCTIONS = ["And unfortunately,", "Ugh! And,"]
@@ -54,15 +59,14 @@ def did_the_dores_win(
 ) -> str | None:
     """
     Checks if the dores won on the desired date! It'll return a response in the case of a win,
-    or a loss with the first argument set to true. Right now it only does football, but basketball
-    should be pretty easy to incorporate
+    or a loss with the first argument set to true. Handles football and both basketballs
     :param message: the trigger message from the chat
     :param desired_date: the date to check the score from
     :return: A String message if Vandy won, then either None or a losing message if we lost,
         depending on the parameter
     """
     if desired_date is None:
-        desired_date = arrow.now("US/Central")
+        desired_date = arrow.now(CENTRAL_TIME)
 
     teams = determine_teams_for_lookup(message, desired_date)
     team_results = [team.get_latest_result(desired_date) for team in teams]
@@ -85,7 +89,9 @@ def determine_teams_for_lookup(
             team for team in VANDY_TEAMS if team.has_match_in_message(message.lower())
         ]
         if len(matches) > 0:
-            logger.debug(f"Found matches in {message} for some specific teams")
+            logger.debug(
+                f"Found {len(matches)} matches in {message} for some specific teams' results"
+            )
             return matches
 
     # if no one's asked for, then we'll report whoever's in season
