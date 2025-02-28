@@ -13,7 +13,7 @@ from saucerbot.utils.sports.schedule_page_utils import (
 simple_events = [
     {
         "date": {
-            "date": "2024-11-14T01:00Z",
+            "date": "2024-11-14T22:00Z",
         },
         "opponent": {
             "id": "25",
@@ -41,13 +41,25 @@ simple_events = [
     }
 ]
 
-simple_espn_fitt = {
-    "page": {
-        "content": {
-            "scheduleData": {"teamSchedule": [{"events": {"post": simple_events}}]}
-        }
-    }
-}
+events_with_weird_times = [
+    {
+        "date": {
+            "date": "2024-12-25T01:00Z",  # would be a day earlier in central
+        },
+        "opponent": {
+            "displayName": "California Golden Bears",
+        },
+        "result": {
+            "currentTeamScore": "85",
+            "opponentTeamScore": "69",
+        },
+        "status": {
+            "name": "STATUS_FINAL",
+            "state": "post",
+            "completed": True,
+        },
+    },
+]
 
 simple_schedule_html = """
 <html>
@@ -55,9 +67,29 @@ simple_schedule_html = """
     window['CONFIG']={{"config": "a"}};
     window['__espnfitt__']={config_json};
   </script>
-</html>""".format(
-    config_json=json.dumps(simple_espn_fitt)
-)
+</html>"""
+
+
+def events_list_to_espn_fitt(events_list: list[dict]) -> dict:
+    return {
+        "page": {
+            "content": {
+                "scheduleData": {"teamSchedule": [{"events": {"post": events_list}}]}
+            }
+        }
+    }
+
+
+@pytest.fixture()
+def simple_events_page():
+    espn_fitt = events_list_to_espn_fitt(simple_events)
+    return simple_schedule_html.format(config_json=json.dumps(espn_fitt))
+
+
+@pytest.fixture()
+def events_with_weird_times_page():
+    espn_fitt = events_list_to_espn_fitt(events_with_weird_times)
+    return simple_schedule_html.format(config_json=json.dumps(espn_fitt))
 
 
 @pytest.fixture
@@ -94,11 +126,21 @@ def sample_events():
     ]
 
 
-def test_read_simple_events():
-    events = read_schedule_events(simple_schedule_html)
+def test_read_simple_events(simple_events_page):
+    events = read_schedule_events(simple_events_page)
     assert len(events) == 1
 
     assert events[0]["date"] == datetime(2024, 11, 14).date()
+    assert "opponent" in events[0]
+    assert "result" in events[0]
+    assert "status" in events[0]
+
+
+def test_weird_time_events(events_with_weird_times_page):
+    events = read_schedule_events(events_with_weird_times_page)
+    assert len(events) == 1
+
+    assert events[0]["date"] == datetime(2024, 12, 24).date()
     assert "opponent" in events[0]
     assert "result" in events[0]
     assert "status" in events[0]
@@ -112,12 +154,12 @@ def test_sample_event_page():
     assert len(events) == 6
 
     expected_dates = [
-        datetime(2024, 11, 5),
-        datetime(2024, 11, 10),
-        datetime(2024, 11, 14),
-        datetime(2025, 2, 12),
-        datetime(2025, 2, 15),
-        datetime(2025, 2, 20),
+        datetime(2024, 11, 4),  # 01:00Z
+        datetime(2024, 11, 10),  # 18:00Z
+        datetime(2024, 11, 13),  # 01:00Z
+        datetime(2025, 2, 11),  # 00:00Z
+        datetime(2025, 2, 15),  # 18:00Z
+        datetime(2025, 2, 19),  # 00:00Z
     ]
 
     actual_dates = sorted([event["date"] for event in events])

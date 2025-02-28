@@ -44,5 +44,9 @@ There's a Makefile that will help you run the CI checks and code standard stuff.
   - ``make test``: runs the tests. Probably have to set DJANGO_ENV. Recommend ``DJANGO_ENV=test make test``
   - ``make ci``: runs all the MR checks. Probably have to set the DJANGO_ENV env var
 
+In sum, since the CI runs format checks, tests, and type checking, you should run this before pushing::
+
+    DJANGO_ENV=test make ci
+
 
 When you're submitting MRs or merging MRs, Clark kinda has to be involved cause he's the only one who can deploy.
