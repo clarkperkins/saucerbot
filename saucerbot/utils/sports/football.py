@@ -35,9 +35,9 @@ class VandyFootball(Team):
         return VandyResult(
             date=get_date_from_string(game_info["date"]),
             opponent_name=opponent["team"]["displayName"],
-            opponent_score=opponent["score"],
+            opponent_score=int(opponent["score"]),
             vandy_team=self.name,
-            vandy_score=vandy["score"],
+            vandy_score=int(vandy["score"]),
             is_finished=game_info["status"]["type"]["completed"],
         )
 
