@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import uuid
+from asyncio import AbstractEventLoop
 from collections import defaultdict
+from typing import Iterator
 
 import discord.ext.test as dpytest
 import pytest
@@ -166,6 +168,12 @@ def setup_bot(db, gmi, monkeypatch):
 
     return bot
 
+
+@pytest.fixture(scope="function")
+def event_loop(request: pytest.FixtureRequest) -> Iterator[AbstractEventLoop]:
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 @pytest.fixture(name="discord_client")
 def setup_discord_client(event_loop):
