@@ -23,8 +23,8 @@ class BaseUser(models.Model):
     is_superuser = False
 
     objects = models.Manager()
-    _groups = EmptyManager(auth_models.Group)
-    _user_permissions = EmptyManager(auth_models.Permission)
+    _groups = EmptyManager(auth_models.Group)  # type: ignore
+    _user_permissions = EmptyManager(auth_models.Permission)  # type: ignore
 
     @property
     @abstractmethod
