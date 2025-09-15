@@ -3,25 +3,16 @@ from abc import ABCMeta
 from typing import Optional
 
 import arrow
+from pydantic import BaseModel
 
 
-class VandyResult:
-
-    def __init__(
-        self,
-        date: datetime.date,
-        is_finished: bool,
-        vandy_team: str,
-        vandy_score: Optional[int],
-        opponent_name: str,
-        opponent_score: Optional[int],
-    ):
-        self.date = date
-        self.is_finished = is_finished
-        self.vandy_team = vandy_team
-        self.vandy_score = vandy_score
-        self.opponent = opponent_name
-        self.opponent_score = opponent_score
+class VandyResult(BaseModel):
+    date: datetime.date
+    is_finished: bool
+    vandy_team: str
+    vandy_score: Optional[int]
+    opponent: str
+    opponent_score: Optional[int]
 
     def is_win(self):
         return self.is_finished and self.vandy_score > self.opponent_score

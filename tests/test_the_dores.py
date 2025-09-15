@@ -51,7 +51,12 @@ def mock_team_1():
     team_1.is_in_season.return_value = True
     team_1.has_match_in_message.return_value = True
     team_1.get_latest_result.return_value = VandyResult(
-        arrow.get("2021-01-01").date(), True, "Team1", 30, "Opp", 27
+        date=arrow.get("2021-01-01").date(),
+        is_finished=True,
+        vandy_team="Team1",
+        vandy_score=30,
+        opponent="Opp",
+        opponent_score=27,
     )
     return team_1
 
@@ -63,7 +68,12 @@ def mock_team_2():
     team_2.is_in_season.return_value = True
     team_2.has_match_in_message.return_value = False
     team_2.get_latest_result.return_value = VandyResult(
-        arrow.get("2021-01-02").date(), True, "Team2", 30, "Opp", 50
+        date=arrow.get("2021-01-02").date(),
+        is_finished=True,
+        vandy_team="Team2",
+        vandy_score=30,
+        opponent="Opp",
+        opponent_score=50,
     )
     return team_2
 
@@ -142,28 +152,28 @@ def test_determine_teams_for_lookup(message, expected_teams):
         (
             [
                 VandyResult(
-                    arrow.get("2024-09-09").date(),
-                    True,
-                    "Vandy Football",
-                    21,
-                    "Georgia",
-                    35,
+                    date=arrow.get("2024-09-09").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=21,
+                    opponent="Georgia",
+                    opponent_score=35,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-11").date(),
-                    True,
-                    "Vandy Football",
-                    24,
-                    "LSU",
-                    20,
+                    date=arrow.get("2024-09-11").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=24,
+                    opponent="LSU",
+                    opponent_score=20,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-10").date(),
-                    True,
-                    "Vandy Football",
-                    30,
-                    "Alabama",
-                    27,
+                    date=arrow.get("2024-09-10").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=30,
+                    opponent="Alabama",
+                    opponent_score=27,
                 ),
             ],
             ["LSU", "Alabama", "Georgia"],
@@ -172,28 +182,28 @@ def test_determine_teams_for_lookup(message, expected_teams):
         (
             [
                 VandyResult(
-                    arrow.get("2024-09-11").date(),
-                    True,
-                    "Vandy Football",
-                    21,
-                    "Georgia",
-                    35,
+                    date=arrow.get("2024-09-11").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=21,
+                    opponent="Georgia",
+                    opponent_score=35,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-11").date(),
-                    True,
-                    "Vandy Football",
-                    30,
-                    "Alabama",
-                    27,
+                    date=arrow.get("2024-09-11").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=30,
+                    opponent="Alabama",
+                    opponent_score=27,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-11").date(),
-                    False,
-                    "Vandy Football",
-                    14,
-                    "Florida",
-                    14,
+                    date=arrow.get("2024-09-11").date(),
+                    is_finished=False,
+                    vandy_team="Vandy Football",
+                    vandy_score=14,
+                    opponent="Florida",
+                    opponent_score=14,
                 ),
             ],
             ["Alabama", "Georgia", "Florida"],
@@ -202,28 +212,28 @@ def test_determine_teams_for_lookup(message, expected_teams):
         (
             [
                 VandyResult(
-                    arrow.get("2024-09-10").date(),
-                    True,
-                    "Vandy Football",
-                    21,
-                    "Missouri",
-                    35,
+                    date=arrow.get("2024-09-10").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=21,
+                    opponent="Missouri",
+                    opponent_score=35,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-11").date(),
-                    False,
-                    "Vandy Football",
-                    14,
-                    "Texas",
-                    14,
+                    date=arrow.get("2024-09-11").date(),
+                    is_finished=False,
+                    vandy_team="Vandy Football",
+                    vandy_score=14,
+                    opponent="Texas",
+                    opponent_score=14,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-09").date(),
-                    True,
-                    "Vandy Football",
-                    30,
-                    "Alabama",
-                    27,
+                    date=arrow.get("2024-09-09").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=30,
+                    opponent="Alabama",
+                    opponent_score=27,
                 ),
             ],
             ["Alabama", "Texas", "Missouri"],
@@ -232,20 +242,20 @@ def test_determine_teams_for_lookup(message, expected_teams):
         (
             [
                 VandyResult(
-                    arrow.get("2024-09-10").date(),
-                    True,
-                    "Vandy Football",
-                    30,
-                    "Alabama",
-                    27,
+                    date=arrow.get("2024-09-10").date(),
+                    is_finished=True,
+                    vandy_team="Vandy Football",
+                    vandy_score=30,
+                    opponent="Alabama",
+                    opponent_score=27,
                 ),
                 VandyResult(
-                    arrow.get("2024-09-15").date(),
-                    False,
-                    "Vandy Football",
-                    0,
-                    "Tennessee",
-                    0,
+                    date=arrow.get("2024-09-15").date(),
+                    is_finished=False,
+                    vandy_team="Vandy Football",
+                    vandy_score=0,
+                    opponent="Tennessee",
+                    opponent_score=0,
                 ),
             ],
             ["Alabama", "Tennessee"],
@@ -259,7 +269,14 @@ def test_sort_team_results(results, expected_order):
 
 def test_build_message_response_one_result():
     results = [
-        VandyResult(arrow.now().date(), True, "Vandy Football", 30, "Alabama", 27)
+        VandyResult(
+            date=arrow.now().date(),
+            is_finished=True,
+            vandy_team="Vandy Football",
+            vandy_score=30,
+            opponent="Alabama",
+            opponent_score=27,
+        )
     ]
     result = build_message_response(results)
     assert "win_inter Vandy win" in result
@@ -268,10 +285,20 @@ def test_build_message_response_one_result():
 def test_build_message_response_two_wins():
     results = [
         VandyResult(
-            arrow.get("2024-09-01").date(), True, "Vandy Football", 30, "Alabama", 27
+            date=arrow.get("2024-09-01").date(),
+            is_finished=True,
+            vandy_team="Vandy Football",
+            vandy_score=30,
+            opponent="Alabama",
+            opponent_score=27,
         ),
         VandyResult(
-            arrow.get("2024-09-02").date(), True, "Vandy Basketball", 35, "Georgia", 28
+            date=arrow.get("2024-09-02").date(),
+            is_finished=True,
+            vandy_team="Vandy Basketball",
+            vandy_score=35,
+            opponent="Georgia",
+            opponent_score=28,
         ),
     ]
     result = build_message_response(results)
@@ -282,10 +309,20 @@ def test_build_message_response_two_wins():
 def test_build_message_response_win_loss():
     results = [
         VandyResult(
-            arrow.get("2024-09-01").date(), True, "Vandy Football", 55, "Alabama", 35
+            date=arrow.get("2024-09-01").date(),
+            is_finished=True,
+            vandy_team="Vandy Football",
+            vandy_score=55,
+            opponent="Alabama",
+            opponent_score=35,
         ),
         VandyResult(
-            arrow.get("2024-09-02").date(), True, "Vandy Basketball", 10, "Georgia", 21
+            date=arrow.get("2024-09-02").date(),
+            is_finished=True,
+            vandy_team="Vandy Basketball",
+            vandy_score=10,
+            opponent="Georgia",
+            opponent_score=21,
         ),
     ]
     result = build_message_response(results)
@@ -296,10 +333,20 @@ def test_build_message_response_win_loss():
 def test_build_message_response_two_losses():
     results = [
         VandyResult(
-            arrow.get("2024-09-01").date(), True, "Vandy Football", 14, "Alabama", 35
+            date=arrow.get("2024-09-01").date(),
+            is_finished=True,
+            vandy_team="Vandy Football",
+            vandy_score=14,
+            opponent="Alabama",
+            opponent_score=35,
         ),
         VandyResult(
-            arrow.get("2024-09-02").date(), True, "Vandy Basketball", 10, "Georgia", 21
+            date=arrow.get("2024-09-02").date(),
+            is_finished=True,
+            vandy_team="Vandy Basketball",
+            vandy_score=10,
+            opponent="Georgia",
+            opponent_score=21,
         ),
     ]
     result = build_message_response(results)
@@ -310,10 +357,20 @@ def test_build_message_response_two_losses():
 def test_build_message_response_one_win_one_in_progress():
     results = [
         VandyResult(
-            arrow.get("2024-09-01").date(), True, "Vandy Football", 30, "Alabama", 27
+            date=arrow.get("2024-09-01").date(),
+            is_finished=True,
+            vandy_team="Vandy Football",
+            vandy_score=30,
+            opponent="Alabama",
+            opponent_score=27,
         ),
         VandyResult(
-            arrow.get("2024-09-02").date(), False, "Vandy Basketball", 0, "Georgia", 0
+            date=arrow.get("2024-09-02").date(),
+            is_finished=False,
+            vandy_team="Vandy Basketball",
+            vandy_score=0,
+            opponent="Georgia",
+            opponent_score=0,
         ),
     ]
     result = build_message_response(results)
@@ -324,10 +381,20 @@ def test_build_message_response_one_win_one_in_progress():
 def test_build_message_response_two_in_progress():
     results = [
         VandyResult(
-            arrow.get("2024-09-01").date(), False, "Vandy Football", 0, "Alabama", 0
+            date=arrow.get("2024-09-01").date(),
+            is_finished=False,
+            vandy_team="Vandy Football",
+            vandy_score=0,
+            opponent="Alabama",
+            opponent_score=0,
         ),
         VandyResult(
-            arrow.get("2024-09-02").date(), False, "Vandy Basketball", 0, "Georgia", 0
+            date=arrow.get("2024-09-02").date(),
+            is_finished=False,
+            vandy_team="Vandy Basketball",
+            vandy_score=0,
+            opponent="Georgia",
+            opponent_score=0,
         ),
     ]
     result = build_message_response(results)
