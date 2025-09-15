@@ -21,6 +21,7 @@ dependencies = [
     "gunicorn",
     "lowerpines @ git+https://github.com/bigfootjon/lowerpines.git@main",
     "psycopg",
+    "pydantic",
     "pyyaml",
     "requests",
     "rollbar",

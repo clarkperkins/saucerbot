@@ -5,7 +5,9 @@ from typing import Optional
 
 import arrow
 import requests
+from pydantic import BaseModel
 
+from saucerbot.utils.sports.espn import ESPNFootballEvent, ESPNScoreboard
 from saucerbot.utils.sports.models import Team, VandyResult
 from saucerbot.utils.time_utils import get_date_from_string
 
@@ -33,33 +35,38 @@ class VandyFootball(Team):
             return None
         vandy, opponent = self.__get_teams(game_info)
         return VandyResult(
-            date=get_date_from_string(game_info["date"]),
-            opponent_name=opponent["team"]["displayName"],
-            opponent_score=int(opponent["score"]),
+            date=game_info.date.date(),
+            opponent=opponent.team.displayName,
+            opponent_score=opponent.score,
             vandy_team=self.name,
-            vandy_score=int(vandy["score"]),
-            is_finished=game_info["status"]["type"]["completed"],
+            vandy_score=vandy.score,
+            is_finished=game_info.status.type.completed,
         )
 
     def has_match_in_message(self, message: str) -> bool:
         return "football" in message
 
     @staticmethod
-    def __get_teams(game: dict) -> tuple[dict, dict]:
+    def __get_teams(
+        game: ESPNFootballEvent,
+    ) -> tuple[
+        ESPNFootballEvent.Competition.Competitor,
+        ESPNFootballEvent.Competition.Competitor,
+    ]:
         """
         Extracts the teams from the game. Vandy will be returned first
         :param game: the game information
         :return: both teams, vandy first
         """
-        team1 = game["competitions"][0]["competitors"][0]
-        team2 = game["competitions"][0]["competitors"][1]
-        if team1["team"]["location"] == "Vanderbilt":
+        team1 = game.competitions[0].competitors[0]
+        team2 = game.competitions[0].competitors[1]
+        if team1.team.location == "Vanderbilt":
             return team1, team2
         else:
             return team2, team1
 
 
-def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
+def get_football_results(desired_date: arrow.Arrow) -> ESPNFootballEvent | None:
     logger.debug("Getting the football results")
     if (
         1 < desired_date.month < 8
@@ -79,9 +86,8 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
     logger.debug("Requesting URL '%s'", url)
     response = requests.get(url)
     if 200 <= response.status_code < 300:
-        scores = response.json()
-        game = __get_the_dores_game(scores)
-        return game
+        scoreboard = ESPNScoreboard.model_validate(response.json())
+        return __get_the_dores_game(scoreboard)
     else:
         logger.warning(
             "Received non-success response code: %i -- %s",
@@ -91,12 +97,12 @@ def get_football_results(desired_date: arrow.Arrow) -> Optional[dict]:
         return None
 
 
-def __get_the_dores_game(scores: dict) -> dict | None:
-    for ev in scores["events"]:
-        teams = ev["competitions"][0]["competitors"]
+def __get_the_dores_game(scores: ESPNScoreboard) -> ESPNFootballEvent | None:
+    for event in scores.events:
+        teams = event.competitions[0].competitors
         for team in teams:
-            if team["team"]["location"] == "Vanderbilt":
-                return ev
+            if team.team.location == "Vanderbilt":
+                return event
     logger.info("Looked through all the events, couldn't find the Vandy game")
     return None
 

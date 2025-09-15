@@ -55,7 +55,7 @@ def _get_vandy_result_from_schedule_event(
 
     return VandyResult(
         date=event["date"],
-        opponent_name=event["opponent"]["displayName"],
+        opponent=event["opponent"]["displayName"],
         opponent_score=int(event["result"].get("opponentTeamScore", -1)),
         vandy_team=team_name,
         vandy_score=int(
