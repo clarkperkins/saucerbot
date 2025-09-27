@@ -175,6 +175,7 @@ def event_loop(request: pytest.FixtureRequest) -> Iterator[AbstractEventLoop]:
     yield loop
     loop.close()
 
+
 @pytest.fixture(name="discord_client")
 def setup_discord_client(event_loop):
     from saucerbot.discord.client import SaucerbotClient
