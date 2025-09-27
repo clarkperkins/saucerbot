@@ -85,10 +85,10 @@ class ESPNFootballEvent(BaseModel):
             type: str
             order: int
             homeAway: str
-            winner: bool
+            winner: bool | None = None
             team: ESPNTeam
             score: int
-            linescores: list[ESPNLineScore]
+            linescores: list[ESPNLineScore] | None = None
             statistics: list
             curatedRank: ESPNCuratedRank
             records: list[Record]
