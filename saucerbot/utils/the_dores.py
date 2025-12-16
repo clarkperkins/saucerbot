@@ -31,7 +31,7 @@ LOSING_FORMATS = [
 
 IN_PROGRESS_FORMATS = [
     "For {vandy_name} vs the {opponent_name}? Time will tell...",
-    "Waiting on the {vandy_name}/{opponent_name} result!",
+    "Waiting on the result of {vandy_name}/{opponent_name}!",
     "Like {vandy_name}/{opponent_name}? I don't know yet, but go dores!",
 ]
 
@@ -40,13 +40,14 @@ IN_PROGRESS_FOLLOW_UPS = [
     "Stay tuned to find out what happens as {vandy_name} takes on the {opponent_name}",
 ]
 
-WINNING_INTERJECTIONS = ["ATFD!", "Hell yeah!", "Kachow!", "You know it!"]
+WINNING_INTERJECTIONS = ["ATFD!", "Hell yeah!", "Kachow!", "You know it!", "Yowza yowza yowza!"]
 WINNING_CONJUNCTIONS = [
     "But that's not all!",
     "Also!",
     "And let's keep the party rolling!",
+    "And we're winning so much you're going to be tired of winning!"
 ]
-LOSING_INTERJECTIONS = ["No :(", "Not this time...", "Welllllll..."]
+LOSING_INTERJECTIONS = ["No :(", "Not this time...", "Welllllll...", "Oof size: large;"]
 LOSS_AFTER_WIN_CONJUNCTIONS = ["Buuut,", "Unfortunately though,"]
 LOSS_AFTER_LOSS_CONJUNCTIONS = ["And unfortunately,", "Ugh! And,"]
 
@@ -139,7 +140,7 @@ def __build_single_result_response(result: VandyResult, is_only_result: bool) ->
             random.choice(LOSING_INTERJECTIONS) + " " + random.choice(LOSING_FORMATS)
         )
 
-    vandy_team_name = "Vandy" if is_only_result else result.vandy_team
+    vandy_team_name = random.choice(GENERIC_VANDY_NAMES) if is_only_result else result.vandy_team
     return format_string.format(
         vandy_name=vandy_team_name,
         vandy_score=result.vandy_score,
