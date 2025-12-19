@@ -21,12 +21,6 @@ class BotContext(metaclass=ABCMeta):
         raise NotImplementedError()
 
 
-class TaggedUserResponse(metaclass=ABCMeta):
-    @abstractmethod
-    def render_message(self) -> Any:
-        raise NotImplementedError()
-
-
 class Message(metaclass=ABCMeta):
     @property
     @abstractmethod
