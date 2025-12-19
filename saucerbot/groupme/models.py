@@ -16,7 +16,7 @@ from lowerpines.endpoints.message import Message as LPMessage
 from lowerpines.endpoints.user import User as LPUser
 from lowerpines.exceptions import UnauthorizedException
 from lowerpines.gmi import GMI
-from lowerpines.message import ComplexMessage
+from lowerpines.message import ComplexMessage, RefAttach
 
 from saucerbot.core.models import BaseUser, InvalidUser, get_user_builder
 from saucerbot.handlers import BotContext, Message, registry
