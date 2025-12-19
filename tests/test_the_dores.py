@@ -17,6 +17,9 @@ from saucerbot.utils.the_dores import (
 @pytest.fixture(autouse=True)
 def replace_options_for_text(monkeypatch):
     monkeypatch.setattr(
+        "saucerbot.utils.the_dores.GENERIC_VANDY_NAMES", ["Vandy"]
+    )
+    monkeypatch.setattr(
         "saucerbot.utils.the_dores.WINNING_FORMATS", ["{vandy_name} win"]
     )
     monkeypatch.setattr(
