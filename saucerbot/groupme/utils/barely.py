@@ -7,7 +7,7 @@ from collections.abc import Set
 from pathlib import Path
 
 from django.conf import settings
-from lowerpines.message import ComplexMessage, RefAttach
+from lowerpines.message import ComplexMessage
 
 from saucerbot.handlers import BotContext, Message
 
@@ -56,6 +56,11 @@ def i_barely_know_her(context: BotContext, message: Message) -> bool:
     return False
 
 
+def get_user_tag_component(message: Message):
+
+    return
+
+
 def get_quip(message: Message) -> ComplexMessage | str | None:
     matches = []
     for word in re.split(r"[^a-zA-Z]", message.content):
@@ -67,7 +72,7 @@ def get_quip(message: Message) -> ComplexMessage | str | None:
         emoji = random.choice(quips[quip])
         split_quip = quip.format(match=match).split("<person>")
         if len(split_quip) > 1:
-            user_ref = RefAttach(message.user_id, f"@{message.user_name}")
+            user_ref = get_user_tag_component(message)
             return split_quip[0] + user_ref + split_quip[1] + " " + emoji
         else:
             return split_quip[0] + " " + emoji
