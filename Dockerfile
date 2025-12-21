@@ -1,9 +1,12 @@
-FROM python:3.13-slim AS build
+FROM dhi.io/python:3.13-dev AS build
 
 WORKDIR /app
 
 COPY docker/install_build.sh /app/
 RUN sh install_build.sh
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install poetry
 RUN python -m pip install poetry virtualenv
@@ -23,9 +26,6 @@ COPY saucerbot saucerbot
 RUN poetry version $(date +"%Y.%m.%d")
 RUN poetry sync --without=dev
 
-# Precompile the sources
-RUN python -m compileall saucerbot
-
 # Need these for collectstatic to work
 ENV DJANGO_ENV=build
 
@@ -33,22 +33,20 @@ ENV DJANGO_ENV=build
 RUN python manage.py collectstatic --noinput
 
 
-FROM python:3.13-slim AS saucerbot
+FROM dhi.io/python:3.13-dev AS saucerbot
 
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=off
 
-# Passing the -d /app will set that as the home dir & chown it
-RUN useradd -r -U -m -d /app saucerbot
-
 WORKDIR /app
 
-COPY --chown=saucerbot:saucerbot docker/install_runtime.sh /app/
+COPY --chown=nonroot:nonroot docker/install_runtime.sh /app/
 RUN sh install_runtime.sh
 
-COPY --chown=saucerbot:saucerbot --from=build /app /app
+USER nonroot
+
+COPY --chown=nonroot:nonroot --from=build /app /app
 
 ENV VIRTUAL_ENV=/app/venv
 ENV PATH=$VIRTUAL_ENV/bin:$PATH
-
-USER saucerbot
