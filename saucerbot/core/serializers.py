@@ -53,7 +53,7 @@ class HandlerRelatedField(serializers.RelatedField):
             )
         return handler
 
-    def to_representation(self, value: Handler | RHandler) -> str:
+    def to_representation(self, value: Handler | RHandler) -> str:  # type: ignore[override]
         """
         Can deal with both registry handlers and handler model objects
         """
