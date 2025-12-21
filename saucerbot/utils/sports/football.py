@@ -1,15 +1,12 @@
 import datetime
 import logging
 import math
-from typing import Optional
 
 import arrow
 import requests
-from pydantic import BaseModel
 
 from saucerbot.utils.sports.espn import ESPNFootballEvent, ESPNScoreboard
 from saucerbot.utils.sports.models import Team, VandyResult
-from saucerbot.utils.time_utils import get_date_from_string
 
 logger = logging.getLogger(__name__)
 

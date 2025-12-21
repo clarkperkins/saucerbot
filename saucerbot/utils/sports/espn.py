@@ -26,20 +26,22 @@ class ESPNLink(BaseModel):
 
 
 class ESPNTeam(BaseModel):
-    id: int
-    uid: str
     location: str
-    name: str
-    abbreviation: str
     displayName: str
-    shortDisplayName: str
-    color: str
-    alternativeColor: str | None = None
-    isActive: bool
-    venue: ESPNVenue
-    links: list[ESPNLink]
-    logo: str
-    conferenceId: int
+
+    # Unused below
+    # id: int
+    # uid: str
+    # abbreviation: str
+    # name: str
+    # shortDisplayName: str
+    # color: str
+    # alternativeColor: str
+    # isActive: bool
+    # venue: ESPNVenue
+    # links: list[ESPNLink]
+    # logo: str
+    # conferenceId: int
 
 
 class ESPNLineScore(BaseModel):
@@ -61,10 +63,12 @@ class ESPNEventStatus(BaseModel):
     class Type(BaseModel):
         completed: bool
 
-    clock: float
-    displayClock: str
-    period: int
     type: Type
+
+    # Unused below
+    # clock: float
+    # displayClock: str
+    # period: int
 
 
 class ESPNFootballEvent(BaseModel):
@@ -80,18 +84,21 @@ class ESPNFootballEvent(BaseModel):
                 type: str
                 abbreviation: str | None = None
 
-            id: int
-            uid: str
-            type: str
-            order: int
-            homeAway: str
-            winner: bool | None = None
-            team: ESPNTeam
             score: int
-            linescores: list[ESPNLineScore] | None = None
-            statistics: list
-            curatedRank: ESPNCuratedRank
-            records: list[Record]
+            team: ESPNTeam
+
+            # Unused below
+            # id: int
+            # uid: str
+            # order: int
+            # homeAway: str
+            # winner: bool | None = None
+            # linescores: list[ESPNLineScore] | None = None
+            # statistics: list | None = None
+            # curatedRank: ESPNCuratedRank | None = None
+            # records: list[Record] | None = None
+            # Apparently using `# type: xxx` is another means of type-checking recognized by mypy, so double-commenting
+            # # type: str
 
         class Groups(BaseModel):
             id: int
@@ -99,45 +106,52 @@ class ESPNFootballEvent(BaseModel):
             shortName: str
             isConference: bool
 
-        id: int
-        uid: str
-        date: datetime.datetime
-        attendance: int
-        type: Type
-        timeValid: bool
-        dateValid: bool
-        neutralSite: bool
-        conferenceCompetition: bool
-        recent: bool
-        venue: dict
         competitors: list[Competitor]
-        notes: list[str]
-        status: ESPNEventStatus
-        broadcasts: list[ESPNBroadcast]
-        leaders: list[dict]
-        groups: Groups | None = None
-        format: dict
-        startDate: datetime.datetime
-        broadcast: str
-        geoBroadcasts: list[dict]
-        highlights: list[dict]
-        headlines: list[dict] | None = None
 
-    id: int
-    uid: str
+        # Unused below
+        # id: int
+        # uid: str
+        # date: datetime.datetime
+        # attendance: int
+        # timeValid: bool
+        # dateValid: bool
+        # neutralSite: bool
+        # conferenceCompetition: bool
+        # recent: bool
+        # venue: dict
+        # notes: list[dict]
+        # status: ESPNEventStatus
+        # broadcasts: list[ESPNBroadcast]
+        # leaders: list[dict] | None = None
+        # groups: Groups | None = None
+        # format: dict
+        # startDate: datetime.datetime
+        # broadcast: str
+        # geoBroadcasts: list[dict]
+        # highlights: list[dict]
+        # headlines: list[dict] | None = None
+        # Apparently using `# type: xxx` is another means of type-checking recognized by mypy, so double-commenting
+        # # type: Type
+
     date: datetime.datetime
-    name: str
-    shortName: str
-    season: ESPNSeason
-    week: ESPNWeek
-    competitions: list[Competition]
-    links: list[ESPNLink]
     status: ESPNEventStatus
+    competitions: list[Competition]
+
+    # Unused below
+    # id: int
+    # uid: str
+    # name: str
+    # shortName: str
+    # season: ESPNSeason
+    # week: ESPNWeek
+    # links: list[ESPNLink]
 
 
 class ESPNScoreboard(BaseModel):
-    leagues: list[dict]
-    groups: list[int]
-    season: ESPNSeason
-    week: ESPNWeek
     events: list[ESPNFootballEvent]
+
+    # Unused Below
+    # leagues: list[dict]
+    # groups: list[int]
+    # season: ESPNSeason
+    # week: ESPNWeek
