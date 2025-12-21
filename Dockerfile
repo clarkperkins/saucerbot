@@ -1,4 +1,4 @@
-FROM dhi.io/python:3.13-dev AS build
+FROM python:3.13-slim AS build
 
 WORKDIR /app
 
@@ -33,20 +33,23 @@ ENV DJANGO_ENV=build
 RUN python manage.py collectstatic --noinput
 
 
-FROM dhi.io/python:3.13-dev AS saucerbot
+FROM python:3.13-slim AS saucerbot
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=off
 
+# Passing the -d /app will set that as the home dir & chown it
+RUN useradd -r -U -m -d /app saucerbot
+
 WORKDIR /app
 
-COPY --chown=nonroot:nonroot docker/install_runtime.sh /app/
+COPY --chown=saucerbot:saucerbot docker/install_runtime.sh /app/
 RUN sh install_runtime.sh
 
-USER nonroot
-
-COPY --chown=nonroot:nonroot --from=build /app /app
+COPY --chown=saucerbot:saucerbot --from=build /app /app
 
 ENV VIRTUAL_ENV=/app/venv
 ENV PATH=$VIRTUAL_ENV/bin:$PATH
+
+USER saucerbot
