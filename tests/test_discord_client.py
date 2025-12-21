@@ -77,7 +77,7 @@ async def test_whoami_long(db):
     )
 
     first_expected_end = (
-        f"{long_display_name} 29 4 weeks ago\n" f"{long_display_name} 30 4 weeks ago\n"
+        f"{long_display_name} 29 a month ago\n" f"{long_display_name} 30 a month ago\n"
     )
 
     assert first_message.startswith(first_expected_start)

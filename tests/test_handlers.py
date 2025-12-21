@@ -412,7 +412,7 @@ def test_whoami_long(bot, gmi):
     )
 
     first_expected_end = (
-        f"{long_nickname} 14 2 weeks ago\n" f"{long_nickname} 15 2 weeks ago\n"
+        f"{long_nickname} 14 2 weeks ago\n" f"{long_nickname} 15 a month ago\n"
     )
 
     assert first_message.text.startswith(first_expected_start)
@@ -423,11 +423,11 @@ def test_whoami_long(bot, gmi):
     assert len(second_message.text) <= 1000
 
     second_expected_start = (
-        f"{long_nickname} 16 2 weeks ago\n" f"{long_nickname} 17 2 weeks ago\n"
+        f"{long_nickname} 16 a month ago\n" f"{long_nickname} 17 a month ago\n"
     )
 
     second_expected_end = (
-        f"{long_nickname} 19 2 weeks ago\n" f"{long_nickname} 20 2 weeks ago\n"
+        f"{long_nickname} 19 a month ago\n" f"{long_nickname} 20 a month ago\n"
     )
 
     assert second_message.text.startswith(second_expected_start)
