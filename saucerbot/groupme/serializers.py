@@ -26,7 +26,7 @@ class GroupRelatedField(serializers.RelatedField):
                 f"Group with id '{data}' doesn't exist"
             ) from e
 
-    def to_representation(self, value: Group) -> str:
+    def to_representation(self, value: Group) -> str:  # type: ignore[override]
         return value.group_id
 
 
