@@ -9,6 +9,7 @@ from pathlib import Path
 from django.conf import settings
 from lowerpines.message import ComplexMessage, RefAttach
 
+from saucerbot.discord.models import DiscordMessage
 from saucerbot.handlers import BotContext, Message
 
 emojis = [
@@ -70,8 +71,6 @@ def get_quip(message: Message) -> ComplexMessage | str | None:
             # Check if this is a Discord or GroupMe message
             # For Discord, use the mention format <@user_id>
             # For GroupMe, use RefAttach
-            from saucerbot.discord.models import DiscordMessage
-
             if isinstance(message, DiscordMessage):
                 # Discord mention format
                 user_mention = f"<@{message.user_id}>"
