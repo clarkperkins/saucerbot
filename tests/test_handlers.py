@@ -558,3 +558,95 @@ def test_too_early_for_thai_send(bot, gmi, client):
 
     # cleanup at the end
     os.remove(lockfile)
+
+
+def test_barely_know_her_groupme(gmi, monkeypatch):
+    """Test that barely know her uses RefAttach for GroupMe messages"""
+    from lowerpines.endpoints.message import Message
+    from lowerpines.message import ComplexMessage
+
+    from saucerbot.groupme.models import GroupMeMessage
+    from saucerbot.groupme.utils.barely import get_quip
+
+    # Mock random.choice to select a quip with <person> placeholder
+    def mock_choice(seq):
+        # For quips dict, select one with <person>
+        if isinstance(seq, list) and len(seq) > 0 and isinstance(seq[0], str):
+            # This is the quips.keys() list - find one with <person>
+            for item in seq:
+                if "<person>" in item:
+                    return item
+        # For emojis or other sequences, return first item
+        return seq[0] if seq else None
+
+    monkeypatch.setattr("saucerbot.groupme.utils.barely.random.choice", mock_choice)
+
+    raw_message = {
+        "attachments": [],
+        "avatar_url": "https://example.com/avatar.jpeg",
+        "created_at": 1234567890,
+        "group_id": "test_group",
+        "id": "1234567890",
+        "name": "Test User",
+        "sender_id": "user123",
+        "sender_type": "user",
+        "source_guid": "test-guid",
+        "system": False,
+        "text": "Can you deliver this package?",
+        "user_id": "user123",
+    }
+
+    message = GroupMeMessage(Message.from_json(gmi, raw_message))
+    quip = get_quip(message)
+
+    # Should return a ComplexMessage with RefAttach
+    # (for GroupMe, when <person> is in the quip, it returns ComplexMessage)
+    assert isinstance(quip, ComplexMessage)
+
+    # The quip should contain the matched word
+    quip_str = str(quip)
+    assert "deliver" in quip_str.lower() or "package" in quip_str.lower()
+
+    # Verify it mentions the user (RefAttach will show as @User in string representation)
+    assert "@Test User" in quip_str or "Test User" in quip_str
+
+
+def test_barely_know_her_discord(monkeypatch):
+    """Test that barely know her uses Discord mention format for Discord messages"""
+    import arrow
+
+    from saucerbot.groupme.utils.barely import get_quip
+
+    # Mock random.choice to select a quip with <person> placeholder
+    def mock_choice(seq):
+        # For quips dict, select one with <person>
+        if isinstance(seq, list) and len(seq) > 0 and isinstance(seq[0], str):
+            # This is the quips.keys() list - find one with <person>
+            for item in seq:
+                if "<person>" in item:
+                    return item
+        # For emojis or other sequences, return first item
+        return seq[0] if seq else None
+
+    monkeypatch.setattr("saucerbot.groupme.utils.barely.random.choice", mock_choice)
+
+    # Create a mock Discord message
+    class MockDiscordAuthor:
+        id = 987654321
+        name = "DiscordUser"
+
+    class MockDiscordMessage:
+        author = MockDiscordAuthor()
+        content = "Can you deliver this package?"
+        created_at = arrow.utcnow().datetime
+
+    # Import DiscordMessage and create instance
+    from saucerbot.discord.models import DiscordMessage
+
+    message = DiscordMessage(MockDiscordMessage())
+    quip = get_quip(message)
+
+    # Should return a string with Discord mention format
+    assert isinstance(quip, str)
+    assert "<@987654321>" in quip, "Expected Discord mention format in quip"
+    assert "deliver" in quip.lower() or "package" in quip.lower()
