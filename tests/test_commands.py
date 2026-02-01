@@ -9,16 +9,19 @@ from saucerbot.groupme.management.commands.remind import LIKE_IF_POST
 logger = logging.getLogger(__name__)
 
 
-def test_like_if(bot):
+def test_like_if(bot, monkeypatch):
+    # Mock get_todays_events to avoid network calls
+    monkeypatch.setattr(
+        "saucerbot.groupme.management.commands.remind.get_todays_events", lambda: []
+    )
+
     execute_from_command_line(
         ["manage.py", "remind", "saucerbot", "--force", "like-if"]
     )
 
     messages = bot.group.messages.all()
-    assert len(messages) <= 2
+    assert len(messages) == 1
     assert messages[0].text == LIKE_IF_POST
-    if len(messages) == 2:
-        assert "Bridgestone" in messages[1].text
 
 
 def test_whos_coming(bot, gmi):

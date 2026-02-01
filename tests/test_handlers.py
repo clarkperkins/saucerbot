@@ -273,11 +273,14 @@ def test_saucerbot_user(bot, gmi):
     assert bot.group.messages.count == 1
 
 
-def test_saucerbot_user_random(bot, gmi):
+def test_saucerbot_user_random(bot, gmi, monkeypatch):
     from lowerpines.endpoints.message import Message
 
     from saucerbot.groupme.models import GroupMeMessage
     from saucerbot.handlers import saucer
+
+    # Mock get_insult to avoid network calls
+    monkeypatch.setattr("saucerbot.handlers.saucer.get_insult", lambda: "test insult")
 
     raw_message = get_sample_message(bot.bot, "", name="saucerbot")
 
