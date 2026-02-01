@@ -16,9 +16,7 @@ from saucerbot.utils.the_dores import (
 
 @pytest.fixture(autouse=True)
 def replace_options_for_text(monkeypatch):
-    monkeypatch.setattr(
-        "saucerbot.utils.the_dores.GENERIC_VANDY_NAMES", ["Vandy"]
-    )
+    monkeypatch.setattr("saucerbot.utils.the_dores.GENERIC_VANDY_NAMES", ["Vandy"])
     monkeypatch.setattr(
         "saucerbot.utils.the_dores.WINNING_FORMATS", ["{vandy_name} win"]
     )
@@ -329,8 +327,10 @@ def test_build_message_response_win_loss():
         ),
     ]
     result = build_message_response(results)
-    assert "win_inter Vandy Football win" in result
-    assert "loss_after_win Vandy Basketball loss" in result
+    # When there are wins, losses should be filtered out
+    # After filtering, only 1 result remains, so it uses generic "Vandy" name
+    assert "win_inter Vandy win" in result
+    assert "Vandy Basketball loss" not in result
 
 
 def test_build_message_response_two_losses():
@@ -411,7 +411,7 @@ def test_build_message_response_two_in_progress():
         (
             None,
             arrow.get("2021-01-03"),
-            "win_inter Team1 win\n\nloss_after_win Team2 loss",
+            "win_inter Vandy win",  # Loss filtered out when win exists, uses generic name
         ),
         (
             None,
