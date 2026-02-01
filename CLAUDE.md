@@ -191,3 +191,8 @@ Test database is SQLite (`test.db`). Tests must have `DJANGO_ENV=test` set.
 - **Type checking**: mypy with django-stubs and djangorestframework-stubs
 - **Linting**: pylint with pylint-django plugin
 - Migrations are excluded from formatting, type checking, and linting
+
+## Git Preferences
+
+- **No fixup commits**: Do not create separate commits to fix issues in previous commits. Instead, amend the original commit with `git commit --amend` and force push if necessary.
+- Keep the git history clean and meaningful with each commit representing a complete, working change.
