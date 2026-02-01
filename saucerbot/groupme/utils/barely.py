@@ -67,8 +67,19 @@ def get_quip(message: Message) -> ComplexMessage | str | None:
         emoji = random.choice(quips[quip])
         split_quip = quip.format(match=match).split("<person>")
         if len(split_quip) > 1:
-            user_ref = RefAttach(message.user_id, f"@{message.user_name}")
-            return split_quip[0] + user_ref + split_quip[1] + " " + emoji
+            # Check if this is a Discord or GroupMe message
+            # For Discord, use the mention format <@user_id>
+            # For GroupMe, use RefAttach
+            from saucerbot.discord.models import DiscordMessage
+
+            if isinstance(message, DiscordMessage):
+                # Discord mention format
+                user_mention = f"<@{message.user_id}>"
+                return split_quip[0] + user_mention + split_quip[1] + " " + emoji
+            else:
+                # GroupMe RefAttach format
+                user_ref = RefAttach(message.user_id, f"@{message.user_name}")
+                return split_quip[0] + user_ref + split_quip[1] + " " + emoji
         else:
             return split_quip[0] + " " + emoji
     return None
