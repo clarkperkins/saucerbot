@@ -1,6 +1,7 @@
 from typing import Any
 
 import arrow
+import pytest
 from bs4 import BeautifulSoup
 
 from saucerbot.utils.bridgestone import (
@@ -77,6 +78,9 @@ def test_event_time_parsing():
     assert extracted == "7:00"
 
 
+@pytest.mark.skip(
+    reason="Skipping integration test that requires external network access"
+)
 def test_bridgestone_site_structure():
     """
     Tests to make sure the Bridgestone events site hasn't changed
