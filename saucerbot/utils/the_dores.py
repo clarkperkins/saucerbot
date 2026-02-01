@@ -124,6 +124,13 @@ def sort_team_results(results: List[VandyResult], desired_date: arrow.Arrow):
 
 
 def build_message_response(results: List[VandyResult]) -> str:
+    # Filter out losses if there are any wins
+    has_wins = any(result.is_win() for result in results)
+    if has_wins:
+        results = [
+            result for result in results if result.is_win() or not result.is_finished
+        ]
+
     response = __build_single_result_response(results[0], len(results) == 1)
     last_result = results[0]
     for result in results[1:]:
