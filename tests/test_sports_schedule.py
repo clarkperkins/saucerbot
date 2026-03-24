@@ -199,3 +199,9 @@ def test_find_recent_event_none_before(sample_events):
     event = find_most_recent_event(sample_events, desired_date)
 
     assert event is None
+
+
+def test_find_recent_event_empty_list():
+    event = find_most_recent_event([], arrow.Arrow(2024, 1, 1))
+
+    assert event is None

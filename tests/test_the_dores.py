@@ -416,13 +416,18 @@ def test_build_message_response_two_in_progress():
         (
             None,
             arrow.get("2021-01-04"),
-            "loss_inter Vandy loss",
-        ),  # within 3 days for team 2
+            "win_inter Vandy win",
+        ),  # within 3 days for both teams, win prioritized
         (
             "Message",
             arrow.get("2021-01-03"),
             "win_inter Vandy win",
         ),  # has message match for team 1
+        (
+            "Message",
+            arrow.get("2021-01-04"),
+            "win_inter Vandy win",
+        ),  # team_1 on Jan 1 is exactly 3 days ago, included with >=
         (
             "Message",
             arrow.get("2021-01-06"),

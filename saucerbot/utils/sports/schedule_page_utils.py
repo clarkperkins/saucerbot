@@ -49,6 +49,8 @@ def request_schedule_page(url: str) -> str:
 def find_most_recent_event(
     events: List[dict], desired_date: arrow.Arrow
 ) -> Optional[dict]:
+    if not events:
+        return None
     desired_date_casted = (
         desired_date.date()
     )  # make the types match, and just get the date info

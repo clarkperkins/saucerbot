@@ -110,7 +110,7 @@ def filter_team_results(
 ) -> List[VandyResult]:
     date_limit = desired_date.shift(days=-3).date()
     null_filtered = [x for x in results if x is not None]
-    return [result for result in null_filtered if result.date > date_limit]
+    return [result for result in null_filtered if result.date >= date_limit]
 
 
 def sort_team_results(results: List[VandyResult], desired_date: arrow.Arrow):
