@@ -47,6 +47,14 @@ def lit(context: BotContext) -> None:
     context.post("You're not lit, I'm lit")
 
 
+@registry.handler(r"lea", on_by_default=True, always_run=True)
+def daddy(context: BotContext) -> None:
+    """
+    Lea -> daddy
+    """
+    context.post("daddy")
+
+
 @registry.handler(r"@saucerbot", case_sensitive=True, on_by_default=True)
 def dont_at_me(context: BotContext) -> None:
     """
