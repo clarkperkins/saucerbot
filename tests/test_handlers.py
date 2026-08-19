@@ -650,3 +650,29 @@ def test_barely_know_her_discord(monkeypatch):
     assert isinstance(quip, str)
     assert "<@987654321>" in quip, "Expected Discord mention format in quip"
     assert "deliver" in quip.lower() or "package" in quip.lower()
+
+
+def test_daddy():
+    """Test that saucerbot says daddy when someone says Lea"""
+    from saucerbot.handlers import registry
+    from saucerbot.handlers.general import daddy
+
+    handler = registry.get(name="daddy")
+    assert handler is not None
+    assert handler.regexes is not None
+
+    regex = handler.regexes[0]
+    for content in ["Lea", "hey lea!", "LEA is here", "please", "clean", "flea"]:
+        assert regex.search(content), f"Expected a match for {content}"
+    for content in ["nothing here", "el"]:
+        assert not regex.search(content), f"Expected no match for {content}"
+
+    posted = []
+
+    class FakeContext:
+        def post(self, message):
+            posted.append(message)
+
+    daddy(FakeContext())
+
+    assert posted == ["daddy"]
