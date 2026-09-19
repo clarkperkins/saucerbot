@@ -26,8 +26,8 @@ check/isort:
 check/black:
 	poetry run black saucerbot --check
 
-check/pylint: reports
-	poetry run pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > reports/pylint.txt
+check/pylint:
+	poetry run pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 
 check/mypy:
 	poetry run mypy saucerbot
@@ -48,7 +48,4 @@ test: test/pytest/xml
 cov: test/pytest/html
 	open reports/coverage/html/index.html
 
-sonar: check/pylint test/pytest/xml
-	sonar-scanner
-
-ci: check test sonar
+ci: check test

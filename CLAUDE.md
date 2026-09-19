@@ -51,7 +51,7 @@ make format
 # Check code quality (runs isort, black, pylint, mypy)
 make check
 
-# Run all CI checks (format checks + tests + sonar)
+# Run all CI checks (format checks + tests)
 DJANGO_ENV=test make ci
 ```
 
