@@ -11,6 +11,7 @@ import requests
 from saucerbot.groupme.models import GroupMeBotContext
 from saucerbot.groupme.utils import i_barely_know_her, janet
 from saucerbot.handlers import BotContext, Message, registry
+from saucerbot.utils.http import DEFAULT_TIMEOUT
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ def catfacts(context: BotContext) -> None:
     Sends catfacts!
     """
     if random.random() < CATFACTS_CHANCE:
-        catfact = requests.get(CATFACTS_URL).json()
+        catfact = requests.get(CATFACTS_URL, timeout=DEFAULT_TIMEOUT).json()
         context.post(catfact["fact"])
 
 

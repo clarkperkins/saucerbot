@@ -6,6 +6,8 @@ import requests
 from django.conf import settings
 from django.urls import reverse
 
+from saucerbot.utils.http import DEFAULT_TIMEOUT
+
 API_ENDPOINT = "https://discord.com/api/v8"
 
 
@@ -19,7 +21,12 @@ def _token_request(**kwargs) -> dict[str, Any]:
     data["client_secret"] = settings.DISCORD_CLIENT_SECRET
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    r = requests.post(f"{API_ENDPOINT}/oauth2/token", data=data, headers=headers)
+    r = requests.post(
+        f"{API_ENDPOINT}/oauth2/token",
+        data=data,
+        headers=headers,
+        timeout=DEFAULT_TIMEOUT,
+    )
     r.raise_for_status()
     return r.json()
 

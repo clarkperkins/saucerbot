@@ -31,8 +31,6 @@ CENTRAL_TIME = "US/Central"
 
 
 class SaucerbotClient(Client):
-    # pylint: disable=no-self-use
-
     def __init__(self, *, intents: Intents = Intents.all(), **options: Any) -> None:
         super().__init__(intents=intents, **options)
         self.tree = CommandTree(self)

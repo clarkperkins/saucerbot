@@ -1,15 +1,13 @@
 import datetime
 import logging
 import math
-from typing import Optional
 
 import arrow
 import requests
-from pydantic import BaseModel
 
+from saucerbot.utils.http import DEFAULT_TIMEOUT
 from saucerbot.utils.sports.espn import ESPNFootballEvent, ESPNScoreboard
 from saucerbot.utils.sports.models import Team, VandyResult
-from saucerbot.utils.time_utils import get_date_from_string
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +82,7 @@ def get_football_results(desired_date: arrow.Arrow) -> ESPNFootballEvent | None:
         year=desired_date.year, week=week, season=season_type
     )
     logger.debug("Requesting URL '%s'", url)
-    response = requests.get(url)
+    response = requests.get(url, timeout=DEFAULT_TIMEOUT)
     if 200 <= response.status_code < 300:
         scoreboard = ESPNScoreboard.model_validate(response.json())
         return __get_the_dores_game(scoreboard)

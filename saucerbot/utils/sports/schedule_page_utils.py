@@ -5,12 +5,19 @@ from typing import List, Optional
 import arrow
 import requests
 
+from saucerbot.utils.http import DEFAULT_TIMEOUT
 from saucerbot.utils.time_utils import get_date_from_string
 
 logger = logging.getLogger(__name__)
 
-# different strategy here, just gonna pull the whole schedule and read the page config rather than try to get it by date
-# probably could do the scoreboard way, but football has its whole week calculation nonsense; this seemed easier
+
+class SchedulePageError(Exception):
+    """Raised when the ESPN schedule page cannot be retrieved or parsed."""
+
+
+# different strategy here, just gonna pull the whole schedule and read the page
+# config rather than try to get it by date. probably could do the scoreboard way,
+# but football has its whole week calculation nonsense; this seemed easier
 SCHEDULE_PAGE_START_MARKER = "window['__espnfitt__']"
 
 # It checks for a User-Agent, so whatever, I'll lie to ESPN
@@ -19,28 +26,30 @@ HEADERS_FOR_ESPN = {"Accept": "*/*", "User-Agent": "curl/8.7.1"}
 
 def get_schedule_page_results(url: str, desired_date: arrow.Arrow) -> dict | None:
     try:
-        logger.info(f"Retrieving latest event from schedule page: {url}")
+        logger.info("Retrieving latest event from schedule page: %s", url)
         schedule = read_schedule_events(request_schedule_page(url))
         most_recent = find_most_recent_event(schedule, desired_date)
         if most_recent:
-            logger.info(f"Found most recent event with date {str(most_recent['date'])}")
+            logger.info("Found most recent event with date %s", most_recent["date"])
         else:
             logger.info("No recent events found")
         return most_recent
-    except Exception as e:
+    # ESPN can change this page shape at any time; a scrape failure should degrade
+    # to "no result" rather than propagate out into a message handler.
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error("Failed to read schedule page data", exc_info=e)
         return None
 
 
 def request_schedule_page(url: str) -> str:
-    response = requests.get(url, headers=HEADERS_FOR_ESPN)
-    if not (200 <= response.status_code < 300):
+    response = requests.get(url, headers=HEADERS_FOR_ESPN, timeout=DEFAULT_TIMEOUT)
+    if not 200 <= response.status_code < 300:
         logger.warning(
             "Received non-success response code: %i -- %s",
             response.status_code,
             response.text,
         )
-        raise Exception(
+        raise SchedulePageError(
             f"Failed to request basketball data from ESPN: {response.status_code}"
         )
     return response.text
@@ -82,10 +91,10 @@ def __read_events(season: dict) -> List[dict]:
 
     event_map = season["events"]
     event_list = []
-    for key, values in event_map.items():
+    for values in event_map.values():
         event_list.extend([parse_event(event) for event in values])
 
-    logger.debug(f"Found {len(event_list)} events")
+    logger.debug("Found %i events", len(event_list))
     return event_list
 
 
@@ -97,6 +106,8 @@ def __retrieve_basketball_json(response_text: str) -> dict:
     true_end = response_text.rindex("}", start, end)
 
     logger.debug(
-        f"Thinking we have the start of basketball data at {true_start} and the end at {true_end}"
+        "Thinking we have the start of basketball data at %i and the end at %i",
+        true_start,
+        true_end,
     )
     return json.loads(response_text[true_start : true_end + 1])
