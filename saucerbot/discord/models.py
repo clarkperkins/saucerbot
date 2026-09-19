@@ -167,9 +167,16 @@ class Channel(models.Model):
     async def handle_message(
         self, loop: asyncio.AbstractEventLoop, message: DMessage
     ) -> list[str]:
-        handler_names = await loop.run_in_executor(
-            None, lambda: {h.handler_name for h in self.handlers.all()}
-        )
+        # Deliberately not loop.run_in_executor(None, ...) here: that borrows an
+        # arbitrary thread from the default pool, and since django's connection
+        # storage is thread local, each such thread opens a connection that
+        # nothing ever closes.  sync_to_async keeps the query on asgiref's thread
+        # sensitive executor alongside the rest of our ORM calls, so the
+        # connection it uses is the one with_db_lifecycle manages.
+        def load_handler_names() -> set[str]:
+            return {h.handler_name for h in self.handlers.all()}
+
+        handler_names = await sync_to_async(load_handler_names)()
 
         return registry.handle_message(
             "discord",
