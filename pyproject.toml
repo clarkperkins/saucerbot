@@ -57,6 +57,10 @@ saucerbot = 'saucerbot.cli:main'
 
 [tool.black]
 exclude = "migrations"
+# Pin the target so formatting is identical no matter which interpreter runs
+# black. Without it black infers the whole requires-python range and its AST
+# safety check fails on anything older than the newest version in that range.
+target-version = ["py311"]
 
 
 

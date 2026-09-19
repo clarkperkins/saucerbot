@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import uuid
-from asyncio import AbstractEventLoop
 from collections import defaultdict
-from typing import Iterator
 
 import discord.ext.test as dpytest
 import pytest
+import pytest_asyncio
 
 
 @pytest.fixture(name="gmi")
@@ -169,19 +168,19 @@ def setup_bot(db, gmi, monkeypatch):
     return bot
 
 
-@pytest.fixture(scope="function")
-def event_loop(request: pytest.FixtureRequest) -> Iterator[AbstractEventLoop]:
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(name="discord_client")
-def setup_discord_client(event_loop):
+@pytest_asyncio.fixture(name="discord_client")
+async def setup_discord_client():
+    """
+    dpytest needs to be configured from inside the loop the test runs on, so
+    this has to be an async fixture.
+    """
     from saucerbot.discord.client import SaucerbotClient
 
     client = SaucerbotClient()
-    client.loop = event_loop
+    client.loop = asyncio.get_running_loop()
 
     dpytest.configure(client)
-    return client
+
+    yield client
+
+    await dpytest.empty_queue()
