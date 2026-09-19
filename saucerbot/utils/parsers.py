@@ -6,6 +6,8 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup
 
+from .http import DEFAULT_TIMEOUT
+
 
 class RowMismatchError(Exception):
     pass
@@ -22,7 +24,7 @@ class HtmlContentProvider:
 
     def get_content(self) -> BeautifulSoup:
         if not self.soup:
-            r = requests.get(self.url)
+            r = requests.get(self.url, timeout=DEFAULT_TIMEOUT)
             r.raise_for_status()
             self.soup = BeautifulSoup(r.text, "html.parser")
         return self.soup
@@ -111,7 +113,6 @@ class Parser:
         :return: the transformed row
         :rtype: dict
         """
-        # pylint: disable=no-self-use
         return row
 
 

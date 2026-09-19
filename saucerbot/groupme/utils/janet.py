@@ -12,6 +12,8 @@ from lowerpines.endpoints.bot import Bot
 from lowerpines.endpoints.image import ImageConvertRequest
 from lowerpines.message import ComplexMessage, ImageAttach
 
+from saucerbot.utils.http import DEFAULT_TIMEOUT
+
 flickr_url = "https://api.flickr.com/services/rest/"
 logger = logging.getLogger(__name__)
 janet_messages = [
@@ -40,7 +42,7 @@ def search_flickr(terms: list[str]) -> list | None:
         "text": terms,
         "format": "json",
     }
-    resp = requests.get(flickr_url, params=args)
+    resp = requests.get(flickr_url, params=args, timeout=DEFAULT_TIMEOUT)
     if resp.status_code >= 300 or resp.status_code < 200:
         logger.info("Failed to search flickr: status code %i", resp.status_code)
         logger.debug("Response: %s", resp.text)
@@ -74,7 +76,7 @@ def select_terms_from_message(message: str) -> list[str]:
 
 
 def add_to_groupme_img_service(bot: Bot, image_url: str) -> str:
-    img_data = requests.get(image_url).content
+    img_data = requests.get(image_url, timeout=DEFAULT_TIMEOUT).content
     return ImageConvertRequest(bot.gmi, img_data).result
 
 

@@ -8,7 +8,7 @@ from lowerpines.exceptions import NoneFoundException
 from rest_framework import serializers
 
 from saucerbot.core.serializers import HandlerRelatedField
-from saucerbot.groupme.models import Bot, Handler, User
+from saucerbot.groupme.models import Bot, Handler
 
 logger = logging.getLogger(__name__)
 

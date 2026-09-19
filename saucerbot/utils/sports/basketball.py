@@ -5,7 +5,10 @@ from arrow import arrow
 from saucerbot.utils.sports.models import Team, VandyResult
 from saucerbot.utils.sports.schedule_page_utils import get_schedule_page_results
 
-ESPN_MENS_BASKETBALL_URL = "https://www.espn.com/mens-college-basketball/team/schedule/_/id/238/vanderbilt-commodores"
+ESPN_MENS_BASKETBALL_URL = (
+    "https://www.espn.com/mens-college-basketball"
+    "/team/schedule/_/id/238/vanderbilt-commodores"
+)
 ESPN_WOMENS_BASKETBALL_URL = (
     "https://www.espn.com/womens-college-basketball/team/schedule/_/id/238"
 )

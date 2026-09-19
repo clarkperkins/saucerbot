@@ -156,6 +156,9 @@ known-third-party = [
 ]
 
 [tool.pylint.design]
+# Maximum number of arguments for a function (see R0913). The handler decorator
+# takes a set of keyword-only config flags; only the regex is positional.
+max-args = 10
 # Maximum number of attributes for a class (see R0902).
 max-attributes = 15
 # Maximum number of parents for a class (see R0901).

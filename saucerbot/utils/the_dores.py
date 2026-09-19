@@ -20,8 +20,10 @@ WINNING_FORMATS = [
     "{vandy_name} took down the {opponent_name} {vandy_score}-{opponent_score}",
     "{vandy_name} rolled past the {opponent_name} {vandy_score}-{opponent_score}",
     "The {opponent_name} stood no chance! {vandy_name} wins {vandy_score}-{opponent_score}",
-    "{vandy_name} conquered the {opponent_name}, prevailing with a score of {vandy_score}-{opponent_score}",
-    "{vandy_name} beat the {opponent_name} {vandy_score}-{opponent_score}. Vandy, we're fuckin turnt!",
+    "{vandy_name} conquered the {opponent_name}, "
+    "prevailing with a score of {vandy_score}-{opponent_score}",
+    "{vandy_name} beat the {opponent_name} {vandy_score}-{opponent_score}. "
+    "Vandy, we're fuckin turnt!",
 ]
 
 LOSING_FORMATS = [
@@ -97,7 +99,9 @@ def determine_teams_for_lookup(
         ]
         if len(matches) > 0:
             logger.debug(
-                f"Found {len(matches)} matches in {message} for some specific teams' results"
+                "Found %i matches in %s for some specific teams' results",
+                len(matches),
+                message,
             )
             return matches
 
@@ -188,7 +192,7 @@ def __build_follow_up_response(result: VandyResult, last_result: VandyResult) ->
 
 
 # Good for testing the feature
-if __name__ == "__main__":
+def main() -> None:
     message = None
     date = None
     if len(sys.argv) > 1:
@@ -196,3 +200,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         date = arrow.get(sys.argv[2], "YYYY-MM-DD")
     print(did_the_dores_win(message, date))
+
+
+if __name__ == "__main__":
+    main()

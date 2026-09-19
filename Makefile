@@ -27,7 +27,7 @@ check/black:
 	poetry run black saucerbot --check
 
 check/pylint:
-	poetry run pylint saucerbot --reports=n --exit-zero --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+	poetry run pylint saucerbot --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 
 check/mypy:
 	poetry run mypy saucerbot

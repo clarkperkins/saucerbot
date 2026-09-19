@@ -149,9 +149,9 @@ def new_user(
         "refresh_token": refresh_token,
         "expires_at": timezone.now() + timedelta(seconds=expires_in),
     }
-    user, _ = User.objects.update_or_create(user_id=user_id, defaults=defaults)
+    stored_user, _ = User.objects.update_or_create(user_id=user_id, defaults=defaults)
 
-    request.session[SESSION_KEY] = str(user.pk)
+    request.session[SESSION_KEY] = str(stored_user.pk)
 
 
 class Guild(models.Model):
@@ -191,7 +191,9 @@ class Channel(models.Model):
             for h in registry
             if h.on_by_default
         ]
-        await self.handlers.abulk_create(default_handlers)
+        # pylint-django cannot resolve this reverse accessor because Handler is
+        # declared further down the module.
+        await self.handlers.abulk_create(default_handlers)  # pylint: disable=no-member
 
 
 class Handler(models.Model):
