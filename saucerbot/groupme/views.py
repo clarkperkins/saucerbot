@@ -81,13 +81,18 @@ class BotActionsViewSet(GenericViewSet):
     permission_classes = [AllowAny]
 
     def parse_as_message(self, bot: Bot) -> Message:
+        data = self.request.data
+
         if logger.isEnabledFor(logging.INFO):
-            raw_json = json.dumps(self.request.data, ensure_ascii=False)
+            raw_json = json.dumps(data, ensure_ascii=False)
             logger.info("Received raw message: %s", raw_json)
+
+        if not isinstance(data, dict):
+            raise ParseError("Invalid GroupMe message")
 
         # Load it as a groupme message
         try:
-            return Message.from_json(bot.owner.gmi, self.request.data)
+            return Message.from_json(bot.owner.gmi, data)
         except Exception as e:
             raise ParseError("Invalid GroupMe message") from e
 
