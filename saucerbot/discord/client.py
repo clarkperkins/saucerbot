@@ -18,6 +18,7 @@ from discord import (
 from discord.app_commands import CommandTree
 from django.utils import timezone
 
+from saucerbot.discord.db import with_db_lifecycle
 from saucerbot.discord.models import Channel as SChannel
 from saucerbot.discord.models import Guild as SGuild
 from saucerbot.discord.models import HistoricalDisplayName
@@ -69,6 +70,7 @@ class SaucerbotClient(Client):
             await s_channel.add_defaults()
         return s_channel
 
+    @with_db_lifecycle
     async def on_message(self, message: Message):
         logger.info(
             "Message from %s in %s#%s: %s",
@@ -89,6 +91,7 @@ class SaucerbotClient(Client):
                 )
                 await stored_channel.handle_message(self.loop, message)
 
+    @with_db_lifecycle
     async def on_reaction_add(self, reaction: Reaction, user: User | Member):
         logger.info("%s reacted to %s with %s", user, reaction.message, reaction)
 
@@ -109,12 +112,14 @@ class SaucerbotClient(Client):
             display_name=member.display_name,
         )
 
+    @with_db_lifecycle
     async def on_member_join(self, member: Member):
         await self.store_display_name(member)
 
     # async def on_member_remove(self, member: Member):
     #     pass
 
+    @with_db_lifecycle
     async def on_member_update(self, before: Member, after: Member):
         # Only store the name if it actually changed!
         if after.display_name and before.display_name != after.display_name:
@@ -168,6 +173,7 @@ async def get_whoami_responses(guild_id: str, user_id: str) -> list[str]:
 
 
 @client.tree.command()
+@with_db_lifecycle
 async def whoami(interaction: Interaction):
     if not interaction.channel or not interaction.channel.guild:
         logger.warning("Interaction missing channel or guild: %s", interaction)

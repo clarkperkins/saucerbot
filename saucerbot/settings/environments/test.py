@@ -12,5 +12,7 @@ SERVER_DOMAIN = "localhost"
 
 # Don't require SSL for test
 DATABASES = {
-    "default": dj_database_url.config(default="sqlite://:memory:", conn_max_age=600),
+    "default": dj_database_url.config(
+        default="sqlite://:memory:", conn_max_age=600, conn_health_checks=True
+    ),
 }
