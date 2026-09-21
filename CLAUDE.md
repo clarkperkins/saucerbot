@@ -26,6 +26,22 @@ Install dependencies:
 poetry install
 ```
 
+### Upgrading Dependencies
+
+`poetry update` only moves within the constraints in `pyproject.toml`; anything
+pinned there (django, djangorestframework, pylint) needs the constraint edited
+first. For a major framework upgrade, two checks are worth the few minutes:
+
+- **Diff a throwaway project against ours.** Run `django-admin startproject` on
+  both the old and new version and diff the two generated trees whole — every
+  file and the layout itself, not a fixed list, since a new version can add or
+  move one. Then compare what changed against this repo. Settings that quietly
+  stopped being read don't warn about anything, so this is the only reliable
+  way to spot them.
+- **Check the new minimum database version** and bump `docker-compose.yml` to
+  match, then run the suite against PostgreSQL (see Testing) rather than the
+  SQLite default.
+
 ## Common Commands
 
 ### Running Tests
@@ -183,7 +199,22 @@ Tests are in the `tests/` directory and use pytest with these plugins:
 - `pytest-mock` - Mocking utilities
 - `dpytest` - Discord.py testing utilities
 
-Test database is SQLite (`test.db`). Tests must have `DJANGO_ENV=test` set.
+Tests must have `DJANGO_ENV=test` set.
+
+**The test database depends on whether `DATABASE_URL` is set**, and this trips people up:
+
+- Unset (the usual local case) — the test environment falls back to in-memory SQLite.
+- Set — that database is used. CI sets it and runs the `docker-compose` PostgreSQL container.
+
+So anything database-specific passes locally and fails in CI. Django's minimum
+PostgreSQL version is the obvious one, but so are migrations and raw SQL. To run
+the suite the way CI does:
+
+```bash
+touch web.env  # compose reads it for the web service; must exist even to start db
+docker compose up -d db
+DJANGO_ENV=test DATABASE_URL='postgres://postgres:postgres@localhost:5432/postgres' make test
+```
 
 ## Code Standards
 

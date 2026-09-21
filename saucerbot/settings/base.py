@@ -123,7 +123,17 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Django reads STORAGES["staticfiles"]; the old STATICFILES_STORAGE setting
+# is no longer consulted, so whitenoise's compression and manifest hashing
+# were silently inactive while it was set that way.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
