@@ -108,7 +108,7 @@ def test_groupme_login_redirect_no_session():
     r = v.get(fake_request)
 
     assert r.status_code == 302
-    assert r.url.startswith("https://oauth.groupme.com")
+    assert r.url.startswith("https://oauth.groupme.com/oauth/authorize")
 
 
 @pytest.mark.django_db
@@ -125,7 +125,7 @@ def test_groupme_login_redirect_with_session():
     r = v.get(fake_request)
 
     assert r.status_code == 302
-    assert not r.url.startswith("https://oauth.groupme.com")
+    assert not r.url.startswith("https://oauth.groupme.com/oauth/authorize")
     assert "/api/groupme/" in r.url
 
 
@@ -162,7 +162,7 @@ def test_groupme_oauth_with_token(gmi):
     r = v.get(fake_request)
 
     assert r.status_code == 302
-    assert not r.url.startswith("https://oauth.groupme.com")
+    assert not r.url.startswith("https://oauth.groupme.com/oauth/authorize")
     assert "/api/groupme/" in r.url
 
     assert SESSION_KEY in fake_request.session

@@ -42,11 +42,15 @@ def user_named_saucerbot(
 
     if force_random or msg == "random":
         insult = get_insult()
-        prefix = "Stop being a"
-        if insult[0].lower() in ["a", "e", "i", "o", "u"]:
-            prefix = prefix + "n"
 
-        msg = prefix + " " + insult + ", "
+        if insult is None:
+            msg = "Stop being an asshole, "
+        else:
+            prefix = "Stop being a"
+            if insult[0].lower() in ["a", "e", "i", "o", "u"]:
+                prefix = prefix + "n"
+
+            msg = prefix + " " + insult + ", "
 
     if isinstance(msg, str):
         msg = msg + user_attach

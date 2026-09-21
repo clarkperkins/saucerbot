@@ -10,6 +10,14 @@ env:
   PYTHON_VERSION: "3.13"
   REGISTRY_IMAGE: clarkperkins/saucerbot
 
+# Default every job down to read-only on the repo contents; the two jobs that
+# need more (Build & Test, Helm Chart) declare it themselves below. The docker
+# jobs authenticate to the registry with DOCKERHUB_TOKEN rather than
+# GITHUB_TOKEN, and same-run artifact up/download uses the Actions runtime
+# token, so none of them need anything beyond this.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build & Test
