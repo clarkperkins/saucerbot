@@ -31,7 +31,7 @@ Clark can worry about the rest of the stuff that makes the app work.
 Contributing
 ************
 
-We run poetry here. You'll need Python 3.11.x or newer and Poetry 2.0.x or newer. Clark also wrote an ``asdf``
+We run poetry here. You'll need Python 3.13.x or newer and Poetry 2.0.x or newer. Clark also wrote an ``asdf``
 ``.tool-versions`` file if you're so inclined to use it.
 
 If you're running tests or code, there's some env vars you'll want to set. For local dev, I'd recommend the following::

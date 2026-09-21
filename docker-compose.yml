@@ -1,6 +1,9 @@
 services:
   db:
-    image: postgres:14
+    # Keep this on POSTGRES_DEFAULT from tests/conftest.py, so a local stack and
+    # a default test run exercise the same major. Bumping it makes an existing
+    # dbdata volume unreadable -- `docker compose down -v` to recreate it.
+    image: postgres:18
     ports:
       - "5432:5432"
     environment:

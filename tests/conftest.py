@@ -12,7 +12,7 @@ import pytest_asyncio
 # default. Deliberately not Renovate-managed: it is a standing choice rather
 # than an available version, so a bot has nothing useful to say about it and it
 # moves by hand.
-POSTGRES_DEFAULT = 14
+POSTGRES_DEFAULT = 18
 
 # The newest PostgreSQL this project means to support. Renovate keeps it
 # current through the custom manager keyed on the comment below, so a new major
