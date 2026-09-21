@@ -19,7 +19,7 @@ Valid environments are: `test`, `local`, `development`, `staging`, `production`,
 
 ### Poetry & Python
 
-This project uses Poetry 2.0.x and requires Python 3.11+. An `.tool-versions` file is provided for asdf users.
+This project uses Poetry 2.0.x and requires Python 3.13+. An `.tool-versions` file is provided for asdf users.
 
 Install dependencies:
 ```bash

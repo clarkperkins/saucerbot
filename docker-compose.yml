@@ -1,6 +1,9 @@
 services:
   db:
-    image: postgres:14
+    # Django 6.1 requires PostgreSQL 15 or later. Bumping this major version
+    # makes an existing dbdata volume unreadable -- `docker compose down -v`
+    # to recreate it.
+    image: postgres:16
     ports:
       - "5432:5432"
     environment:

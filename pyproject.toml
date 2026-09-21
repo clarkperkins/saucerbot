@@ -7,7 +7,7 @@ authors = [
     {name = "Chris Reynolds",email = "christianbreynolds@users.noreply.github.com"}
 ]
 readme = "README.rst"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.13,<4.0"
 dependencies = [
     "arrow",
     "beautifulsoup4",
@@ -15,9 +15,9 @@ dependencies = [
     "colorlog",
     "discord.py ~=2.0",
     "dj-database-url",
-    "django ~=5.2.16",
+    "django ~=6.1.0",
     "django-split-settings",
-    "djangorestframework ~=3.17.2",
+    "djangorestframework ~=3.18.0",
     "gunicorn",
     "lowerpines @ git+https://github.com/bigfootjon/lowerpines.git@main",
     "psycopg",
@@ -60,7 +60,7 @@ exclude = "migrations"
 # Pin the target so formatting is identical no matter which interpreter runs
 # black. Without it black infers the whole requires-python range and its AST
 # safety check fails on anything older than the newest version in that range.
-target-version = ["py311"]
+target-version = ["py313"]
 
 
 
