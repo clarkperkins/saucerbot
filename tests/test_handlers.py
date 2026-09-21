@@ -292,6 +292,25 @@ def test_saucerbot_user_random(bot, gmi, monkeypatch):
     assert bot.group.messages.count == 1
 
 
+def test_saucerbot_user_random_no_insult(bot, gmi, monkeypatch):
+    from lowerpines.endpoints.message import Message
+
+    from saucerbot.groupme.models import GroupMeMessage
+    from saucerbot.handlers import saucer
+
+    # The insult generator is unreachable: fall back rather than blowing up
+    monkeypatch.setattr("saucerbot.handlers.saucer.get_insult", lambda: None)
+
+    raw_message = get_sample_message(bot.bot, "", name="saucerbot")
+
+    ret = saucer.user_named_saucerbot(
+        bot.bot, GroupMeMessage(Message.from_json(gmi, raw_message)), True
+    )
+
+    assert ret
+    assert bot.group.messages.count == 1
+
+
 def test_troll_missing(bot, client):
     bot.handlers.create(handler_name="troll")
 
