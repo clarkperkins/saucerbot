@@ -48,7 +48,7 @@ jobs:
             poetry-cache-${{ runner.os }}-${{ env.PYTHON_VERSION }}
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
 
@@ -260,7 +260,7 @@ jobs:
           version: v3.17.1
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
 
