@@ -5,18 +5,18 @@
     // Refresh poetry.lock (transitives, the lowerpines git ref) weekly.
     ":maintainLockFilesWeekly",
   ],
+  // Updates open as soon as they clear minimumReleaseAge; only the lock
+  // refresh above runs on a schedule (Monday mornings).
   timezone: "America/Chicago",
-  schedule: ["before 6am on monday"],
   labels: ["dependencies"],
 
   // Give a release a few days to get yanked before we pick it up. Keep in step
   // with solver.min-release-age in poetry.toml, which covers lock maintenance.
   minimumReleaseAge: "3 days",
 
-  // Fixes for known vulnerabilities skip the schedule and the release age.
+  // Fixes for known vulnerabilities skip the release age.
   vulnerabilityAlerts: {
     labels: ["dependencies", "security"],
-    schedule: ["at any time"],
     minimumReleaseAge: null,
   },
 
