@@ -15,7 +15,7 @@ dependencies = [
     "colorlog",
     "discord.py ~=2.0",
     "dj-database-url",
-    "django ~=5.2.16",
+    "django ~=5.2.17",
     "django-split-settings",
     "djangorestframework ~=3.17.2",
     "gunicorn",
