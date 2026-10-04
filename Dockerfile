@@ -8,23 +8,28 @@ RUN sh install_build.sh
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install poetry
-RUN python -m pip install poetry virtualenv
+# Install uv
+# renovate: datasource=pypi depName=uv
+ARG UV_VERSION=0.12.23
+RUN python -m pip install --no-cache-dir uv==${UV_VERSION}
 
+# Build the virtualenv where the runtime stage expects it, against the image's
+# own interpreter rather than a uv-managed download.
 ENV VIRTUAL_ENV=/app/venv
-
-# Create & activate virtualenv
-RUN virtualenv $VIRTUAL_ENV
+ENV UV_PROJECT_ENVIRONMENT=$VIRTUAL_ENV
+ENV UV_PYTHON_DOWNLOADS=never
+ENV UV_LINK_MODE=copy
 ENV PATH=$VIRTUAL_ENV/bin:$PATH
 
 # Install python dependencies (but not self)
-COPY pyproject.toml poetry.lock manage.py logging.yaml gunicorn.conf.py README.rst /app/
-RUN poetry sync --without=dev --no-root
+COPY pyproject.toml uv.lock manage.py logging.yaml gunicorn.conf.py README.rst /app/
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev --no-install-project
 
-# Copy self, set the version & install
+# Copy self & install
 COPY saucerbot saucerbot
-RUN poetry version $(date +"%Y.%m.%d")
-RUN poetry sync --without=dev
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
 
 # Need these for collectstatic to work
 ENV DJANGO_ENV=build
