@@ -65,9 +65,20 @@
     },
     {
       // The interpreter shows up in the Dockerfile, .tool-versions and the CI
-      // workflow; one PR keeps them from drifting apart.
+      // workflow; one PR keeps them from drifting apart. "none" keeps an
+      // upgrade still inside minimumReleaseAge in the branch (behind a pending
+      // stability check) instead of dropping it and opening a partial group.
       groupName: "python",
       matchDepNames: ["python"],
+      internalChecksFilter: "none",
+    },
+    {
+      // A floating Docker tag's timestamp is its last rebuild, not the Python
+      // release, so it would hold the group every time the image is re-pushed.
+      // The release age is already enforced on the .tool-versions upgrade.
+      matchDatasources: ["docker"],
+      matchDepNames: ["python"],
+      minimumReleaseAge: null,
     },
     {
       groupName: "docker github actions",
