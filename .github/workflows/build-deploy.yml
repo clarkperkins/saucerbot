@@ -8,7 +8,7 @@ on:
 
 env:
   # renovate: datasource=docker depName=python
-  PYTHON_VERSION: "3.13"
+  PYTHON_VERSION: "3.14"
   REGISTRY_IMAGE: clarkperkins/saucerbot
 
 # Default every job down to read-only on the repo contents; the two jobs that
