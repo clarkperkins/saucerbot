@@ -6,6 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Saucerbot is a multi-platform chat bot that works with both GroupMe and Discord. It responds to messages using a handler-based architecture with regex pattern matching.
 
+## Public Repository
+
+This repository is public. Keep details of deployed environments out of it —
+hostnames, addresses, log queries, or output copied from a running service — in
+code, commit messages, PR bodies and comments alike. A version pinned in a file
+is fine.
+
 ## Development Setup
 
 ### Environment Variables
