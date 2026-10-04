@@ -52,11 +52,6 @@ jobs:
         with:
           python-version: "${{ env.PYTHON_VERSION }}"
 
-      - name: Spin up Containers
-        run: |
-          touch web.env
-          docker compose up -d db
-
       - name: Install Build Dependencies
         run: |
           python -m pip install --upgrade pip poetry
@@ -75,16 +70,18 @@ jobs:
         env:
           DJANGO_ENV: test
 
+      # "all" means one container per PostgreSQL major from Django's own
+      # minimum_database_version up to POSTGRES_CEILING in tests/conftest.py,
+      # so the whole supported range is covered by this one step. A plain run
+      # without it would only cover POSTGRES_DEFAULT, which is the right
+      # default locally but would leave the rest of the range untested here.
+      # The runner's docker daemon is all this needs.
       - name: Run Tests
         run: |
           make test
         env:
           DJANGO_ENV: test
-          DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/postgres'
-
-      - name: Stop Containers
-        run: |
-          docker compose down
+          TEST_POSTGRES_MAJORS: all
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2

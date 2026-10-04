@@ -42,6 +42,18 @@
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?",
       ],
     },
+    {
+      // POSTGRES_CEILING in tests/conftest.py: the newest PostgreSQL the
+      // suite means to support. Same comment marker as above, but a Python
+      // assignment rather than a YAML key. POSTGRES_DEFAULT sits beside it
+      // with no marker on purpose -- it is a standing choice, not an
+      // available version, so it moves by hand.
+      customType: "regex",
+      managerFilePatterns: ["/^tests/conftest\\.py$/"],
+      matchStrings: [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+\\w+\\s*=\\s*(?<currentValue>\\d+)",
+      ],
+    },
   ],
 
   packageRules: [
@@ -86,9 +98,11 @@
       matchPackageNames: ["docker/*"],
     },
     {
-      // compose deliberately runs Django's *minimum* supported PostgreSQL so
-      // CI catches anything newer-only. Bump it by hand alongside a Django
-      // upgrade (see CLAUDE.md).
+      // CI no longer uses compose for the test database: the suite starts its
+      // own containers, covering every major from Django's minimum up to
+      // POSTGRES_CEILING in tests/conftest.py. This pin only affects local
+      // `docker compose up`, where a major bump makes an existing dbdata
+      // volume unreadable -- so it stays manual.
       matchManagers: ["docker-compose"],
       matchPackageNames: ["postgres"],
       matchUpdateTypes: ["major"],
@@ -101,6 +115,19 @@
       matchPackageNames: ["postgresql"],
       matchUpdateTypes: ["major"],
       dependencyDashboardApproval: true,
+    },
+    {
+      // POSTGRES_CEILING is the one PostgreSQL version meant to move on its
+      // own: a new major should arrive as a PR whose CI says whether the
+      // suite survives it, which is the entire point of the pin. So unlike
+      // the two majors above it is deliberately ungated. Spelled out rather
+      // than left to the default, because every other postgres major here is
+      // held back and a later blanket rule should not quietly swallow this
+      // one. POSTGRES_DEFAULT is invisible to Renovate -- it carries no
+      // "# renovate:" marker -- so this is the only version it can bump.
+      matchFileNames: ["tests/conftest.py"],
+      matchPackageNames: ["postgres"],
+      dependencyDashboardApproval: false,
     },
     {
       // Low-risk updates merge themselves once CI is green. Majors and
