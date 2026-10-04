@@ -8,6 +8,12 @@
   // Updates open as soon as they clear minimumReleaseAge; only the lock
   // refresh above runs on a schedule (Monday mornings).
   timezone: "America/Chicago",
+
+  // The Mend-hosted app injects mode: "silent" for repos installed under "All
+  // repositories", which opens no PRs or dashboard issue. Pin it here so a
+  // reinstall can't quietly put us back in silent mode.
+  mode: "full",
+
   labels: ["dependencies"],
 
   // Give a release a few days to get yanked before we pick it up. Keep in step
