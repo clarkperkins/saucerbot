@@ -38,9 +38,13 @@ first. For a major framework upgrade, two checks are worth the few minutes:
   move one. Then compare what changed against this repo. Settings that quietly
   stopped being read don't warn about anything, so this is the only reliable
   way to spot them.
-- **Check the new minimum database version** and bump `docker-compose.yml` to
-  match, then run the suite against PostgreSQL (see Testing) rather than the
-  SQLite default.
+- **The minimum database version takes care of itself.** CI reads Django's
+  `minimum_database_version` and runs the suite from there up to
+  `POSTGRES_CEILING`, so a Django upgrade that raises the floor is covered
+  without touching any pin. Check the release notes for a new minimum anyway,
+  since the database has to clear the new floor before the upgrade can ship —
+  and if that floor is above `POSTGRES_CEILING`, the suite says so and stops
+  rather than running nothing.
 
 ## Common Commands
 
@@ -201,20 +205,82 @@ Tests are in the `tests/` directory and use pytest with these plugins:
 
 Tests must have `DJANGO_ENV=test` set.
 
-**The test database depends on whether `DATABASE_URL` is set**, and this trips people up:
+**The tests always run against PostgreSQL**, in containers `tests/conftest.py`
+starts with testcontainers. There is no SQLite option: the suite only ever
+talks to the engine this project actually uses, so a database-specific bug
+cannot hide until CI. **A running Docker daemon is therefore required to run the tests.**
 
-- Unset (the usual local case) — the test environment falls back to in-memory SQLite.
-- Set — that database is used. CI sets it and runs the `docker-compose` PostgreSQL container.
+`tests/conftest.py` carries two pinned majors, with different jobs:
 
-So anything database-specific passes locally and fails in CI. Django's minimum
-PostgreSQL version is the obvious one, but so are migrations and raw SQL. To run
-the suite the way CI does:
+- **`POSTGRES_DEFAULT`** — the major this project targets, and the default for
+  a test run, so a plain `make test` exercises the one that matters most.
+  Deliberately **not** Renovate-managed: it is a standing choice rather than an
+  available version, so a bot has nothing useful to say about it and it moves by
+  hand. It is not derivable from this repo either — `Chart.yaml` pins a chart
+  version, not a server version.
+- **`POSTGRES_CEILING`** — the newest major the project means to support.
+  Renovate keeps it current through a custom manager keyed on the `# renovate:`
+  comment above it, so a new PostgreSQL major arrives as a failing test rather
+  than a surprise later.
+
+**This is the only PostgreSQL version Renovate bumps, and it does so without
+asking.** Every other one is held back on purpose: compose's tag is
+`enabled: false` for majors (a bump makes an existing `dbdata` volume
+unreadable), the chart's `postgresql` subchart needs dependency-dashboard
+approval (a major there means a data migration), and `POSTGRES_DEFAULT`
+carries no `# renovate:` marker at all, so Renovate cannot see it. The ceiling
+is ungated by an explicit `dependencyDashboardApproval: false` rule rather than
+by default, so a later blanket "hold postgres majors" rule can't quietly
+swallow the one bump that is supposed to happen on its own. It opens a PR; it
+does not automerge, so a major still gets a human look even when CI is green.
+
+`TEST_POSTGRES_MAJORS` chooses what a given run covers:
+
+- Unset (the usual local case) — `POSTGRES_DEFAULT`, on its own. One
+  container.
+- `all` — every major from Django's own `minimum_database_version` up to
+  `POSTGRES_CEILING`, each in its own container. This is what CI sets, so the
+  whole supported range is covered on every PR. The floor comes from Django
+  rather than a pin, so it follows a framework upgrade on its own.
+- `15,18` — exactly those majors, for reproducing one CI leg without paying for
+  the rest. An explicit list is an override and skips the checks below.
+
+Only the tests that actually want a database are multiplied out (about half the
+suite); the rest run once. Each version appears as a `[pg17]`-style test id, so
+a failure says which server it was.
 
 ```bash
-touch web.env  # compose reads it for the web service; must exist even to start db
-docker compose up -d db
-DJANGO_ENV=test DATABASE_URL='postgres://postgres:postgres@localhost:5432/postgres' make test
+DJANGO_ENV=test make test                           # default only, ~11s
+DJANGO_ENV=test TEST_POSTGRES_MAJORS=all make test  # what CI runs, ~55s
+DJANGO_ENV=test TEST_POSTGRES_MAJORS=15 make test   # one specific major
 ```
+
+Having both numbers lets the default run answer a question nothing else does:
+**if `POSTGRES_DEFAULT` is below Django's minimum, the suite refuses to run and
+says so.** That combination is not a test problem — it means the framework in
+the lockfile cannot run against the major this project targets, which is
+exactly what the Django 6.1 branch hit, found the hard way via a
+`NotSupportedError` in CI. `TEST_POSTGRES_MAJORS=all` still works in that state,
+so the code can be validated while the database question is settled. A default
+*above* the ceiling is also an error — the ceiling is stale.
+
+`settings/environments/test.py` deliberately configures no database at all —
+`base.py` leaves `DATABASES` empty when `DATABASE_URL` is unset, and the
+fixture fills it in. Anything reaching for a database outside that fixture
+fails loudly rather than quietly running on a different engine than the real one.
+The fixture repoints `DATABASES` unconditionally, so `DATABASE_URL` has no
+effect on a test run — there is no supported way to aim the suite at a
+PostgreSQL you manage yourself, only at the majors the two `TEST_POSTGRES_*`
+variables select.
+
+Repointing Django at a container mid-run takes more than rewriting
+`settings.DATABASES`: the `ConnectionHandler` caches both the settings and the
+built `DatabaseWrapper` (pytest-django issue #643), and the wrappers live in a
+thread-critical `Local`, so the `sync_to_async` worker thread the async tests
+use holds one of its own. `django_db_modify_db_settings` in `tests/conftest.py`
+evicts all of that and then asserts the server it reached really is the major
+the leg asked for — without that assertion the failure mode is several green
+legs that all tested the same version.
 
 ## Code Standards
 
