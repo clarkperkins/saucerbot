@@ -13,35 +13,35 @@ reports:
 	mkdir -p reports/tests
 
 format/isort:
-	poetry run isort saucerbot tests
+	uv run isort saucerbot tests
 
 format/black:
-	poetry run black saucerbot tests
+	uv run black saucerbot tests
 
 format: format/isort format/black
 
 check/isort:
-	poetry run isort saucerbot --check
+	uv run isort saucerbot --check
 
 check/black:
-	poetry run black saucerbot --check
+	uv run black saucerbot --check
 
 check/pylint:
-	poetry run pylint saucerbot --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+	uv run pylint saucerbot --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 
 check/mypy:
-	poetry run mypy saucerbot
+	uv run mypy saucerbot
 
 check: check/isort check/black check/pylint check/mypy
 
 staticfiles:
-	poetry run python manage.py collectstatic --noinput
+	uv run python manage.py collectstatic --noinput
 
 test/pytest/xml: reports staticfiles
-	poetry run pytest --junit-xml=reports/tests/unit.xml --cov=saucerbot --cov-report=xml
+	uv run pytest --junit-xml=reports/tests/unit.xml --cov=saucerbot --cov-report=xml
 
 test/pytest/html: reports staticfiles
-	poetry run pytest --cov=saucerbot --cov-report=html
+	uv run pytest --cov=saucerbot --cov-report=html
 
 test: test/pytest/xml
 

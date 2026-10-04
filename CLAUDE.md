@@ -24,20 +24,26 @@ Set `DJANGO_ENV` before running any commands:
 
 Valid environments are: `test`, `local`, `development`, `staging`, `production`, `build`
 
-### Poetry & Python
+### uv & Python
 
-This project uses Poetry 2.4+ (enforced by `requires-poetry`, needed for `solver.min-release-age` in `poetry.toml`) and requires Python 3.13+. An `.tool-versions` file is provided for asdf users.
+This project uses [uv](https://docs.astral.sh/uv/) (0.12+) and requires Python 3.13+. `.python-version` names the
+Python minor version; uv installs a matching interpreter if you don't have one.
 
-Install dependencies:
+Install dependencies (including the `dev` group) into `.venv`:
 ```bash
-poetry install
+uv sync
 ```
+
+`uv run <cmd>` runs a command in that environment, syncing it first if `uv.lock` has changed.
 
 ### Upgrading Dependencies
 
-`poetry update` only moves within the constraints in `pyproject.toml`; anything
-pinned there (django, djangorestframework, pylint) needs the constraint edited
-first. For a major framework upgrade, two checks are worth the few minutes:
+`uv lock --upgrade` (or `--upgrade-package <name>`) only moves within the
+constraints in `pyproject.toml`; anything pinned there (django,
+djangorestframework, pylint) needs the constraint edited first. Resolution
+ignores releases younger than `tool.uv.exclude-newer` (3 days), matching
+Renovate's `minimumReleaseAge`. For a major framework upgrade, two checks are
+worth the few minutes:
 
 - **Diff a throwaway project against ours.** Run `django-admin startproject` on
   both the old and new version and diff the two generated trees whole — every
@@ -65,8 +71,8 @@ DJANGO_ENV=test make test
 DJANGO_ENV=test make cov
 
 # Run specific test file or test
-DJANGO_ENV=test poetry run pytest tests/test_handlers.py
-DJANGO_ENV=test poetry run pytest tests/test_handlers.py::test_specific_function
+DJANGO_ENV=test uv run pytest tests/test_handlers.py
+DJANGO_ENV=test uv run pytest tests/test_handlers.py::test_specific_function
 ```
 
 ### Code Quality
@@ -107,10 +113,10 @@ python manage.py migrate
 
 ```bash
 # Run the Discord bot worker
-poetry run saucerbot discord run
+uv run saucerbot discord run
 
 # Sync Discord slash commands globally
-poetry run saucerbot discord sync-global-commands
+uv run saucerbot discord sync-global-commands
 ```
 
 ### Docker

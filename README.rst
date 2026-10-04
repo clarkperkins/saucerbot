@@ -31,8 +31,8 @@ Clark can worry about the rest of the stuff that makes the app work.
 Contributing
 ************
 
-We run poetry here. You'll need Python 3.13.x or newer and Poetry 2.0.x or newer. Clark also wrote an ``asdf``
-``.tool-versions`` file if you're so inclined to use it.
+We run `uv <https://docs.astral.sh/uv/>`_ here (0.12 or newer). ``uv sync`` sets up a ``.venv`` with everything,
+including a matching Python if you don't have one (``.python-version`` says which).
 
 If you're running tests or code, there's some env vars you'll want to set. For local dev, I'd recommend the following::
 

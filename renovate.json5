@@ -2,7 +2,7 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: [
     "config:recommended",
-    // Refresh poetry.lock (transitives, the lowerpines git ref) weekly.
+    // Refresh uv.lock (transitives, the lowerpines git ref) weekly.
     ":maintainLockFilesWeekly",
   ],
   // Updates open as soon as they clear minimumReleaseAge; only the lock
@@ -17,14 +17,14 @@
   labels: ["dependencies"],
 
   // Give a release a few days to get yanked before we pick it up. Keep in step
-  // with solver.min-release-age in poetry.toml, which covers lock maintenance.
+  // with tool.uv.exclude-newer in pyproject.toml, which covers lock maintenance.
   minimumReleaseAge: "3 days",
 
-  // Lock maintenance re-resolves from scratch, and only Poetry >= 2.4 honours
-  // solver.min-release-age; older versions silently ignore it. Without this,
-  // Renovate runs whatever version the poetry.lock header names.
+  // Lock maintenance re-resolves from scratch, and tool.uv.exclude-newer's
+  // relative "3 days" needs uv >= 0.12 (as does tool.uv.required-version), so
+  // make sure Renovate's own uv is new enough.
   constraints: {
-    poetry: ">=2.4.0",
+    uv: ">=0.12.0",
   },
 
   // Fixes for known vulnerabilities skip the release age.
@@ -40,13 +40,16 @@
 
   customManagers: [
     {
-      // The CI Python version lives in a workflow env var that no built-in
-      // manager reads. Kept in step with the Dockerfile and .tool-versions by
-      // the "python" group below.
+      // Versions pinned in workflow env vars and Dockerfile ARGs, which no
+      // built-in manager reads: the CI Python (kept in step with the
+      // Dockerfile and .python-version by the "python" group below) and uv.
       customType: "regex",
-      managerFilePatterns: ["/^\\.github/workflows/[^/]+\\.ya?ml$/"],
+      managerFilePatterns: [
+        "/^\\.github/workflows/[^/]+\\.ya?ml$/",
+        "/(^|/)Dockerfile$/",
+      ],
       matchStrings: [
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+\\S+:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?",
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+(?:ARG\\s+)?[\\w-]+[:=]\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?",
       ],
     },
     {
@@ -64,6 +67,14 @@
   ],
 
   packageRules: [
+    {
+      // pep621's default strategy leaves a satisfied range alone, so a
+      // ">=floor" dependency would only ever move with lock maintenance. This
+      // opens a uv.lock-only PR for in-range releases (as the Poetry manager
+      // did for "*") and still rewrites the range for out-of-range ones.
+      matchManagers: ["pep621"],
+      rangeStrategy: "update-lockfile",
+    },
     {
       // Type stubs track the framework release, so they have to move together
       // or mypy breaks.
@@ -83,7 +94,7 @@
       matchPackageNames: ["pytest", "pytest-*", "dpytest"],
     },
     {
-      // The interpreter shows up in the Dockerfile, .tool-versions and the CI
+      // The interpreter shows up in the Dockerfile, .python-version and the CI
       // workflow; one PR keeps them from drifting apart. "none" keeps an
       // upgrade still inside minimumReleaseAge in the branch (behind a pending
       // stability check) instead of dropping it and opening a partial group.
@@ -94,10 +105,17 @@
     {
       // A floating Docker tag's timestamp is its last rebuild, not the Python
       // release, so it would hold the group every time the image is re-pushed.
-      // The release age is already enforced on the .tool-versions upgrade.
+      // Every Python reference (including .python-version, via the pyenv
+      // manager) resolves through this datasource, so minor bumps skip the
+      // release age; they're never automerged, so a human still gates them.
       matchDatasources: ["docker"],
       matchDepNames: ["python"],
       minimumReleaseAge: null,
+    },
+    {
+      // The CLI (Dockerfile, CI) and the build backend ship in lockstep.
+      groupName: "uv",
+      matchPackageNames: ["uv", "uv_build"],
     },
     {
       groupName: "docker github actions",
@@ -132,7 +150,7 @@
       // Low-risk updates merge themselves once CI is green. Majors, runtime
       // dependencies and GitHub Actions (which run with the repo's secrets)
       // still wait for a human.
-      matchDepTypes: ["dev"],
+      matchDepTypes: ["dependency-groups"],
       matchUpdateTypes: ["minor", "patch"],
       automerge: true,
     },
