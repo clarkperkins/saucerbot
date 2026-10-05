@@ -1,0 +1,70 @@
+{{- if .Values.migrate.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "saucerbot.migrateName" . }}
+  labels:
+    {{- include "saucerbot.migrateLabels" . | nindent 4 }}
+  annotations:
+    # pre-* rather than post-*: migrations land before the new pods exist, so
+    # nothing has to gate its own readiness on the schema, and `helm upgrade
+    # --wait` cannot deadlock waiting for pods that are waiting for this job.
+    # A failure aborts the release with the previous version still serving.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    # Keep a failed job for inspection; clear a stale one before re-running.
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ .Values.migrate.backoffLimit }}
+  template:
+    metadata:
+      {{- with .Values.migrate.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "saucerbot.migrateSelectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "saucerbot.serviceAccountName" . }}
+      # Migrations run the same image as the backend, so they inherit its
+      # hardening rather than carrying a second set of knobs.
+      securityContext:
+        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+      containers:
+        - name: migrate
+          securityContext:
+            {{- toYaml .Values.backend.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - python
+          args:
+            - manage.py
+            - migrate
+            - --noinput
+          env:
+            {{- include "saucerbot.databaseEnv" . | nindent 12 }}
+          {{- with (include "saucerbot.migrateEnvFrom" .) }}
+          envFrom:
+            {{- . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.migrate.resources | nindent 12 }}
+      {{- with .Values.backend.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

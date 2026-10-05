@@ -1,0 +1,6 @@
+# postgres.existingSecret is required, so the chart cannot render with bare
+# defaults. `ct lint` uses the files in this directory instead; this one gives
+# the required values the smallest plausible setting so lint exercises the
+# default path.
+postgres:
+  existingSecret: saucerbot-db

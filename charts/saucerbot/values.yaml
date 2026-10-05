@@ -42,6 +42,30 @@ ingress:
   #      - chart-example.local
 
 
+# This chart does not deploy a database. Point it at one you manage yourself:
+# the secret named here must hold a connection URL that dj_database_url
+# accepts, e.g. postgresql://user:pass@host:5432/dbname. Rendering fails if it
+# is unset, rather than leaving the pods to crash-loop with no explanation.
+postgres:
+  existingSecret: ""
+  secretKey: DATABASE_URL
+
+
+# `manage.py migrate`, as a pre-install/pre-upgrade hook. Running before the
+# new pods exist means no init-container gate is needed, and a failed migration
+# aborts the release with the previous version still serving. The trade is that
+# migrations land before the new code, so they have to be backwards compatible
+# for the length of the rollout.
+migrate:
+  enabled: true
+  backoffLimit: 1
+  podAnnotations: {}
+  resources: {}
+  # Migrations need the same configuration as the app (DJANGO_ENV above all).
+  # Left empty, this follows backend.envFrom.
+  envFrom: []
+
+
 backend:
   podAnnotations: {}
 
