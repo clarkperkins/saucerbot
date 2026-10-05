@@ -20,6 +20,13 @@
   // with solver.min-release-age in poetry.toml, which covers lock maintenance.
   minimumReleaseAge: "3 days",
 
+  // Lock maintenance re-resolves from scratch, and only Poetry >= 2.4 honours
+  // solver.min-release-age; older versions silently ignore it. Without this,
+  // Renovate runs whatever version the poetry.lock header names.
+  constraints: {
+    poetry: ">=2.4.0",
+  },
+
   // Fixes for known vulnerabilities skip the release age.
   vulnerabilityAlerts: {
     labels: ["dependencies", "security"],
