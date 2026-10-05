@@ -64,3 +64,27 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+DATABASE_URL, from a secret the operator manages outside this release.
+`required` turns a missing value into a template error naming the key, instead
+of pods that start and then crash-loop on a missing setting.
+*/}}
+{{- define "saucerbot.databaseEnv" -}}
+- name: DATABASE_URL
+  valueFrom:
+    secretKeyRef:
+      name: {{ required "postgres.existingSecret is required: this chart does not deploy a database" .Values.postgres.existingSecret }}
+      key: {{ required "postgres.secretKey is required" .Values.postgres.secretKey }}
+{{- end }}
+
+{{/*
+envFrom for the migrate job, defaulting to the backend's so migrations cannot
+silently run with different configuration than the app. Renders to nothing
+when both are empty, so the job gets no envFrom key at all.
+*/}}
+{{- define "saucerbot.migrateEnvFrom" -}}
+{{- with (.Values.migrate.envFrom | default .Values.backend.envFrom) -}}
+{{- toYaml . -}}
+{{- end -}}
+{{- end }}

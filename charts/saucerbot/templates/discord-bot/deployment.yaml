@@ -38,6 +38,8 @@ spec:
           args:
             - discord
             - run
+          env:
+            {{- include "saucerbot.databaseEnv" . | nindent 12 }}
           {{- with .Values.discordBot.envFrom }}
           envFrom:
             {{- toYaml . | nindent 12 }}

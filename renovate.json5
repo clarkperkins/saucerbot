@@ -109,14 +109,6 @@
       enabled: false,
     },
     {
-      // A major bump of the postgresql subchart usually means a PostgreSQL
-      // major and a data migration. Opt in from the dependency dashboard.
-      matchManagers: ["helmv3"],
-      matchPackageNames: ["postgresql"],
-      matchUpdateTypes: ["major"],
-      dependencyDashboardApproval: true,
-    },
-    {
       // POSTGRES_CEILING is the one PostgreSQL version meant to move on its
       // own: a new major should arrive as a PR whose CI says whether the
       // suite survives it, which is the entire point of the pin. So unlike
