@@ -1,6 +1,8 @@
-# Don't resolve releases younger than this many days (Poetry >= 2.4). Renovate
-# applies the same age to the PRs it opens, but its lock file maintenance just
-# runs `poetry lock`, so this is what holds back transitive dependencies.
+# Don't resolve releases younger than this many days (Poetry >= 2.4, enforced by
+# requires-poetry in pyproject.toml and constraints.poetry in renovate.json5;
+# older versions silently ignore it). Renovate applies the same age to the PRs
+# it opens, but its lock file maintenance just runs `poetry lock`, so this is
+# what holds back transitive dependencies.
 # Installing from an existing lock is unaffected.
 [solver]
 min-release-age = 3

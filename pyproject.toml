@@ -33,6 +33,8 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
+# solver.min-release-age in poetry.toml needs 2.4; older versions ignore it.
+requires-poetry = ">=2.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
