@@ -10,7 +10,7 @@ env:
   # Only the Helm job's chart-testing uses this; the build job gets its Python
   # from .python-version through uv.
   # renovate: datasource=docker depName=python
-  PYTHON_VERSION: "3.14"
+  PYTHON_VERSION: "3.15"
   # renovate: datasource=pypi depName=uv
   UV_VERSION: "0.13.0"
   REGISTRY_IMAGE: clarkperkins/saucerbot
