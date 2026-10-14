@@ -1,4 +1,4 @@
-FROM python:3.14-slim AS build
+FROM python:3.15-slim AS build
 
 WORKDIR /app
 
@@ -38,7 +38,7 @@ ENV DJANGO_ENV=build
 RUN python manage.py collectstatic --noinput
 
 
-FROM python:3.14-slim AS saucerbot
+FROM python:3.15-slim AS saucerbot
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
