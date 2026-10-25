@@ -10,7 +10,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Install uv
 # renovate: datasource=pypi depName=uv
-ARG UV_VERSION=0.13.4
+ARG UV_VERSION=0.13.5
 RUN python -m pip install --no-cache-dir uv==${UV_VERSION}
 
 # Build the virtualenv where the runtime stage expects it, against the image's
