@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# A force-push (e.g. Renovate rebasing) supersedes the PR's in-flight run.
+# Pushes to main are never cancelled: they publish images and the chart.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 env:
   # Only the Helm job's chart-testing uses this; the build job gets its Python
   # from .python-version through uv.
