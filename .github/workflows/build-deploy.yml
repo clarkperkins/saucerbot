@@ -87,6 +87,10 @@ jobs:
   docker-meta:
     name: Docker Meta
 
+    # Never publish from a commit that failed checks or tests.
+    needs:
+      - build
+
     runs-on: ubuntu-latest
 
     outputs:
@@ -234,6 +238,10 @@ jobs:
 
   helm:
     name: Helm Chart
+
+    # Never publish from a commit that failed checks or tests.
+    needs:
+      - build
 
     permissions:
       contents: write
