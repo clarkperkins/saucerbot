@@ -16,6 +16,12 @@
 
   labels: ["dependencies"],
 
+  // Only rebase on a real conflict. main doesn't require branches to be up to
+  // date (the push build on main catches a bad combination right after merge),
+  // so rebasing every open PR whenever another one lands would just multiply
+  // CI runs.
+  rebaseWhen: "conflicted",
+
   // Give a release a few days to get yanked before we pick it up. Keep in step
   // with tool.uv.exclude-newer in pyproject.toml, which covers lock maintenance.
   minimumReleaseAge: "3 days",
